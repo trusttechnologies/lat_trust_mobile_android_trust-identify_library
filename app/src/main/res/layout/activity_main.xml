@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:keepScreenOn="true">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/Text.Medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="24dp"
+                android:text="Eventos"
+                android:textColor="@color/textColorBlack"
+                android:textSize="@dimen/textSizeLargeX" />
+
+            <android.support.design.button.MaterialButton
+                android:id="@+id/event"
+                style="@style/Base.Widget.AppCompat.Button.Borderless"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="16dp"
+                android:text=""
+                app:backgroundTint="@color/neon_blue"
+                app:cornerRadius="24dp"
+                app:icon="@drawable/ic_add_alert_black_24dp"
+                app:iconSize="22dp" />
+        </RelativeLayout>
+    </android.support.design.widget.AppBarLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:id="@+id/actual_sim_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:orientation="vertical">
+
+            <android.support.design.widget.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/trustid_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:enabled="false"
+                    android:hint="ID TRUST"
+                    android:text="1232351234651346512345"
+                    android:textSize="@dimen/textSizeSmall" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <TextView
+                android:id="@+id/sim_carrier"
+                style="@style/Text.Medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:text="SIM Actual"
+                android:textColor="@color/black"
+                android:textSize="@dimen/textSizeLarge" />
+
+            <android.support.design.card.MaterialCardView
+                style="@style/Widget.MaterialComponents.CardView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                app:cardCornerRadius="4dp"
+                app:cardElevation="4dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/gradient">
+
+                    <ImageView
+                        android:id="@+id/sim_ico_actual"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginBottom="31dp"
+                        android:layout_marginStart="28dp"
+                        android:layout_marginTop="43dp"
+                        app:srcCompat="@drawable/ic_ico_sim_tarjeta_nuevo_sim" />
+
+                    <TextView
+                        android:id="@+id/actual_sim_title"
+                        style="@style/Text.Medium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="34dp"
+                        android:layout_toEndOf="@id/sim_ico_actual"
+                        android:text="Tienes una nueva tarjeta SIM"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/textSizeMedium" />
+
+                    <TextView
+                        android:id="@+id/actual_sim_id"
+                        style="@style/Text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/actual_sim_title"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_toEndOf="@id/sim_ico_actual"
+                        android:text="12345234123123"
+                        android:textColor="@color/white" />
+
+                    <TextView
+                        android:id="@+id/actual_sim_date"
+                        style="@style/Text.Medium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginTop="14dp"
+                        android:text="Fecha y Hora"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/textSizeSmall" />
+                </RelativeLayout>
+
+            </android.support.design.card.MaterialCardView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/button"
+            android:layout_below="@+id/actual_sim_layout"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/Text.Medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:text="Historial de cambios"
+                android:textColor="@color/black"
+                android:textSize="@dimen/textSizeLarge" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/history_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+
+        <android.support.design.button.MaterialButton
+            android:id="@+id/button"
+            style="@style/Base.Widget.AppCompat.Button.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/fira_sans_extra_condensed_medium"
+            android:text="Reportar"
+            android:textColor="@color/black"
+            app:backgroundTint="@color/neon_blue"
+            app:cornerRadius="25dp"
+            app:rippleColor="@color/white" />
+
+    </RelativeLayout>
+
+
+</android.support.design.widget.CoordinatorLayout>

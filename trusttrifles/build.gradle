@@ -1,0 +1,81 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
+    }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+
+group='com.github.trusttechnologies.trust-device-info'
+version='1.1.8'
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 28
+        versionCode 7
+        versionName "1.1.8"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+
+ext {
+    retrofitVersion = "2.4.0"
+    okhttpVersion = "3.10.0"
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation "com.android.support:design:28.0.0"
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+
+    api "com.orhanobut:hawk:2.0.1"
+
+    //---------NETWORKING------------------------
+
+    // -- OKHTTP
+    api "com.squareup.okhttp3:logging-interceptor:3.10.0"
+    api "com.squareup.okhttp3:okhttp:3.10.0"
+    api "com.squareup.okhttp3:okhttp-urlconnection:3.10.0"
+
+    // -- RETROFIT
+    api "com.squareup.retrofit2:retrofit:2.4.0"
+    api "com.squareup.retrofit2:converter-gson:2.4.0"
+
+    //---------DEXTER - TRUST
+    //implementation 'com.github.trusttechnologies:Dexter:5.0.1'
+    //---------DEXTER
+    implementation 'com.karumi:dexter:5.0.0'
+
+    //---------ROOTBEER - TRUST
+    implementation 'com.github.trusttechnologies:rootbeer:0.0.8'
+    //---------ROOTBEER
+    //implementation 'com.scottyab:rootbeer-lib:0.0.7'
+
+
+    //--------Trust Lock
+  //  api 'com.github.trusttechnologies:TrustLock:1.10'
+
+}

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">@color/white</color>
+    <color name="colorPrimaryDark">@color/black_50</color>
+    <color name="colorAccent">@color/neon_blue</color>
+
+    <!-- TextColor -->
+    <color name="textColorBlack">@color/black</color>
+    <color name="textColorBlack50">@color/black_50</color>
+    <color name="textColorBlack70">@color/black_70</color>
+    <color name="textColorPlum">@color/plum</color>
+    <color name="textColorBlue">@color/neon_blue</color>
+    <color name="textColorWhite">@android:color/white</color>
+    <color name="textColorRed">@color/light_red</color>
+
+    <!-- BUTTONS -->
+    <color name="loginButtonBackGround">@color/neon_blue</color>
+
+    <color name="editTextActive">@color/colorAccent</color>
+    <color name="editTextNormal">@android:color/white</color>
+
+
+    <!-- ALL COLORS -->
+    <color name="black">#343434</color>
+    <color name="black_bright">#b34b4b4b</color>
+    <color name="black_50">#80343434</color>
+    <color name="black_70">#b3343434</color>
+    <color name="grey_light">#bbbbbb</color>
+    <color name="grey">#898989</color>
+    <color name="neon_blue">#00d9ff</color>
+    <color name="neon_blue_dark">#0899c1</color>
+    <color name="light_red">#ff3f4e</color>
+    <color name="light_red_soft">#ff7386</color>
+    <color name="white">#f8f8f8</color>
+    <color name="nav_white">#e6ffffff</color>
+    <color name="plum">#581219</color>
+    <color name="green">#00bfa5</color>
+    <color name="green_light">#1de9b6</color>
+</resources>

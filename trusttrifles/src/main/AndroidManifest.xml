@@ -1,0 +1,39 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="lat.trust.trusttrifles"
+    android:sharedUserId="trust.trifles"
+    android:sharedUserLabel="@string/shared_user_label" >
+
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <uses-permission android:name="android.permission.NFC"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- SERVICES -->
+<application>
+    <service
+        android:name=".network.MyFirebaseMessagingService"
+        android:stopWithTask="false">
+        <intent-filter>
+            <action android:name="com.google.firebase.MESSAGING_EVENT" />
+        </intent-filter>
+    </service>
+
+    <service android:name="com.trust.trustlocklibrary.LockService" />
+
+    <!-- RECEIVER -->
+    <receiver
+        android:name="com.trust.trustlocklibrary.BootBroadcast"
+        android:enabled="true"
+        android:exported="false">
+        <intent-filter>
+            <action android:name="android.intent.action.BOOT_COMPLETED" />
+        </intent-filter>
+    </receiver>
+</application>
+
+
+</manifest>
