@@ -1,10 +1,31 @@
+apply plugin: 'com.novoda.bintray-release'
+apply plugin: 'com.android.library'
+
+//Step II: Add the below publish details
+publish {
+
+    def groupProjectID = 'lat.trust.trustdemo'
+    def artifactProjectID = 'trustdemo'
+    def publishVersionID = '0.1.0'
+
+    userOrg = 'fcaro'
+    repoName = 'TrustIdentify'
+    groupId = groupProjectID
+    artifactId = artifactProjectID
+    publishVersion = publishVersionID
+    desc = 'Android mobile library responsible for generating a unique id per device through certain features of this same.'
+    website = 'https://github.com/trusttechnologies'
+}
+
 buildscript {
     repositories {
         mavenCentral()
+        jcenter()
     }
 
     dependencies {
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
+
     }
 }
 
@@ -64,8 +85,6 @@ dependencies {
     api "com.squareup.retrofit2:retrofit:2.4.0"
     api "com.squareup.retrofit2:converter-gson:2.4.0"
 
-    //---------DEXTER - TRUST
-    //implementation 'com.github.trusttechnologies:Dexter:5.0.1'
     //---------DEXTER
     implementation 'com.karumi:dexter:5.0.0'
 
@@ -73,9 +92,5 @@ dependencies {
     implementation 'com.github.trusttechnologies:rootbeer:0.0.8'
     //---------ROOTBEER
     //implementation 'com.scottyab:rootbeer-lib:0.0.7'
-
-
-    //--------Trust Lock
-  //  api 'com.github.trusttechnologies:TrustLock:1.10'
 
 }

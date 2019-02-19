@@ -40,11 +40,7 @@ dependencies {
     implementation "com.afollestad.material-dialogs:core:${materialDialogsVersion}"
     implementation project(':trusttrifles')
 
-    //---------FireBase Cloud
 
-    //implementation 'com.google.firebase:firebase-core:9.0.0'
-    //implementation 'com.google.firebase:firebase-messaging:17.3.2'
     implementation project(path: ':trusttrifles')
 
 }
-//apply plugin: 'com.google.gms.google-services'

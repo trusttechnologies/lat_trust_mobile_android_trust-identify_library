@@ -2,7 +2,6 @@ package lat.trust.trustdemo;
 
 import android.app.Application;
 
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.orhanobut.hawk.Hawk;
 
 
