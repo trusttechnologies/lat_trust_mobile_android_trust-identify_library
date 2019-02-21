@@ -1,10 +1,10 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="android:windowBackground">@color/nav_white</item>
-        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentStatus" tools:ignore="NewApi">true</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/black</item>
@@ -13,15 +13,15 @@
 
     <!-- TEXT -->
     <style name="Text">
-        <item name="android:fontFamily">@font/fira_sans_extra_condensed</item>
+        <item name="android:fontFamily" tools:ignore="NewApi">@font/fira_sans_extra_condensed</item>
     </style>
 
     <style name="Text.Bold" parent="Text">
-        <item name="android:fontFamily">@font/fira_sans_extra_condensed_bold</item>
+        <item name="android:fontFamily" tools:ignore="NewApi">@font/fira_sans_extra_condensed_bold</item>
     </style>
 
     <style name="Text.Medium" parent="Text">
-        <item name="android:fontFamily">@font/fira_sans_extra_condensed_medium</item>
+        <item name="android:fontFamily" tools:ignore="NewApi">@font/fira_sans_extra_condensed_medium</item>
     </style>
 
 </resources>

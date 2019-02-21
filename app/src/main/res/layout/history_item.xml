@@ -22,7 +22,9 @@
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:layout_marginStart="16dp"
-            app:srcCompat="@drawable/ic_ico_sim_tarjeta_historial" />
+            app:srcCompat="@drawable/ic_ico_sim_tarjeta_historial"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="16dp" />
 
         <TextView
             android:id="@+id/title"
@@ -36,7 +38,9 @@
             android:layout_toEndOf="@+id/icon"
             android:text="TITULO"
             android:textColor="@color/black"
-            android:textSize="@dimen/textSizeMedium" />
+            android:textSize="@dimen/textSizeMedium"
+            android:layout_marginLeft="16dp"
+            android:layout_toRightOf="@+id/icon" />
 
         <TextView
             android:id="@+id/data"
@@ -50,7 +54,9 @@
             android:layout_toEndOf="@+id/title"
             android:text="ID 1231242351345135"
             android:textColor="@color/black_50"
-            android:textSize="@dimen/textSizeNormal" />
+            android:textSize="@dimen/textSizeNormal"
+            android:layout_toRightOf="@+id/title"
+            android:layout_marginLeft="8dp" />
 
         <TextView
             android:id="@+id/date"
@@ -63,7 +69,9 @@
             android:layout_marginTop="8dp"
             android:text="date"
             android:textColor="@color/black_50"
-            android:textSize="@dimen/textSizeSmall" />
+            android:textSize="@dimen/textSizeSmall"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="16dp" />
 
 
     </RelativeLayout>

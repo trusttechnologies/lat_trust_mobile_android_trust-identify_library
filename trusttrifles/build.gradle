@@ -1,22 +1,6 @@
-apply plugin: 'com.novoda.bintray-release'
 apply plugin: 'com.android.library'
-
-//Step II: Add the below publish details
-publish {
-
-    def groupProjectID = 'lat.trust.trustdemo'
-    def artifactProjectID = 'trustdemo'
-    def publishVersionID = '0.1.0'
-
-    userOrg = 'fcaro'
-    repoName = 'TrustIdentify'
-    groupId = groupProjectID
-    artifactId = artifactProjectID
-    publishVersion = publishVersionID
-    desc = 'Android mobile library responsible for generating a unique id per device through certain features of this same.'
-    website = 'https://github.com/trusttechnologies'
-}
-
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
 buildscript {
     repositories {
         mavenCentral()
@@ -25,6 +9,8 @@ buildscript {
 
     dependencies {
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
+
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.0'
 
     }
 }
@@ -38,7 +24,7 @@ version='1.1.8'
 android {
     compileSdkVersion 28
     defaultConfig {
-        minSdkVersion 14
+        minSdkVersion 15
         targetSdkVersion 28
         versionCode 7
         versionName "1.1.8"
@@ -58,8 +44,27 @@ android {
 
 
 ext {
-    retrofitVersion = "2.4.0"
-    okhttpVersion = "3.10.0"
+    bintrayRepo = 'trust'
+    bintrayName = 'trustidentify'
+
+    publishedGroupId = 'lat.trust.trustdemo'
+    libraryName = 'trusttrifles'
+    artifact = 'trusttrifles'
+
+    libraryDescription = 'Android mobile library responsible for generating a unique id per device through certain features of this same.'
+
+    siteUrl = 'https://github.com/trusttechnologies/lat_trust_mobile_android_trust-identify_library'
+    gitUrl = 'https://github.com/trusttechnologies/lat_trust_mobile_android_trust-identify_library.git'
+
+    libraryVersion = '1.1.0'
+
+    developerId = 'fcaro'
+    developerName = 'Felipe Caro'
+    developerEmail = 'fcaro@trust.lat'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
 }
 
 dependencies {
@@ -89,8 +94,101 @@ dependencies {
     implementation 'com.karumi:dexter:5.0.0'
 
     //---------ROOTBEER - TRUST
-    implementation 'com.github.trusttechnologies:rootbeer:0.0.8'
+    //implementation 'com.github.trusttechnologies:rootbeer:0.0.8'
     //---------ROOTBEER
-    //implementation 'com.scottyab:rootbeer-lib:0.0.7'
+    implementation 'com.scottyab:rootbeer-lib:0.0.7'
 
+
+}
+
+
+
+
+
+
+
+
+
+
+
+//apply from: 'LINK_TO_SCRIPT'
+group = publishedGroupId
+version = libraryVersion
+
+install {
+    repositories.mavenInstaller {
+        pom.project {
+            packaging 'aar'
+            groupId publishedGroupId
+            artifactId artifact
+
+            name libraryName
+            description libraryDescription
+            url siteUrl
+
+            licenses {
+                license {
+                    name licenseName
+                    url licenseUrl
+                }
+            }
+            developers {
+                developer {
+                    id developerId
+                    name developerName
+                    email developerEmail
+                }
+            }
+            scm {
+                connection gitUrl
+                developerConnection gitUrl
+                url siteUrl
+            }
+        }
+    }
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+bintray {
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.apikey")
+
+    configurations = ['archives']
+    pkg {
+        repo = bintrayRepo
+        name = bintrayName
+        desc = libraryDescription
+        websiteUrl = siteUrl
+        vcsUrl = gitUrl
+        licenses = allLicenses
+        dryRun = false
+        publish = true
+        override = false
+        publicDownloadNumbers = true
+        version {
+            desc = libraryDescription
+        }
+    }
 }

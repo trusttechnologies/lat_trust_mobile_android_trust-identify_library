@@ -3,42 +3,42 @@ package lat.trust.trusttrifles.model;
 import com.google.gson.annotations.SerializedName;
 
 public class AuditSource {
-    @SerializedName("trustid")
-    private String trustId;
-    @SerializedName("app_name")
-    private String appName;
-    @SerializedName("bundle_id")
-    private String bundleId;
-    @SerializedName("system_name")
-    private String systemName;
-    @SerializedName("system_version")
-    private String systemVersion;
+    //@SerializedName("trustid")
+    private String trustid;
+    //@SerializedName("app_name")
+    private String app_name;
+    //@SerializedName("bundle_id")
+    private String bundle_id;
+    //@SerializedName("system_name")
+    private String system_name;
+    //@SerializedName("system_version")
+    private String system_version;
 
-    public AuditSource(String trustId, String appName, String bundleId, String systemName, String systemVersion) {
-        this.trustId = trustId;
-        this.appName = appName;
-        this.bundleId = bundleId;
-        this.systemName = systemName;
-        this.systemVersion = systemVersion;
+    public AuditSource(String trustid, String app_name, String bundle_id, String system_name, String system_version) {
+        this.trustid = trustid;
+        this.app_name = app_name;
+        this.bundle_id = bundle_id;
+        this.system_name = system_name;
+        this.system_version = system_version;
     }
 
-    public void setTrustId(String trustId) {
-        this.trustId = trustId;
+    public void setTrustid(String trustid) {
+        this.trustid = trustid;
     }
 
-    public void setAppName(String appName) {
-        this.appName = appName;
+    public void setApp_name(String app_name) {
+        this.app_name = app_name;
     }
 
-    public void setBundleId(String bundleId) {
-        this.bundleId = bundleId;
+    public void setBundle_id(String bundle_id) {
+        this.bundle_id = bundle_id;
     }
 
-    public void setSystemName(String systemName) {
-        this.systemName = systemName;
+    public void setSystem_name(String system_name) {
+        this.system_name = system_name;
     }
 
-    public void setSystemVersion(String systemVersion) {
-        this.systemVersion = systemVersion;
+    public void setSystem_version(String system_version) {
+        this.system_version = system_version;
     }
 }

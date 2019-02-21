@@ -93,7 +93,7 @@ import static lat.trust.trusttrifles.utilities.Utils.getValue;
 /**
  * The type Trust client.
  */
-//
+
 @SuppressLint("StaticFieldLeak")
 public class TrustClient {
     private static volatile TrustClient trustInstance;
@@ -174,8 +174,8 @@ public class TrustClient {
     }
 
     /**
-     * Obtiene las minucias del Dispositivo. SI requestTrustId es True se enviarán al servicio
-     * para obtener el Trust ID. Si el listener no es null se notificará el resultado de la
+     * Obtiene las minucias del Dispositivo. SI requestTrustId es True se enviaran al servicio
+     * para obtener el Trust ID. Si el listener no es null se notificara el resultado de la
      * request.
      *
      * @param requestTrustId si se requiere enviar las minucias al servicio
@@ -278,8 +278,8 @@ public class TrustClient {
         },10000);
     }
     /**
-     * Obtiene las minucias del Dispositivo. SI requestTrustId es True se enviarán al servicio
-     * para obtener el Trust ID. Si el listener no es null se notificará el resultado de la
+     * Obtiene las minucias del Dispositivo. SI requestTrustId es True se enviaran al servicio
+     * para obtener el Trust ID. Si el listener no es null se notificara el resultado de la
      * request.
      *
      * @param requestTrustId si se requiere enviar las minucias al servicio
@@ -289,9 +289,9 @@ public class TrustClient {
         getTrifles(requestTrustId,true,true,true, listener);
     }
     /**
-     * Agrega cierta información de las cámaras del dispositivo
+     * Agrega cierta informacion de las camaras del dispositivo
      *
-     * @param device Objeto que almacena la información obtenida desde el dispositivo
+     * @param device Objeto que almacena la informacion obtenida desde el dispositivo
      */
     @RequiresPermission(CAMERA)
     private void getCameraData(Device device) {
@@ -373,9 +373,9 @@ public class TrustClient {
     }
 
     /**
-     * Agrega información respecto a la presencia de NFC en el dispositivo
+     * Agrega informacion respecto a la presencia de NFC en el dispositivo
      *
-     * @param device Objeto que almacena la información obtenida desde el dispositivo
+     * @param device Objeto que almacena la informacion obtenida desde el dispositivo
      */
     private void getNFCData(Device device){
         NfcManager manager = (NfcManager) mContext.getSystemService(Context.NFC_SERVICE);
@@ -393,9 +393,9 @@ public class TrustClient {
     }
 
     /**
-     * Agrega información relacionada a la batería del dispositivo
+     * Agrega informacion relacionada a la bateria del dispositivo
      *
-     * @param device Objeto que almacena la información obtenida desde el dispositivo
+     * @param device Objeto que almacena la informacion obtenida desde el dispositivo
      */
     private void getBatteryData(Device device){
         IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
@@ -430,10 +430,10 @@ public class TrustClient {
     }
 
     /**
-     * Obtención de capacidad en mAh de la batería del dispositivo
+     * Obtencion de capacidad en mAh de la bateria del dispositivo
      *
-     * @param context Contexto necesario para el uso de reflexión
-     * @return Retorna la capacidad en mAh de la batería del dispositivo como double.
+     * @param context Contexto necesario para el uso de reflexion
+     * @return Retorna la capacidad en mAh de la bateria del dispositivo como double.
      */
     @SuppressLint("PrivateApi")
     private double getBatteryCapacity(Context context) {
@@ -461,9 +461,9 @@ public class TrustClient {
 
 
     /**
-     * Agrega cierta información de los sensores del dispositivo
+     * Agrega cierta informacion de los sensores del dispositivo
      *
-     * @param device Objeto que almacena la información obtenida desde el dispositivo
+     * @param device Objeto que almacena la informacion obtenida desde el dispositivo
      */
     private void getSensorsData(Device device) {
         SensorManager mSensorManager= (SensorManager) mContext.getSystemService(SENSOR_SERVICE);
@@ -487,9 +487,9 @@ public class TrustClient {
     }
 
     /**
-     * Agrega toda la información relevante obtenida desde Build
+     * Agrega toda la informacion relevante obtenida desde Build
      *
-     * @param device Objeto que almacena la información obtenida desde el dispositivo
+     * @param device Objeto que almacena la informacion obtenida desde el dispositivo
      */
     @RequiresPermission(READ_PHONE_STATE)
     private void getDeviceData(Device device) {
@@ -514,9 +514,9 @@ public class TrustClient {
     }
 
     /**
-     * Este método agrega el imei del dispositivo y la version del software
+     * Este metodo agrega el imei del dispositivo y la version del software
      *
-     * @param device Objeto que almacena la información obtenida desde el dispositivo
+     * @param device Objeto que almacena la informacion obtenida desde el dispositivo
      */
     @RequiresPermission(READ_PHONE_STATE)
     private void getImei(Device device) {
@@ -545,8 +545,8 @@ public class TrustClient {
     }
 
     /**
-     * Este método obtiene la info de cada sim disponible
-     * <p>
+     * Este metodo obtiene la info de cada sim disponible
+     *
      * Casos Particulares Encontrados:
      * Objetos de prueba: Chip entel - Chip claro
      * Test 1: Chip claro primer slot -> OK
@@ -569,11 +569,11 @@ public class TrustClient {
         int simCount = 2;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (telephonyManager != null)
-                //Desde API 22 se puede obtener el número de SIMs disponibles
+                //Desde API 22 se puede obtener el numero de SIMs disponibles
                 simCount = telephonyManager.getPhoneCount();
         }
 
-        //Iteramos para ver si está disponible la información en cada sim
+        //Iteramos para ver si esta disponible la informacion en cada sim
         for (int i = 0; i < simCount; i++) {
             SIM sim = getSimDataAtSlot(i);
             if (sim != null) sims.add(sim);
@@ -632,7 +632,7 @@ public class TrustClient {
     /**
      * Obtiene el estado de la sim en el slot indicado
      *
-     * @param slotID número del slot que se desea consultar
+     * @param slotID numero del slot que se desea consultar
      * @return true si la sim se encuentra disponible en el slot indicado
      */
     @RequiresPermission(READ_PHONE_STATE)
@@ -656,8 +656,8 @@ public class TrustClient {
     /**
      * Obtiene el valor del methodo consultado
      *
-     * @param predictedMethodName nombre del método a consultar
-     * @param slotID              número del slot que se desea consultar
+     * @param predictedMethodName nombre del metodo a consultar
+     * @param slotID              numero del slot que se desea consultar
      * @return String informacion asociada a la SIM
      */
     @RequiresPermission(allOf = {READ_PHONE_STATE})
@@ -688,7 +688,7 @@ public class TrustClient {
      * Este metodo agrega al objeto recibido los valores buscados sobre la CPU
      * obtenidos desde el archivo /proc/cpuinfo mediante comandos de sistema
      *
-     * @param device Objeto que almacena la información obtenida desde el dispositivo
+     * @param device Objeto que almacena la informacion obtenida desde el dispositivo
      */
     private void getCPUDataCat(Device device) {
         try {
@@ -744,7 +744,7 @@ public class TrustClient {
      * Este metodo agrega al objeto recibido los valores de MemTotal, SwapTotal y KernelStack
      * obtenidos desde el archivo /proc/meminfo mediando comandos de systema
      *
-     * @param device Objeto que almacena la información obtenida desde el dispositivo
+     * @param device Objeto que almacena la informacion obtenida desde el dispositivo
      */
     private void getMemDataCat(Device device) {
         try {
@@ -774,7 +774,7 @@ public class TrustClient {
     }
 
     /**
-     * Obtiene la mac-address del dispositvo wlan0 si está disponible
+     * Obtiene la mac-address del dispositvo wlan0 si esta disponible
      *
      * @return mac address del dispositivo, 02:00:00:00:00:00 si no lo encuentra o hay algun error
      */
@@ -806,7 +806,7 @@ public class TrustClient {
     }
 
     /**
-     * Obtiene la MAC address asociada al Bluetooth del dispositivo si está disponible
+     * Obtiene la MAC address asociada al Bluetooth del dispositivo si esta disponible
      *
      * @return mac address del Bluetooth del dispositivo 02:00:00:00:00:00 si no lo encuentra o hay algun error
      */
@@ -842,9 +842,9 @@ public class TrustClient {
     }
 
     /**
-     * Obtiene el DEVICE ID del dispositivo si está disponible
+     * Obtiene el DEVICE ID del dispositivo si esta disponible
      *
-     * @return DEVICE ID del dispositivo o string vacío "Not found" en caso de error
+     * @return DEVICE ID del dispositivo o string vacio "Not found" en caso de error
      */
     @SuppressLint({"MissingPermission", "HardwareIds"})
     private String getAndroidDeviceID() {
@@ -855,9 +855,9 @@ public class TrustClient {
     }
 
     /**
-     * Obtiene el Google Services Framework Identifier (GSF) del dispositivo si está disponible
+     * Obtiene el Google Services Framework Identifier (GSF) del dispositivo si esta disponible
      *
-     * @return GSF del dispositivo o string vacío "Not found" en caso de error
+     * @return GSF del dispositivo o string vacio "Not found" en caso de error
      */
     @SuppressLint({"MissingPermission", "HardwareIds"})
     private String getGoogleServiceFramework() {
@@ -890,11 +890,11 @@ public class TrustClient {
     }
 
     /**
-     * Verifica si el dispositivo está rooteado, aunque como considera distintos parámetros
+     * Verifica si el dispositivo esta rooteado, aunque como considera distintos parametros
      * existe la posibilidad de obtener falsos positivos. Un ejemplo son los celulares OnePlus,
-     * dado que de fábrica quedan rastros de Busybox en la rom preinstalada.
+     * dado que de fabrica quedan rastros de Busybox en la rom preinstalada.
      *
-     * @return "Rooted" si se considera rooteado o "No Rooted" en caso de considerarlo así
+     * @return "Rooted" si se considera rooteado o "No Rooted" en caso de considerarlo asi
      */
     @SuppressLint({"MissingPermission", "HardwareIds"})
     private String getRooted() {
@@ -914,7 +914,7 @@ public class TrustClient {
      * Envia las minucias recogidas al servidos para obtener un identificador
      *
      * @param mBody
-     * @param listener envíalo si quieres recuperar la respuesta desde tu aplicación
+     * @param listener envialo si quieres recuperar la respuesta desde tu aplicacion
      */
     private void sendTrifles(@NonNull TrifleBody mBody, @Nullable final TrustListener.OnResult<Audit> listener) {
         Call<TrifleResponse> createTrifle = RestClient.get().trifle(mBody);
@@ -946,9 +946,9 @@ public class TrustClient {
     }
 
     /**
-     * Este método se utiliza para reportar un cambio en el dispositivo al servidor
+     * Este metodo se utiliza para reportar un cambio en el dispositivo al servidor
      * Utiliza el trust id que obtuvo el usuario
-     * No espera auditoría en la respuesta
+     * No espera auditoria en la respuesta
      * 14/11/2018 onError - Code: 404
      *
      * @param trustId     the trust id
@@ -984,9 +984,9 @@ public class TrustClient {
     }
 
     /**
-     * Este método se utiliza para reportar un cambio en el dispositivo hacia el servidor
-     * Utiliza el trust id almacenado por la librería
-     * No espera auditoría en la respuesta
+     * Este metodo se utiliza para reportar un cambio en el dispositivo hacia el servidor
+     * Utiliza el trust id almacenado por la libreria
+     * No espera auditoria en la respuesta
      * 14/11/2018 onError - Code: 404
      *
      * @param packageName the package name
@@ -1008,8 +1008,8 @@ public class TrustClient {
     }
 
     /**
-     * Método utilizado para reportar un cambio en el dispositivo al servidor
-     * Espera una auditoría en la respuesta.
+     * Metodo utilizado para reportar un cambio en el dispositivo al servidor
+     * Espera una auditoria en la respuesta.
      * 14/11/2018 onError - Code: 500
      *
      * @param tid      the unique trust id
@@ -1045,9 +1045,9 @@ public class TrustClient {
     }
 
     /**
-     * Método clon de remoteEvent, busca probar otro Body para el envío de información.
-     * Utiliza envío por String para info de SIM (uso previo a la creación de SIM Class).
-     * Espera una auditoría en la respuesta.
+     * Metodo clon de remoteEvent, busca probar otro Body para el envio de informacion.
+     * Utiliza envio por String para info de SIM (uso previo a la creacion de SIM Class).
+     * Espera una auditoria en la respuesta.
      * 14/11/2018 onError - Code: 500
      *
      * @param tid      the tid
@@ -1114,7 +1114,7 @@ public class TrustClient {
     /**
      * This method get state of Wifi (true, false)
      *
-     * @param device Objeto que almacena la información obtenida desde el dispositivo
+     * @param device Objeto que almacena la informacion obtenida desde el dispositivo
      */
     private  void getWifiState(Device device){
         final WifiManager wifiManager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
@@ -1126,7 +1126,7 @@ public class TrustClient {
     /**
      * This method get state of Bluetooth (true, false)
      *
-     * @param device Objeto que almacena la información obtenida desde el dispositivo
+     * @param device Objeto que almacena la informacion obtenida desde el dispositivo
      */
     private  void  getBluetoothState(Device device){
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -1138,7 +1138,7 @@ public class TrustClient {
     /**
      * This method get state of Mobile Network (true, false)
      *
-     * @param device Objeto que almacena la información obtenida desde el dispositivo
+     * @param device Objeto que almacena la informacion obtenida desde el dispositivo
      */
     private  void  getRedGState(Device device){
         ConnectivityManager connectivityManager = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);

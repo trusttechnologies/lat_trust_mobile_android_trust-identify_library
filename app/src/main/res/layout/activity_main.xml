@@ -28,7 +28,9 @@
                 android:layout_marginStart="24dp"
                 android:text="Eventos"
                 android:textColor="@color/textColorBlack"
-                android:textSize="@dimen/textSizeLargeX" />
+                android:textSize="@dimen/textSizeLargeX"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="24dp" />
 
             <android.support.design.button.MaterialButton
                 android:id="@+id/event"
@@ -42,7 +44,9 @@
                 app:backgroundTint="@color/neon_blue"
                 app:cornerRadius="24dp"
                 app:icon="@drawable/ic_add_alert_black_24dp"
-                app:iconSize="22dp" />
+                app:iconSize="22dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="16dp" />
         </RelativeLayout>
     </android.support.design.widget.AppBarLayout>
 
@@ -114,7 +118,8 @@
                         android:layout_marginBottom="31dp"
                         android:layout_marginStart="28dp"
                         android:layout_marginTop="43dp"
-                        app:srcCompat="@drawable/ic_ico_sim_tarjeta_nuevo_sim" />
+                        app:srcCompat="@drawable/ic_ico_sim_tarjeta_nuevo_sim"
+                        android:layout_marginLeft="28dp" />
 
                     <TextView
                         android:id="@+id/actual_sim_title"
@@ -127,7 +132,8 @@
                         android:layout_toEndOf="@id/sim_ico_actual"
                         android:text="Tienes una nueva tarjeta SIM"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/textSizeMedium" />
+                        android:textSize="@dimen/textSizeMedium"
+                        android:layout_toRightOf="@id/sim_ico_actual" />
 
                     <TextView
                         android:id="@+id/actual_sim_id"
@@ -139,7 +145,8 @@
                         android:layout_marginStart="16dp"
                         android:layout_toEndOf="@id/sim_ico_actual"
                         android:text="12345234123123"
-                        android:textColor="@color/white" />
+                        android:textColor="@color/white"
+                        android:layout_toRightOf="@id/sim_ico_actual" />
 
                     <TextView
                         android:id="@+id/actual_sim_date"
@@ -152,7 +159,9 @@
                         android:layout_marginTop="14dp"
                         android:text="Fecha y Hora"
                         android:textColor="@color/white"
-                        android:textSize="@dimen/textSizeSmall" />
+                        android:textSize="@dimen/textSizeSmall"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="16dp" />
                 </RelativeLayout>
 
             </android.support.design.card.MaterialCardView>

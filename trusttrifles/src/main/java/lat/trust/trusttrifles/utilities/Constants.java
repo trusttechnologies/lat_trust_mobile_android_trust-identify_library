@@ -5,7 +5,7 @@ public class Constants {
     public final static String MEM_FILE = "/proc/meminfo";
     public final static String CPU_FILE = "/proc/cpuinfo";
 
-    //Comandos cortos (dependientes de la compilación, con flash cambian frecuentemente)
+    //Comandos cortos (dependientes de la compilacion, con flash cambian frecuentemente)
     public final static String KERNEL_INFO = "/proc/sys/kernel/version";
     public final static String OS_RELEASE = "/proc/sys/kernel/osrelease";
     public final static String BOOT_ID = "/proc/sys/kernel/random/boot_id";
