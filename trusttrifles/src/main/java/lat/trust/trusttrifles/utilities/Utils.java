@@ -1,5 +1,9 @@
 package lat.trust.trusttrifles.utilities;
 
+import android.content.Context;
+import android.location.Location;
+import android.net.wifi.WifiManager;
+
 public class Utils {
     /**
      * Este metodo extrae informacion de un string del tipo "key: value type"
@@ -27,5 +31,35 @@ public class Utils {
             return segs[0];
         }
         return null;
+    }
+
+    public static Long getCurrentTimeStamp() {
+        return System.currentTimeMillis() / 1000;
+
+    }
+
+    public static String getLatitude(Context mContext) {
+        Location location = LocationGPS.getLocation(mContext);
+        return String.valueOf(location.getLatitude());
+    }
+
+    public static String getLongitude(Context mContext) {
+        Location location = LocationGPS.getLocation(mContext);
+        return String.valueOf(location.getLongitude());
+    }
+
+
+    public static void turnOnWifi(Context mContext) {
+        final WifiManager wifiManager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        if (wifiManager != null) {
+            wifiManager.setWifiEnabled(true);
+        }
+    }
+
+    public static void turnOffWifi(Context mContext) {
+        final WifiManager wifiManager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        if (wifiManager != null) {
+            wifiManager.setWifiEnabled(false);
+        }
     }
 }

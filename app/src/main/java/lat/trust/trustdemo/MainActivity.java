@@ -35,6 +35,9 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.FirebaseInstanceIdService;
+import com.google.firebase.messaging.FirebaseMessagingService;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
@@ -50,12 +53,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import lat.trust.trustdemo.Utils.Utils;
 import lat.trust.trusttrifles.TrustClient;
 import lat.trust.trusttrifles.TrustListener;
 import lat.trust.trusttrifles.model.Audit;
 import lat.trust.trusttrifles.utilities.TrustPreferences;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.READ_PHONE_STATE;
 import static lat.trust.trustdemo.SIMData.TYPE_IMEI;
@@ -121,6 +126,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+//        Log.d("TAG",FirebaseInstanceId.getInstance().getToken());
 
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
@@ -286,7 +293,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void checkPermissions() {
 
         Dexter.withActivity(this)
-                .withPermissions(READ_PHONE_STATE, ACCESS_COARSE_LOCATION, CAMERA)
+                .withPermissions(READ_PHONE_STATE, ACCESS_COARSE_LOCATION, CAMERA,ACCESS_FINE_LOCATION)
                 .withListener(new MultiplePermissionsListener() {
                     @SuppressLint("MissingPermission")
                     @Override
@@ -531,7 +538,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Hawk.put("HISTORY", list);
 
         updateHistory();
-
         if (Hawk.contains("TRUST_DEMO_ID")) {
             String tid = Hawk.get("TRUST_DEMO_ID");
             double lat = (mLocation != null) ? mLocation.getLatitude() : 0;
@@ -541,9 +547,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             Toast.makeText(this, "No exite Trust ID, presione Iniciar para crearlo", Toast.LENGTH_SHORT).show();
         }
-
     }
-
     private void updateHistory() {
         adapter.update();
         recyclerView.invalidate();

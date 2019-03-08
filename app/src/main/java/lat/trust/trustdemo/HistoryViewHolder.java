@@ -7,6 +7,8 @@ import android.widget.TextView;
 
 import java.util.Date;
 
+import lat.trust.trustdemo.Utils.Utils;
+
 public class HistoryViewHolder extends RecyclerView.ViewHolder {
     private TextView title;
     private TextView data;

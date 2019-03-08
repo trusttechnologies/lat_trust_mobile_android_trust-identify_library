@@ -12,27 +12,14 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
     <!-- SERVICES -->
 <application>
-    <service
-        android:name=".network.MyFirebaseMessagingService"
-        android:stopWithTask="false">
-        <intent-filter>
-            <action android:name="com.google.firebase.MESSAGING_EVENT" />
-        </intent-filter>
-    </service>
 
-    <service android:name="com.trust.trustlocklibrary.LockService" />
 
-    <!-- RECEIVER -->
-    <receiver
-        android:name="com.trust.trustlocklibrary.BootBroadcast"
-        android:enabled="true"
-        android:exported="false">
-        <intent-filter>
-            <action android:name="android.intent.action.BOOT_COMPLETED" />
-        </intent-filter>
-    </receiver>
+
 </application>
 
 

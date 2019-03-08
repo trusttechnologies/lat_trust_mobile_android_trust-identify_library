@@ -23,4 +23,7 @@ public class Constants {
 
     public final static String TRUST_TRIFLES = "TRUSTLIB_TRUST_TRIFLES";
     public final static String TRUST_ID = "TRUSTLIB_TRUST_ID";
+
+
+    public static final String TRUST_ID_AUTOMATIC = "TRUST_ID_AUTOMATIC";
 }

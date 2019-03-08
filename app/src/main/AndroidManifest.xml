@@ -6,8 +6,18 @@
     android:sharedUserLabel="@string/shared_user_label">
 
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.CAMERA"/>
+
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+
+
     <application
         android:name=".TrustDemoApp"
         android:allowBackup="true"
@@ -26,6 +36,7 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name="lat.trust.trusttrifles.broadcasts.AlarmReceiver" />
 
         <activity
             android:name=".MainActivity"
@@ -37,12 +48,33 @@
             </intent-filter>
         </activity>
 
+        <service
+            android:name=".TrustFirebaseMessagingService"
+            android:stopWithTask="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service android:name="lat.trust.trusttrifles.services.RemoteAuditService" />
+        <service android:name="lat.trust.trusttrifles.services.WifiStateService" />
 
+        <receiver android:name="lat.trust.trusttrifles.broadcasts.AlarmReceiver" />
 
+        <receiver android:name="lat.trust.trusttrifles.broadcasts.PhoneStatReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.PHONE_STATE" />
+                <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
+            </intent-filter>
+        </receiver>
 
+        <receiver
+            android:name="lat.trust.trusttrifles.broadcasts.BootCompleted"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
-
-
 
 
 </manifest>

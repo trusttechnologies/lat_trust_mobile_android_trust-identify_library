@@ -13,8 +13,9 @@ public class TrustDemoApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        TrustClient.init(this);
         Hawk.init(this).build();
+        TrustClient.init(this);
+
         TrustPreferences.init(this);
 
     }

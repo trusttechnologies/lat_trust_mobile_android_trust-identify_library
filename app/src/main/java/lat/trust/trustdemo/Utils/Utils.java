@@ -1,4 +1,4 @@
-package lat.trust.trustdemo;
+package lat.trust.trustdemo.Utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

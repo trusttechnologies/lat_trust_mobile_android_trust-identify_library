@@ -1,6 +1,8 @@
 package lat.trust.trusttrifles;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
@@ -8,13 +10,10 @@ import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.LinearGradient;
 import android.hardware.Camera;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
@@ -27,37 +26,31 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
-import android.support.v4.app.NotificationCompatSideChannelService;
 import android.support.v4.content.ContextCompat;
 import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
 import android.text.TextUtils;
 import android.util.Log;
 
-
 import com.orhanobut.hawk.Hawk;
 import com.scottyab.rootbeer.RootBeer;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.net.ssl.HandshakeCompletedEvent;
-
+import lat.trust.trusttrifles.broadcasts.AlarmReceiver;
 import lat.trust.trusttrifles.model.Audit;
 import lat.trust.trusttrifles.model.AuditSource;
 import lat.trust.trusttrifles.model.AuditTransaction;
@@ -72,6 +65,9 @@ import lat.trust.trusttrifles.network.req.EventBody;
 import lat.trust.trusttrifles.network.req.RemoteEventBody;
 import lat.trust.trusttrifles.network.req.RemoteEventBody2;
 import lat.trust.trusttrifles.network.req.TrifleBody;
+import lat.trust.trusttrifles.services.WifiStateService;
+import lat.trust.trusttrifles.utilities.Constants;
+import lat.trust.trusttrifles.utilities.TrustLogger;
 import lat.trust.trusttrifles.utilities.TrustPreferences;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -80,7 +76,6 @@ import retrofit2.Response;
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.READ_PHONE_STATE;
-import static android.content.ContentValues.TAG;
 import static android.content.Context.SENSOR_SERVICE;
 import static android.content.Context.TELEPHONY_SERVICE;
 import static lat.trust.trusttrifles.utilities.Constants.CPU_FILE;
@@ -100,9 +95,12 @@ public class TrustClient {
     private static Context mContext;
     private TrustPreferences mPreferences;
     private boolean currentWifiStatus;
-    private  boolean currentBluetoothStatus;
+    private boolean currentBluetoothStatus;
+
+
     private TrustClient() {
         TrustPreferences.init(mContext);
+        startAutomaticAudit();
         mPreferences = TrustPreferences.getInstance();
     }
 
@@ -112,10 +110,38 @@ public class TrustClient {
      * @param context the context
      */
     public static void init(Context context) {
+
+        TrustLogger.d("[TRUST ID] init: ");
         mContext = context;
         trustInstance = new TrustClient();
+        if(!Hawk.contains("init")){
+            mContext.startService(new Intent(mContext, WifiStateService.class));
+        }
+        Hawk.put("init","1");
+
     }
 
+    /**
+     * start a alarm or
+     */
+    public static void startAutomaticAudit() {
+        TrustLogger.d("[AUTOMATIC AUDIT] startAutomaticAudit: ");
+        AlarmManager manager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
+        Date dat = new Date();
+        Calendar cal_alarm = Calendar.getInstance();
+        Calendar cal_now = Calendar.getInstance();
+        cal_now.setTime(dat);
+        cal_alarm.setTime(dat);
+        cal_alarm.set(Calendar.HOUR_OF_DAY, 14);
+        cal_alarm.set(Calendar.MINUTE, 35);
+        cal_alarm.set(Calendar.SECOND, 0);
+        if (cal_alarm.before(cal_now)) {
+            cal_alarm.add(Calendar.DATE, 1);
+        }
+        Intent myIntent = new Intent(mContext, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, 0, myIntent, 0);
+        manager.setRepeating(AlarmManager.RTC_WAKEUP, cal_alarm.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+    }
 
     /**
      * Gets instance.
@@ -178,17 +204,18 @@ public class TrustClient {
      * para obtener el Trust ID. Si el listener no es null se notificara el resultado de la
      * request.
      *
-     * @param requestTrustId si se requiere enviar las minucias al servicio
-     * @param listener       para comunicar el resultado de la request
+     * @param requestTrustId   si se requiere enviar las minucias al servicio
+     * @param listener         para comunicar el resultado de la request
      * @param required_permits boolean que indica si se deben solicitar permisos
      * @param forceWifi        boolean que indica si se debe forzar el encendido de Wifi para obtener informacion
      * @param forceBluetooth   boolean que indica si se debe forzar el encendido de bluetooth para obtener informacion
      */
     @SuppressLint("MissingPermission")
-    public void getTrifles(final boolean requestTrustId,final boolean required_permits,  final boolean forceWifi, final boolean forceBluetooth, @NonNull final TrustListener.OnResult<Audit> listener) {
-        saveBluetoothWifiStatus(forceWifi,forceBluetooth);
+    public void getTrifles(final boolean requestTrustId, final boolean required_permits, final boolean forceWifi, final boolean forceBluetooth, @NonNull final TrustListener.OnResult<Audit> listener) {
+        saveBluetoothWifiStatus(forceWifi, forceBluetooth);
+
         final TrifleBody mBody = new TrifleBody();
-        turnOnBluetoothWifi(forceWifi,forceBluetooth);
+        turnOnBluetoothWifi(forceWifi, forceBluetooth);
         final ArrayList<Boolean> permits_found_collection = new ArrayList<>();
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -196,23 +223,23 @@ public class TrustClient {
                 ArrayList<String> permits = new ArrayList<>();
                 boolean permits_found = true;
 
-                if(required_permits){
-                    if(!permissionGranted(READ_PHONE_STATE)) {
+                if (required_permits) {
+                    if (!permissionGranted(READ_PHONE_STATE)) {
                         permits.add(READ_PHONE_STATE);
                         permits_found = false;
                     }
-                    if(!permissionGranted(CAMERA)) {
+                    if (!permissionGranted(CAMERA)) {
                         permits.add(CAMERA);
                         permits_found = false;
                     }
-                    if(!permissionGranted(ACCESS_COARSE_LOCATION)) {
+                    if (!permissionGranted(ACCESS_COARSE_LOCATION)) {
                         permits.add(ACCESS_COARSE_LOCATION);
                         permits_found = false;
                     }
                 }
                 permits_found_collection.add(permits_found);
 
-                if(!required_permits || permits_found) {
+                if (!required_permits || permits_found) {
                     Device device = new Device();
                     //@RequiresPermission(READ_PHONE_STATE)
                     if (permissionGranted(READ_PHONE_STATE))
@@ -259,24 +286,24 @@ public class TrustClient {
                     if (stringSet == null) stringSet = new HashSet<>();
                     stringSet.add(mBody.toJSON());
                     mPreferences.put(TRUST_TRIFLES, stringSet);
-                }
-                else
+                } else
                     listener.onPermissionRequired(permits);
-                restoreWIFIandBluetooth(forceWifi,forceBluetooth);
+                restoreWIFIandBluetooth(forceWifi, forceBluetooth);
             }
-        },4000);
+        }, 4000);
 
         new Handler().postDelayed(new Runnable() {
             @SuppressLint("MissingPermission")
             @Override
             public void run() {
-                if (requestTrustId && permits_found_collection.size()>0
+                if (requestTrustId && permits_found_collection.size() > 0
                         && permits_found_collection.get(0)) {
                     sendTrifles(mBody, listener);
                 }
             }
-        },10000);
+        }, 10000);
     }
+
     /**
      * Obtiene las minucias del Dispositivo. SI requestTrustId es True se enviaran al servicio
      * para obtener el Trust ID. Si el listener no es null se notificara el resultado de la
@@ -285,9 +312,10 @@ public class TrustClient {
      * @param requestTrustId si se requiere enviar las minucias al servicio
      * @param listener       para comunicar el resultado de la request
      */
-    public void getTrifles(final boolean requestTrustId, @NonNull final TrustListener.OnResult<Audit> listener){
-        getTrifles(requestTrustId,true,true,true, listener);
+    public void getTrifles(final boolean requestTrustId, @NonNull final TrustListener.OnResult<Audit> listener) {
+        getTrifles(requestTrustId, true, true, true, listener);
     }
+
     /**
      * Agrega cierta informacion de las camaras del dispositivo
      *
@@ -335,24 +363,24 @@ public class TrustClient {
                     }
                     String k = kv.substring(0, pos);
                     String v = kv.substring(pos + 1);
-                    if(k.equals("picture-size")){
+                    if (k.equals("picture-size")) {
                         int mega = (Integer.valueOf(v.split("x")[0]) * Integer.valueOf(v.split("x")[1]))
-                                /1000000;
+                                / 1000000;
                         camera.setMega_pixels(String.valueOf(mega));
                     }
-                    if(k.equals("horizontal-view-angle")){
+                    if (k.equals("horizontal-view-angle")) {
                         camera.setHorizontal_view_angle(v);
                     }
-                    if(k.equals("vertical-view-angle")){
+                    if (k.equals("vertical-view-angle")) {
                         camera.setVertical_view_angle(v);
                     }
-                    if(k.equals("focal-length")){
+                    if (k.equals("focal-length")) {
                         camera.setFocal_length(v);
                     }
-                    if(k.equals("max-exposure-compensation")){
+                    if (k.equals("max-exposure-compensation")) {
                         camera.setMax_exposure_comp(v);
                     }
-                    if(k.equals("min-exposure-compensation")){
+                    if (k.equals("min-exposure-compensation")) {
                         camera.setMin_exposure_comp(v);
                     }
                 }
@@ -362,10 +390,9 @@ public class TrustClient {
                 //And voila, you have a map of ALL supported parameters
             } catch (NoSuchMethodException ex) {
                 Log.e("ex", ex.toString());
-            } catch(IllegalAccessException ex){
+            } catch (IllegalAccessException ex) {
                 Log.e("ex", ex.toString());
-            }
-            catch(InvocationTargetException ex){
+            } catch (InvocationTargetException ex) {
                 Log.e("ex", ex.toString());
             }
         }
@@ -377,18 +404,16 @@ public class TrustClient {
      *
      * @param device Objeto que almacena la informacion obtenida desde el dispositivo
      */
-    private void getNFCData(Device device){
+    private void getNFCData(Device device) {
         NfcManager manager = (NfcManager) mContext.getSystemService(Context.NFC_SERVICE);
         NfcAdapter adapter;
         if (manager != null) {
             adapter = manager.getDefaultAdapter();
             if (adapter != null /*&& adapter.isEnabled()*/) {
                 device.setNfc("YES");
-            }
-            else
+            } else
                 device.setNfc("NO");
-        }
-        else
+        } else
             device.setNfc("NO");//
     }
 
@@ -397,32 +422,32 @@ public class TrustClient {
      *
      * @param device Objeto que almacena la informacion obtenida desde el dispositivo
      */
-    private void getBatteryData(Device device){
+    private void getBatteryData(Device device) {
         IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         Intent intent = mContext.registerReceiver(null, ifilter);
         String technology = null;
         Boolean present = null;
         String capacidad;
-        if(intent!=null) {
+        if (intent != null) {
             present = intent.getBooleanExtra(BatteryManager.EXTRA_PRESENT, false);
-            if(intent.getExtras() != null) {
+            if (intent.getExtras() != null) {
                 technology = intent.getExtras().getString(BatteryManager.EXTRA_TECHNOLOGY);
             }
 
         }
         String bateria;
-        if(present!=null && present)
+        if (present != null && present)
             bateria = "Presente ";
         else
             bateria = "Ausente ";
-        if(technology == null)
+        if (technology == null)
             technology = "NOT FOUND";
-        int capacity = (int)getBatteryCapacity(mContext);
+        int capacity = (int) getBatteryCapacity(mContext);
 
-        if(capacity == 0)
+        if (capacity == 0)
             capacidad = "NOT FOUND";
         else
-            capacidad = String.valueOf(capacity)+" mAh";
+            capacidad = String.valueOf(capacity) + " mAh";
 
         device.setBattery(bateria);
         device.setBattery_capacity(capacidad);
@@ -466,7 +491,7 @@ public class TrustClient {
      * @param device Objeto que almacena la informacion obtenida desde el dispositivo
      */
     private void getSensorsData(Device device) {
-        SensorManager mSensorManager= (SensorManager) mContext.getSystemService(SENSOR_SERVICE);
+        SensorManager mSensorManager = (SensorManager) mContext.getSystemService(SENSOR_SERVICE);
 
         // List of Sensors Available
         List<Sensor> msensorList = mSensorManager.getSensorList(Sensor.TYPE_ALL);
@@ -475,7 +500,7 @@ public class TrustClient {
         Sensor tmp;
         List<SensorData> sensorData = new ArrayList<>();
         int i;
-        for (i=0;i<msensorList.size();i++){
+        for (i = 0; i < msensorList.size(); i++) {
             tmp = msensorList.get(i);
             SensorData sensor = new SensorData();
             sensor.setName(tmp.getName());
@@ -546,7 +571,7 @@ public class TrustClient {
 
     /**
      * Este metodo obtiene la info de cada sim disponible
-     *
+     * <p>
      * Casos Particulares Encontrados:
      * Objetos de prueba: Chip entel - Chip claro
      * Test 1: Chip claro primer slot -> OK
@@ -814,8 +839,8 @@ public class TrustClient {
     private String getBluetoothMacAddress() {
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         String bluetoothMacAddress = "";
-        if(bluetoothAdapter != null){
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M){
+        if (bluetoothAdapter != null) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
                 try {
                     Field mServiceField = bluetoothAdapter.getClass().getDeclaredField("mService");
                     mServiceField.setAccessible(true);
@@ -832,11 +857,10 @@ public class TrustClient {
                 bluetoothMacAddress = bluetoothAdapter.getAddress();
                 return bluetoothMacAddress;
             }
-        }
-        else{
+        } else {
             return "02:00:00:00:00:00";
         }
-        if(bluetoothMacAddress.equals(""))
+        if (bluetoothMacAddress.equals(""))
             return "02:00:00:00:00:00";
         return bluetoothMacAddress;
     }
@@ -849,7 +873,7 @@ public class TrustClient {
     @SuppressLint({"MissingPermission", "HardwareIds"})
     private String getAndroidDeviceID() {
         String androidId = Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.ANDROID_ID);
-        if(androidId!= null && !androidId.isEmpty())
+        if (androidId != null && !androidId.isEmpty())
             return androidId;
         else return "Not found";
     }
@@ -867,7 +891,7 @@ public class TrustClient {
     private static String getGSFID(Context context) {
         final Uri sUri = Uri.parse("content://com.google.android.gsf.gservices");
         try {
-            Cursor query = context.getContentResolver().query(sUri, null, null, new String[] { "android_id" }, null);
+            Cursor query = context.getContentResolver().query(sUri, null, null, new String[]{"android_id"}, null);
             if (query == null) {
                 return "Not found";
             }
@@ -876,7 +900,7 @@ public class TrustClient {
                 return "Not found";
             }
             String toHexString = "Not Found";
-            if(query.getString(1) != null)
+            if (query.getString(1) != null)
                 toHexString = Long.toHexString(Long.parseLong(query.getString(1)));
             query.close();
             return toHexString.toUpperCase().trim();
@@ -927,6 +951,7 @@ public class TrustClient {
                         if (body != null) {
                             listener.onSuccess(response.code(), body.getAudit());
                             mPreferences.put(TRUST_ID, body.getAudit().getTrustId());
+                            Hawk.put(Constants.TRUST_ID_AUTOMATIC, body.getAudit().getTrustId());
                         } else {
                             Throwable cause = new Throwable("Body null");
                             listener.onFailure(new Throwable("Cannot get the response body", cause));
@@ -1064,12 +1089,12 @@ public class TrustClient {
         remote.enqueue(new Callback<TrifleResponse>() {
             @Override
             public void onResponse(Call<TrifleResponse> call, Response<TrifleResponse> response) {
-                Log.d("EVENT", String.valueOf(response.code()));
+                TrustLogger.d(String.valueOf(response.code()));
             }
 
             @Override
             public void onFailure(Call<TrifleResponse> call, Throwable t) {
-                Log.e("EVENT", t.getMessage());
+                TrustLogger.d(t.getMessage());
             }
         });
     }
@@ -1092,14 +1117,12 @@ public class TrustClient {
         AuditSource source = new AuditSource(trustid, appName, packageName, "Android", String.valueOf(Build.VERSION.SDK_INT));
         AuditTransaction transaction = new AuditTransaction(operation, method, result, timestamp);
         Geo geo = new Geo(lat, lng);
-
         AuditBody body = new AuditBody(source, transaction, geo);
-
         Call<Void> createAudit = RestClient.get().createAudit(body);
         createAudit.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                Log.d("TRUST-LIB", "CODE: " + response.code());
+                TrustLogger.d("CODE: " + response.code());
                 listener.onResult(response.code(), response.message());
             }
 
@@ -1116,10 +1139,10 @@ public class TrustClient {
      *
      * @param device Objeto que almacena la informacion obtenida desde el dispositivo
      */
-    private  void getWifiState(Device device){
+    private void getWifiState(Device device) {
         final WifiManager wifiManager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         boolean state = wifiManager == null || wifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED;
-        Log.d("WifiState",String.valueOf(state));
+        TrustLogger.d("Wifi state: " + String.valueOf(state));
         device.setWifi_state(state);
     }
 
@@ -1128,10 +1151,10 @@ public class TrustClient {
      *
      * @param device Objeto que almacena la informacion obtenida desde el dispositivo
      */
-    private  void  getBluetoothState(Device device){
+    private void getBluetoothState(Device device) {
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         boolean state = mBluetoothAdapter == null || mBluetoothAdapter.isEnabled();
-        Log.d("BluetoothState",String.valueOf(state));
+        TrustLogger.d("BluetoothState: " + String.valueOf(state));
         device.setBluetooth_state(state);
     }
 
@@ -1140,29 +1163,31 @@ public class TrustClient {
      *
      * @param device Objeto que almacena la informacion obtenida desde el dispositivo
      */
-    private  void  getRedGState(Device device){
+    private void getRedGState(Device device) {
         ConnectivityManager connectivityManager = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         boolean state = (networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_MOBILE);
-        Log.d("RedGState" , String.valueOf(state));
+        TrustLogger.d("RedGState" + String.valueOf(state));
         device.setRed_g_state(state);
     }
 
     /**
      * Get the current status of bluetooth
+     *
      * @return returns the current bluetooth status true ON , false OFF
      */
     @SuppressLint("MissingPermission")
-    private boolean getCurrentBluetoothStatus(){
+    private boolean getCurrentBluetoothStatus() {
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         return mBluetoothAdapter != null && mBluetoothAdapter.isEnabled();
     }
 
     /**
      * Get the current status of Wifi
+     *
      * @return returns the current Wifi status true ON , false OFF
      */
-    private  boolean getCurrentWifiStatus(){
+    private boolean getCurrentWifiStatus() {
         final WifiManager wifiManager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         @SuppressLint("MissingPermission") boolean state = wifiManager == null || wifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED;
         return state;
@@ -1170,64 +1195,69 @@ public class TrustClient {
 
     /**
      * Saves the current status of bluetooth and wifi
-     * @param forceWifi inform if you should save the current status of wifi
+     *
+     * @param forceWifi      inform if you should save the current status of wifi
      * @param forceBluetooth inform if you should save the current status of Bluetooth
      */
-    private void saveBluetoothWifiStatus(boolean forceWifi,boolean forceBluetooth){
-        if(forceWifi)        currentWifiStatus = getCurrentWifiStatus();
-        if(forceBluetooth)   currentBluetoothStatus = getCurrentBluetoothStatus();
-        Log.d(TAG,"wifi current state: " +String.valueOf(currentWifiStatus));
-        Log.d(TAG,"bluetooth current state: " +String.valueOf(currentBluetoothStatus));
+    private void saveBluetoothWifiStatus(boolean forceWifi, boolean forceBluetooth) {
+        if (forceWifi) currentWifiStatus = getCurrentWifiStatus();
+        if (forceBluetooth) currentBluetoothStatus = getCurrentBluetoothStatus();
+        TrustLogger.d("wifi current state: " + String.valueOf(currentWifiStatus));
+        TrustLogger.d("bluetooth current state: " + String.valueOf(currentBluetoothStatus));
     }
 
     /**
      * Returns the status of the wifi and bluetooth to the previous state
-     * @param forceWifi informs if you should restore the previous wifi status
+     *
+     * @param forceWifi      informs if you should restore the previous wifi status
      * @param forceBluetooth informs if you should restore the previous bluetooth status
      */
     @SuppressLint("MissingPermission")
-    private void restoreWIFIandBluetooth(boolean forceWifi,boolean forceBluetooth){
+    private void restoreWIFIandBluetooth(boolean forceWifi, boolean forceBluetooth) {
 
-        Log.d(TAG,"restaurando estados WiFi, Bluetooth:" );
-        Log.d(TAG, "WifI estado anterior: "+ String.valueOf(currentBluetoothStatus));
-        Log.d(TAG,"Bkuetooth estado anterior: : " +String.valueOf(currentWifiStatus));
-        final WifiManager wifiManager = (WifiManager)mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        TrustLogger.d("restaurando estados WiFi, Bluetooth:");
+        TrustLogger.d("WifI estado anterior: " + String.valueOf(currentBluetoothStatus));
+        TrustLogger.d("Bkuetooth estado anterior: : " + String.valueOf(currentWifiStatus));
+        final WifiManager wifiManager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if(forceWifi){
-            if(wifiManager != null){
-                if(currentWifiStatus){
+        if (forceWifi) {
+            if (wifiManager != null) {
+                if (currentWifiStatus) {
                     wifiManager.setWifiEnabled(true);
-                    Log.d(TAG,"wifi encendido");}
-                else{
+                    TrustLogger.d("wifi encendido");
+                } else {
                     wifiManager.setWifiEnabled(false);
-                    Log.d(TAG,"wifi apagado");}
+                    TrustLogger.d("wifi apagado");
+                }
             }
         }
-        if(forceBluetooth){
-            if(mBluetoothAdapter != null){
-                if(currentBluetoothStatus){
+        if (forceBluetooth) {
+            if (mBluetoothAdapter != null) {
+                if (currentBluetoothStatus) {
                     mBluetoothAdapter.enable();
-                    Log.d(TAG,"bt encendido");}
-                else{
+                    TrustLogger.d("bt encendido");
+                } else {
                     mBluetoothAdapter.disable();
-                    Log.d(TAG,"bt apagado");}
+                    TrustLogger.d("bt apagado");
+                }
             }
         }
     }
 
     /**
      * Turn on wifi and bluetooth
-     * @param forceWifi informs if wifi should be turned on
+     *
+     * @param forceWifi      informs if wifi should be turned on
      * @param forceBluetooth informs if bluetooth should be turned on
      */
     @SuppressLint("MissingPermission")
-    private void turnOnBluetoothWifi(boolean forceWifi,boolean forceBluetooth){
-        final WifiManager wifiManager = (WifiManager)mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+    private void turnOnBluetoothWifi(boolean forceWifi, boolean forceBluetooth) {
+        final WifiManager wifiManager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if(wifiManager != null && forceWifi){
+        if (wifiManager != null && forceWifi) {
             wifiManager.setWifiEnabled(true);
         }
-        if(mBluetoothAdapter != null && forceBluetooth){
+        if (mBluetoothAdapter != null && forceBluetooth) {
             mBluetoothAdapter.enable();
         }
     }
@@ -1238,8 +1268,7 @@ public class TrustClient {
      * @param permission String of permission to verify i.e. Manifest.permission.ACCESS_FINE_LOCATION
      * @return boolean true if permission is at merged Manifest
      */
-    private boolean hasPermission(String permission)
-    {
+    private boolean hasPermission(String permission) {
         try {
             PackageInfo info = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), PackageManager.GET_PERMISSIONS);
             if (info.requestedPermissions != null) {
@@ -1262,8 +1291,8 @@ public class TrustClient {
      * @param permission String of permission to verify i.e. Manifest.permission.ACCESS_FINE_LOCATION
      * @return boolean true if has a granted permission
      */
-    private boolean permissionGranted(String permission){
-        return ContextCompat.checkSelfPermission( mContext, permission ) == PackageManager.PERMISSION_GRANTED;
+    private boolean permissionGranted(String permission) {
+        return ContextCompat.checkSelfPermission(mContext, permission) == PackageManager.PERMISSION_GRANTED;
     }
 
 }
