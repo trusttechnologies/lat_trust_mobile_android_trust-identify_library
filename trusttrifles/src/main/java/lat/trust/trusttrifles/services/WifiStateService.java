@@ -29,6 +29,7 @@ public class WifiStateService extends Service {
     private static final String METHOD_ENABLED = "METHOD: WIFI_STATE_ENABLED";
     private static final String METHOD_DISABLED = "METHOD: WIFI_STATE_DISABLED";
     public static final String RESULT = "RESULT: ";
+    public static final String LST_AUDIT= "lstAudit";
     private List<SavedAudit> lstAudit;
 
     private String name;
@@ -37,7 +38,6 @@ public class WifiStateService extends Service {
         @Override
         public void onReceive(final Context context, Intent intent) {
             TrustLogger.d("WifiStateService: Receive");
-
             int wifiStateExtra = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, WifiManager.WIFI_STATE_UNKNOWN);
             switch (wifiStateExtra) {
                 case WifiManager.WIFI_STATE_ENABLED:
@@ -73,7 +73,7 @@ public class WifiStateService extends Service {
                                     );
                                 }
                                 lstAudit.clear();
-                                Hawk.delete("lstAudit");
+                                Hawk.delete(LST_AUDIT);
                                 TrustLogger.d("WIFI_STATE_ENABLED: PENDING AUDIT WAS SAVED");
 
                             } else {
@@ -92,7 +92,7 @@ public class WifiStateService extends Service {
                             Utils.getLongitude(context),
                             Utils.getCurrentTimeStamp());
                     lstAudit.add(savedAudit);
-                    Hawk.put("lstAudit", lstAudit);
+                    Hawk.put(LST_AUDIT, lstAudit);
                     TrustLogger.d("WIFI_STATE_DISABLED: AUDIT SAVED");
                     break;
             }
@@ -110,13 +110,15 @@ public class WifiStateService extends Service {
 
     @Override
     public void onCreate() {
-        if (Hawk.contains("lstAudit")) {
-            lstAudit = Hawk.get("lstAudit");
+
+        TrustLogger.d("[WIFI STATE SERVICE] Created.");
+        if (Hawk.contains(LST_AUDIT)) {
+            lstAudit = Hawk.get(LST_AUDIT);
         } else {
             lstAudit = new ArrayList<SavedAudit>();
         }
 
-        TrustLogger.d("WifiStateService: Create");
+
         IntentFilter intentFilter = new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION);
         registerReceiver(wifiStateReceiver, intentFilter);
         super.onCreate();

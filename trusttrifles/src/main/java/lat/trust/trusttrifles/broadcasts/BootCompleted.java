@@ -14,12 +14,9 @@ public class BootCompleted extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         AutomaticAudit.createAutomaticAudit(
-                AutomaticAudit.getSavedTrustId(),
                 OPERATION,
                 METHOD,
                 RESULT,
-                Utils.getCurrentTimeStamp(),
-                Utils.getLatitude(context),
-                Utils.getLongitude(context));
+                context);
     }
 }

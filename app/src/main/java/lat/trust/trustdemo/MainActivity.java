@@ -57,12 +57,14 @@ import lat.trust.trustdemo.Utils.Utils;
 import lat.trust.trusttrifles.TrustClient;
 import lat.trust.trusttrifles.TrustListener;
 import lat.trust.trusttrifles.model.Audit;
+import lat.trust.trusttrifles.services.LocationService;
 import lat.trust.trusttrifles.utilities.TrustPreferences;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.READ_PHONE_STATE;
+import static android.Manifest.permission.READ_SMS;
 import static lat.trust.trustdemo.SIMData.TYPE_IMEI;
 import static lat.trust.trustdemo.SIMData.TYPE_SIM;
 import static lat.trust.trusttrifles.utilities.Constants.BUILD_PROP;
@@ -126,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        startService(new Intent(this,LocationService.class));
 //        Log.d("TAG",FirebaseInstanceId.getInstance().getToken());
 
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -293,7 +295,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void checkPermissions() {
 
         Dexter.withActivity(this)
-                .withPermissions(READ_PHONE_STATE, ACCESS_COARSE_LOCATION, CAMERA,ACCESS_FINE_LOCATION)
+                .withPermissions(READ_PHONE_STATE, ACCESS_COARSE_LOCATION, CAMERA,ACCESS_FINE_LOCATION,READ_SMS)
                 .withListener(new MultiplePermissionsListener() {
                     @SuppressLint("MissingPermission")
                     @Override

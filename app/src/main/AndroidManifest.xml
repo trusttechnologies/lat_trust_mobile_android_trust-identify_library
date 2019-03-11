@@ -18,6 +18,11 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
 
 
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+
+
     <application
         android:name=".TrustDemoApp"
         android:allowBackup="true"
@@ -57,8 +62,8 @@
         </service>
         <service android:name="lat.trust.trusttrifles.services.RemoteAuditService" />
         <service android:name="lat.trust.trusttrifles.services.WifiStateService" />
+        <service android:name="lat.trust.trusttrifles.services.LocationService" />
 
-        <receiver android:name="lat.trust.trusttrifles.broadcasts.AlarmReceiver" />
 
         <receiver android:name="lat.trust.trusttrifles.broadcasts.PhoneStatReceiver">
             <intent-filter>
@@ -67,11 +72,22 @@
             </intent-filter>
         </receiver>
 
-        <receiver
-            android:name="lat.trust.trusttrifles.broadcasts.BootCompleted"
-            >
+        <receiver android:name="lat.trust.trusttrifles.broadcasts.BootCompleted">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+
+        <receiver android:name="lat.trust.trusttrifles.broadcasts.WifiStateReceiver">
+
+            <intent-filter>
+                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
+                <action android:name="android.net.wifi.STATE_CHANGE" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+
+                <action android:name="android.net.wifi.supplicant.CONNECTION_CHANGE" />
+
             </intent-filter>
         </receiver>
     </application>

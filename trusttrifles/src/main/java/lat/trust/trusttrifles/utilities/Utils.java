@@ -39,13 +39,24 @@ public class Utils {
     }
 
     public static String getLatitude(Context mContext) {
-        Location location = LocationGPS.getLocation(mContext);
-        return String.valueOf(location.getLatitude());
+        Location location = null;
+                LocationGPS.getLocation(mContext);
+        if(LocationGPS.getLocation(mContext) != null){
+            return String.valueOf(location.getLatitude());
+
+        }else{
+            return "no latitude avaliable";
+        }
     }
 
     public static String getLongitude(Context mContext) {
         Location location = LocationGPS.getLocation(mContext);
-        return String.valueOf(location.getLongitude());
+        if(LocationGPS.getLocation(mContext)!= null){
+            return String.valueOf(location.getLongitude());
+
+        }else{
+            return "no longitude avaliable";
+        }
     }
 
 

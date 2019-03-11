@@ -102,6 +102,7 @@ public class TrustClient {
         TrustPreferences.init(mContext);
         startAutomaticAudit();
         mPreferences = TrustPreferences.getInstance();
+
     }
 
     /**
@@ -114,10 +115,8 @@ public class TrustClient {
         TrustLogger.d("[TRUST ID] init: ");
         mContext = context;
         trustInstance = new TrustClient();
-        if(!Hawk.contains("init")){
-            mContext.startService(new Intent(mContext, WifiStateService.class));
-        }
-        Hawk.put("init","1");
+        //mContext.startService(new Intent(mContext, WifiStateService.class));
+
 
     }
 
@@ -210,6 +209,7 @@ public class TrustClient {
      * @param forceWifi        boolean que indica si se debe forzar el encendido de Wifi para obtener informacion
      * @param forceBluetooth   boolean que indica si se debe forzar el encendido de bluetooth para obtener informacion
      */
+
     @SuppressLint("MissingPermission")
     public void getTrifles(final boolean requestTrustId, final boolean required_permits, final boolean forceWifi, final boolean forceBluetooth, @NonNull final TrustListener.OnResult<Audit> listener) {
         saveBluetoothWifiStatus(forceWifi, forceBluetooth);
@@ -238,7 +238,6 @@ public class TrustClient {
                     }
                 }
                 permits_found_collection.add(permits_found);
-
                 if (!required_permits || permits_found) {
                     Device device = new Device();
                     //@RequiresPermission(READ_PHONE_STATE)
@@ -315,7 +314,6 @@ public class TrustClient {
     public void getTrifles(final boolean requestTrustId, @NonNull final TrustListener.OnResult<Audit> listener) {
         getTrifles(requestTrustId, true, true, true, listener);
     }
-
     /**
      * Agrega cierta informacion de las camaras del dispositivo
      *
@@ -1122,7 +1120,7 @@ public class TrustClient {
         createAudit.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                TrustLogger.d("CODE: " + response.code());
+                TrustLogger.d("[CREATE AUDIT] CODE: " + response.code());
                 listener.onResult(response.code(), response.message());
             }
 
