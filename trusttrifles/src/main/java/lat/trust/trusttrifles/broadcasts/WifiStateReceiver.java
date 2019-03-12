@@ -37,6 +37,33 @@ public class WifiStateReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, final Intent intent) {
         TrustLogger.d("[WIFI STATE RECEIVER] on receive");
+
+        /*int wifiState = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, WifiManager.WIFI_STATE_UNKNOWN);
+        String wifiStateText = "No State";
+        TrustLogger.d("[WIFI STATE RECEIVER] on receive");
+        switch (wifiState) {
+            case WifiManager.WIFI_STATE_DISABLING:
+                wifiStateText = "WIFI_STATE_DISABLING";
+                break;
+            case WifiManager.WIFI_STATE_DISABLED:
+                wifiStateText = "WIFI_STATE_DISABLED";
+                break;
+            case WifiManager.WIFI_STATE_ENABLING:
+                wifiStateText = "WIFI_STATE_ENABLING";
+                break;
+            case WifiManager.WIFI_STATE_ENABLED:
+                wifiStateText = "WIFI_STATE_ENABLED";
+                break;
+            case WifiManager.WIFI_STATE_UNKNOWN:
+                wifiStateText = "WIFI_STATE_UNKNOWN";
+                break;
+            default:
+                break;*/
+
+
+
+    /*
+        TrustLogger.d("[WIFI STATE RECEIVER] on receive");
         TrustLogger.d(intent.getAction());
         if (Hawk.contains(LST_AUDIT)) {
             lstAudit = Hawk.get(LST_AUDIT);
@@ -125,7 +152,7 @@ public class WifiStateReceiver extends BroadcastReceiver {
                     }
                 }
         }
-
+*/
     }
 
     private void getSSIDAndIPAdress(Context context) {

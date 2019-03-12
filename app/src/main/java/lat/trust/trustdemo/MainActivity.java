@@ -35,6 +35,7 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -53,6 +54,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import io.fabric.sdk.android.Fabric;
 import lat.trust.trustdemo.Utils.Utils;
 import lat.trust.trusttrifles.TrustClient;
 import lat.trust.trusttrifles.TrustListener;
@@ -123,20 +125,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private MaterialDialog loadingDialog;
     private TrustPreferences mPreferences;
     private LocationManager mLocationManager;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         startService(new Intent(this,LocationService.class));
 //        Log.d("TAG",FirebaseInstanceId.getInstance().getToken());
-
+        Fabric.with(this, new Crashlytics());
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
         mClient = TrustClient.getInstance();
         TrustPreferences.init(this);
         mPreferences = TrustPreferences.getInstance();
-
         notificationLayout = findViewById(R.id.actual_sim_layout);
         notificationLayout.setVisibility(View.GONE);
         notificationData = findViewById(R.id.actual_sim_id);
@@ -163,13 +162,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             tid = "No Registrado";
         }
-
         trustInput.setText(tid);
-
         //TEST
         Log.d("TRUSTCLIENT", "START");
         //exec();
-
         Log.d("TRUSTCLIENT", "END");
     }
 

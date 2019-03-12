@@ -5,23 +5,6 @@
     android:sharedUserId="trust.trifles"
     android:sharedUserLabel="@string/shared_user_label">
 
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
-    <uses-permission android:name="android.permission.CAMERA" />
-
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-
-
-    <uses-permission android:name="android.permission.RECEIVE_SMS" />
-    <uses-permission android:name="android.permission.READ_SMS" />
-    <uses-permission android:name="android.permission.SEND_SMS" />
-
 
     <application
         android:name=".TrustDemoApp"
@@ -33,16 +16,6 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
 
-        <receiver
-            android:name="lat.trust.trusttrifles.broadcasts.SIMChangeReceiver"
-            android:stopWithTask="false">
-            <intent-filter>
-                <action android:name="android.intent.action.SIM_STATE_CHANGED" />
-            </intent-filter>
-        </receiver>
-
-        <receiver android:name="lat.trust.trusttrifles.broadcasts.AlarmReceiver" />
-
         <activity
             android:name=".MainActivity"
             android:screenOrientation="sensorPortrait">
@@ -53,6 +26,9 @@
             </intent-filter>
         </activity>
 
+
+
+            <!--FIREBASE SERVICE -->
         <service
             android:name=".TrustFirebaseMessagingService"
             android:stopWithTask="false">
@@ -60,37 +36,11 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service android:name="lat.trust.trusttrifles.services.RemoteAuditService" />
-        <service android:name="lat.trust.trusttrifles.services.WifiStateService" />
-        <service android:name="lat.trust.trusttrifles.services.LocationService" />
 
-
-        <receiver android:name="lat.trust.trusttrifles.broadcasts.PhoneStatReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.PHONE_STATE" />
-                <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
-            </intent-filter>
-        </receiver>
-
-        <receiver android:name="lat.trust.trusttrifles.broadcasts.BootCompleted">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
-
-
-        <receiver android:name="lat.trust.trusttrifles.broadcasts.WifiStateReceiver">
-
-            <intent-filter>
-                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
-                <action android:name="android.net.wifi.STATE_CHANGE" />
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-
-                <action android:name="android.net.wifi.supplicant.CONNECTION_CHANGE" />
-
-            </intent-filter>
-        </receiver>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="c2f2723ade81917cf6b8cac00d194cd208df72ad"
+            />
     </application>
-
 
 </manifest>

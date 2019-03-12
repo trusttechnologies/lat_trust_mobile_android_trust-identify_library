@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -16,6 +17,7 @@ import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcManager;
@@ -30,6 +32,7 @@ import android.support.v4.content.ContextCompat;
 import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
 import android.text.TextUtils;
+import android.text.format.Formatter;
 import android.util.Log;
 
 import com.orhanobut.hawk.Hawk;
@@ -65,7 +68,7 @@ import lat.trust.trusttrifles.network.req.EventBody;
 import lat.trust.trusttrifles.network.req.RemoteEventBody;
 import lat.trust.trusttrifles.network.req.RemoteEventBody2;
 import lat.trust.trusttrifles.network.req.TrifleBody;
-import lat.trust.trusttrifles.services.WifiStateService;
+import lat.trust.trusttrifles.utilities.AutomaticAudit;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 import lat.trust.trusttrifles.utilities.TrustPreferences;
@@ -103,7 +106,48 @@ public class TrustClient {
         startAutomaticAudit();
         mPreferences = TrustPreferences.getInstance();
 
+        IntentFilter intentFilter = new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION);
+
+        mContext.registerReceiver(wifiState, intentFilter);
     }
+
+
+    private BroadcastReceiver wifiState = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            TrustLogger.d("[WIFI STATE RECEIVER]");
+            int wifiState = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, WifiManager.WIFI_STATE_UNKNOWN);
+            String wifiStateText = "No State";
+            switch (wifiState) {
+                case WifiManager.WIFI_STATE_DISABLING:
+                    wifiStateText = "[WIFI STATE RECEIVER] WIFI_STATE_DISABLING";
+                    break;
+                case WifiManager.WIFI_STATE_DISABLED:
+                    wifiStateText = "[WIFI STATE RECEIVER] WIFI_STATE_DISABLED";
+                    break;
+                case WifiManager.WIFI_STATE_ENABLING:
+                    wifiStateText = "[WIFI STATE RECEIVER] WIFI_STATE_ENABLING";
+                    break;
+                case WifiManager.WIFI_STATE_ENABLED:
+                    WifiManager wifiMgr = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                    WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
+                    int ip = wifiInfo.getIpAddress();
+                    String ipAddress = Formatter.formatIpAddress(ip);
+                    String name = wifiInfo.getSSID() == null ? "No wifi avaliable" : wifiInfo.getSSID();
+                    AutomaticAudit.createAutomaticAudit("AUTOMATIC WIFI AUDIT", "receiver", "WIFI_STATE_ENABLED: NAME: "+ name + " IP:" +ipAddress,mContext);
+                    break;
+                case WifiManager.WIFI_STATE_UNKNOWN:
+                    wifiStateText = "[WIFI STATE RECEIVER] WIFI_STATE_UNKNOWN";
+                    break;
+                default:
+                    break;
+
+
+            }
+            TrustLogger.d(wifiStateText);
+
+        }
+    };
 
     /**
      * Init.
@@ -314,6 +358,7 @@ public class TrustClient {
     public void getTrifles(final boolean requestTrustId, @NonNull final TrustListener.OnResult<Audit> listener) {
         getTrifles(requestTrustId, true, true, true, listener);
     }
+
     /**
      * Agrega cierta informacion de las camaras del dispositivo
      *
