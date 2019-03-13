@@ -11,7 +11,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.BatteryManager;
 import android.os.Bundle;
@@ -37,15 +36,12 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.crashlytics.android.Crashlytics;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.FirebaseInstanceIdService;
-import com.google.firebase.messaging.FirebaseMessagingService;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.orhanobut.hawk.Hawk;
-
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -59,7 +55,7 @@ import lat.trust.trustdemo.Utils.Utils;
 import lat.trust.trusttrifles.TrustClient;
 import lat.trust.trusttrifles.TrustListener;
 import lat.trust.trusttrifles.model.Audit;
-import lat.trust.trusttrifles.services.LocationService;
+import lat.trust.trusttrifles.utilities.TrustLogger;
 import lat.trust.trusttrifles.utilities.TrustPreferences;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
@@ -99,74 +95,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     };
 
-    private final LocationListener mLocationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(final Location location) {
-            //your code here
-            mLocation = location;
-        }
-
-        @Override
-        public void onStatusChanged(String s, int i, Bundle bundle) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String s) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String s) {
-
-        }
-    };
 
     private MaterialDialog loadingDialog;
     private TrustPreferences mPreferences;
     private LocationManager mLocationManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        startService(new Intent(this,LocationService.class));
-//        Log.d("TAG",FirebaseInstanceId.getInstance().getToken());
+        checkPermissions();
+        TrustLogger.d(FirebaseInstanceId.getInstance().getToken() != null ? FirebaseInstanceId.getInstance().getToken():"no firebase token id");
         Fabric.with(this, new Crashlytics());
-        mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        mClient = TrustClient.getInstance();
-        TrustPreferences.init(this);
-        mPreferences = TrustPreferences.getInstance();
-        notificationLayout = findViewById(R.id.actual_sim_layout);
-        notificationLayout.setVisibility(View.GONE);
-        notificationData = findViewById(R.id.actual_sim_id);
-        notificationTime = findViewById(R.id.actual_sim_date);
-        notificationTitle = findViewById(R.id.actual_sim_title);
-        simCarrierInput = findViewById(R.id.sim_carrier);
-        trustInput = findViewById(R.id.trustid_input);
-        recyclerView = findViewById(R.id.history_list);
 
-        adapter = new HistoryAdapter();
-        LinearLayoutManager llm = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        recyclerView.setLayoutManager(llm);
-        recyclerView.setAdapter(adapter);
-        recyclerView.invalidate();
-
-        Button button = findViewById(R.id.button);
-        //button.setOnClickListener(feaListener);
-        button.setOnClickListener(this);
-        Button event = findViewById(R.id.event);
-        event.setOnClickListener(this);
-        String tid;
-        if (Hawk.contains("TRUST_DEMO_ID")) {
-            tid = Hawk.get("TRUST_DEMO_ID");
-        } else {
-            tid = "No Registrado";
-        }
-        trustInput.setText(tid);
-        //TEST
-        Log.d("TRUSTCLIENT", "START");
-        //exec();
-        Log.d("TRUSTCLIENT", "END");
     }
 
     private void exec() {
@@ -270,6 +211,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onResume() {
         super.onResume();
         checkPermissions();
+
     }
 
     private void showLoading() {
@@ -291,12 +233,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void checkPermissions() {
 
         Dexter.withActivity(this)
-                .withPermissions(READ_PHONE_STATE, ACCESS_COARSE_LOCATION, CAMERA,ACCESS_FINE_LOCATION,READ_SMS)
+                .withPermissions(READ_PHONE_STATE, ACCESS_COARSE_LOCATION, CAMERA, ACCESS_FINE_LOCATION, READ_SMS)
                 .withListener(new MultiplePermissionsListener() {
                     @SuppressLint("MissingPermission")
                     @Override
                     public void onPermissionsChecked(MultiplePermissionsReport report) {
+                        mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+                        mClient = TrustClient.getInstance();
+                        TrustPreferences.init(getApplicationContext());
+                        mPreferences = TrustPreferences.getInstance();
+                        notificationLayout = findViewById(R.id.actual_sim_layout);
+                        notificationLayout.setVisibility(View.GONE);
+                        notificationData = findViewById(R.id.actual_sim_id);
+                        notificationTime = findViewById(R.id.actual_sim_date);
+                        notificationTitle = findViewById(R.id.actual_sim_title);
+                        simCarrierInput = findViewById(R.id.sim_carrier);
+                        trustInput = findViewById(R.id.trustid_input);
+                        recyclerView = findViewById(R.id.history_list);
 
+                        adapter = new HistoryAdapter();
+                        LinearLayoutManager llm = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
+                        recyclerView.setLayoutManager(llm);
+                        recyclerView.setAdapter(adapter);
+                        recyclerView.invalidate();
+
+                        Button button = findViewById(R.id.button);
+                        //button.setOnClickListener(feaListener);
+                        //button.setOnClickListener(this);
+                        Button event = findViewById(R.id.event);
+                        // event.setOnClickListener(this);
+                        String tid;
+                        if (Hawk.contains("TRUST_DEMO_ID")) {
+                            tid = Hawk.get("TRUST_DEMO_ID");
+                        } else {
+                            tid = "No Registrado";
+                        }
+                        trustInput.setText(tid);
+                        //TEST
+                        Log.d("TRUSTCLIENT", "START");
+                        //exec();
+                        Log.d("TRUSTCLIENT", "END");
                         /*
                         mImei = mClient.getImei();
                         permissionsAccepted = report.areAllPermissionsGranted();
@@ -546,6 +522,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Toast.makeText(this, "No exite Trust ID, presione Iniciar para crearlo", Toast.LENGTH_SHORT).show();
         }
     }
+
     private void updateHistory() {
         adapter.update();
         recyclerView.invalidate();

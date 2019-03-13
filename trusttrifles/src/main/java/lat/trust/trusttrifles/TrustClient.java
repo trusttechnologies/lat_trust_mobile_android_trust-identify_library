@@ -1,8 +1,6 @@
 package lat.trust.trusttrifles;
 
 import android.annotation.SuppressLint;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -45,15 +43,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import lat.trust.trusttrifles.broadcasts.AlarmReceiver;
 import lat.trust.trusttrifles.model.Audit;
 import lat.trust.trusttrifles.model.AuditSource;
 import lat.trust.trusttrifles.model.AuditTransaction;
@@ -103,18 +98,15 @@ public class TrustClient {
 
     private TrustClient() {
         TrustPreferences.init(mContext);
-        startAutomaticAudit();
         mPreferences = TrustPreferences.getInstance();
-
         IntentFilter intentFilter = new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION);
-
         mContext.registerReceiver(wifiState, intentFilter);
     }
 
 
     private BroadcastReceiver wifiState = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(final Context context, Intent intent) {
             TrustLogger.d("[WIFI STATE RECEIVER]");
             int wifiState = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, WifiManager.WIFI_STATE_UNKNOWN);
             String wifiStateText = "No State";
@@ -129,23 +121,31 @@ public class TrustClient {
                     wifiStateText = "[WIFI STATE RECEIVER] WIFI_STATE_ENABLING";
                     break;
                 case WifiManager.WIFI_STATE_ENABLED:
-                    WifiManager wifiMgr = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-                    WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
-                    int ip = wifiInfo.getIpAddress();
-                    String ipAddress = Formatter.formatIpAddress(ip);
-                    String name = wifiInfo.getSSID() == null ? "No wifi avaliable" : wifiInfo.getSSID();
-                    AutomaticAudit.createAutomaticAudit("AUTOMATIC WIFI AUDIT", "receiver", "WIFI_STATE_ENABLED: NAME: "+ name + " IP:" +ipAddress,mContext);
+                    wifiStateText = "[WIFI STATE RECEIVER] WIFI_STATE_DISABLED";
+                    new Handler().postDelayed(new Runnable() {
+                        @SuppressLint("MissingPermission")
+                        @Override
+                        public void run() {
+                            WifiManager wifiMgr = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                            WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
+                            int ip = wifiInfo.getIpAddress();
+                            String ipAddress = Formatter.formatIpAddress(ip);
+                            String name = wifiInfo.getSSID() == null ? "No wifi avaliable" : wifiInfo.getSSID();
+                            AutomaticAudit.createAutomaticAudit(
+                                    "AUTOMATIC WIFI AUDIT",
+                                    "receiver",
+                                    "WIFI_STATE_ENABLED: NAME: " + name + " IP: " + ipAddress,
+                                    context);
+                        }
+                    }, 5000);
                     break;
                 case WifiManager.WIFI_STATE_UNKNOWN:
                     wifiStateText = "[WIFI STATE RECEIVER] WIFI_STATE_UNKNOWN";
                     break;
                 default:
                     break;
-
-
             }
             TrustLogger.d(wifiStateText);
-
         }
     };
 
@@ -159,31 +159,7 @@ public class TrustClient {
         TrustLogger.d("[TRUST ID] init: ");
         mContext = context;
         trustInstance = new TrustClient();
-        //mContext.startService(new Intent(mContext, WifiStateService.class));
-
-
-    }
-
-    /**
-     * start a alarm or
-     */
-    public static void startAutomaticAudit() {
-        TrustLogger.d("[AUTOMATIC AUDIT] startAutomaticAudit: ");
-        AlarmManager manager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
-        Date dat = new Date();
-        Calendar cal_alarm = Calendar.getInstance();
-        Calendar cal_now = Calendar.getInstance();
-        cal_now.setTime(dat);
-        cal_alarm.setTime(dat);
-        cal_alarm.set(Calendar.HOUR_OF_DAY, 14);
-        cal_alarm.set(Calendar.MINUTE, 35);
-        cal_alarm.set(Calendar.SECOND, 0);
-        if (cal_alarm.before(cal_now)) {
-            cal_alarm.add(Calendar.DATE, 1);
-        }
-        Intent myIntent = new Intent(mContext, AlarmReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, 0, myIntent, 0);
-        manager.setRepeating(AlarmManager.RTC_WAKEUP, cal_alarm.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        AutomaticAudit.setAutomaticAlarm(mContext, 14, 30, 0);
     }
 
     /**

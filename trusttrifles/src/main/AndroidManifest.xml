@@ -31,9 +31,7 @@
         <!--REMOTE AUDIT SERVICE-->
         <service android:name="lat.trust.trusttrifles.services.RemoteAuditService" />
         <!--WIFI STATE RECEIVER-->
-        <service android:name="lat.trust.trusttrifles.services.WifiStateService" />
         <!--LOCATION SERVICE-->
-        <service android:name="lat.trust.trusttrifles.services.LocationService" />
 
 
         <!--=================== RECEIVERS ===================-->

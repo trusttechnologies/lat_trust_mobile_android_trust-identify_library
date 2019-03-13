@@ -1,15 +1,20 @@
 package lat.trust.trusttrifles.utilities;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 
 import com.orhanobut.hawk.Hawk;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import lat.trust.trusttrifles.TrustClient;
 import lat.trust.trusttrifles.TrustListener;
+import lat.trust.trusttrifles.broadcasts.AlarmReceiver;
 import lat.trust.trusttrifles.model.Audit;
-import lat.trust.trusttrifles.services.LocationService;
 
 public class AutomaticAudit {
 
@@ -25,6 +30,8 @@ public class AutomaticAudit {
     }
 
     public static void createAutomaticAudit(String trustid, String operation, String method, String result, Long timestamp, String lat, String lng) {
+
+
         TrustLogger.d("[AUTOMATIC AUDIT] : generating automatic audit...");
         TrustClient mClient = TrustClient.getInstance();
         if (isTrustId()) {
@@ -40,11 +47,12 @@ public class AutomaticAudit {
     }
 
     public static void createAutomaticAudit(String operation, String method, String result, Context context) {
+        String lat = Utils.getLatitude(context);
+        String lng = Utils.getLongitude(context);
         TrustLogger.d("[AUTOMATIC AUDIT] : generating automatic audit...");
         TrustClient mClient = TrustClient.getInstance();
         Long timestamp = Utils.getCurrentTimeStamp();
-        String lat = LocationService.getLastLatitude();
-        String lng = LocationService.getLastLongitude();
+
         if (isTrustId()) {
             mClient.createAudit(getSavedTrustId(), operation, method, result, timestamp, lat, lng, new TrustListener.OnResultSimple() {
                 @Override
@@ -85,5 +93,26 @@ public class AutomaticAudit {
                 TrustLogger.d("[AUTOMATIC AUDIT] :  generating trust id error permission.");
             }
         });
+    }
+
+
+    public static void setAutomaticAlarm(Context mContext,int hour,int minute,int second){
+        TrustLogger.d("[AUTOMATIC AUDIT] STARTING... ");
+        AlarmManager manager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
+        Date dat = new Date();
+        Calendar cal_alarm = Calendar.getInstance();
+        Calendar cal_now = Calendar.getInstance();
+        cal_now.setTime(dat);
+        cal_alarm.setTime(dat);
+        cal_alarm.set(Calendar.HOUR_OF_DAY, hour);
+        cal_alarm.set(Calendar.MINUTE, minute);
+        cal_alarm.set(Calendar.SECOND, second);
+        if (cal_alarm.before(cal_now)) {
+            cal_alarm.add(Calendar.DATE, 1);
+        }
+        Intent myIntent = new Intent(mContext, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, 0, myIntent, 0);
+        manager.setRepeating(AlarmManager.RTC_WAKEUP, cal_alarm.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        TrustLogger.d("[AUTOMATIC AUDIT] STARTED AT: " + String.valueOf(hour) + ":" + String.valueOf(minute));
     }
 }

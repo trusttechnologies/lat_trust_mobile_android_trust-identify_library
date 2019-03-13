@@ -1,7 +1,10 @@
 package lat.trust.trusttrifles.utilities;
 
+import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.wifi.WifiManager;
 
 public class Utils {
@@ -17,6 +20,16 @@ public class Utils {
             return segs[1];
         }
         return null;
+    }
+
+    public static boolean isMyServiceRunning(Class<?> serviceClass, Context context) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -38,25 +51,19 @@ public class Utils {
 
     }
 
+    @SuppressLint("MissingPermission")
     public static String getLatitude(Context mContext) {
-        Location location = null;
-                LocationGPS.getLocation(mContext);
-        if(LocationGPS.getLocation(mContext) != null){
-            return String.valueOf(location.getLatitude());
+        LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+        Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        return location != null ? String.valueOf(location.getLatitude()) : "Unable to find correct latitude.";
 
-        }else{
-            return "no latitude avaliable";
-        }
     }
 
+    @SuppressLint("MissingPermission")
     public static String getLongitude(Context mContext) {
-        Location location = LocationGPS.getLocation(mContext);
-        if(LocationGPS.getLocation(mContext)!= null){
-            return String.valueOf(location.getLongitude());
-
-        }else{
-            return "no longitude avaliable";
-        }
+        LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+        Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        return location != null ? String.valueOf(location.getLongitude()) : "Unable to find correct longitude.";
     }
 
 
@@ -73,4 +80,5 @@ public class Utils {
             wifiManager.setWifiEnabled(false);
         }
     }
+
 }

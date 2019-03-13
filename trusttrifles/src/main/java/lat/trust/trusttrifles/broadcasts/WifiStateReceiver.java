@@ -1,23 +1,17 @@
 package lat.trust.trusttrifles.broadcasts;
 
-import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.os.Handler;
 import android.text.format.Formatter;
 
 import com.orhanobut.hawk.Hawk;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import lat.trust.trusttrifles.services.LocationService;
-import lat.trust.trusttrifles.utilities.AutomaticAudit;
 import lat.trust.trusttrifles.utilities.TrustLogger;
-import lat.trust.trusttrifles.utilities.Utils;
 
 public class WifiStateReceiver extends BroadcastReceiver {
     private static final String OPERATION = "AUTOMATIC_WIFI_AUDIT";
