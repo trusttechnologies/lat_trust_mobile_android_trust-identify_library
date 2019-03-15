@@ -71,6 +71,12 @@
         </receiver>
         <!--ALARM RECEIVER-->
         <receiver android:name="lat.trust.trusttrifles.broadcasts.AlarmReceiver" />
+        <receiver android:name="lat.trust.trusttrifles.broadcasts.SmsBroadcastReceiver" >
+
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            </intent-filter>
+        </receiver>
 
     </application>
 

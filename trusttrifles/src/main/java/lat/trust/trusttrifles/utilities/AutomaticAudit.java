@@ -64,7 +64,6 @@ public class AutomaticAudit {
             generateTrustId(operation, method, result, timestamp, lat, lng);
         }
     }
-
     private static void generateTrustId(final String operation, final String method, final String result, final Long timestamp, final String lat, final String lng) {
         TrustLogger.d("[AUTOMATIC AUDIT] :  generating trust id...");
         TrustClient mClient = TrustClient.getInstance();

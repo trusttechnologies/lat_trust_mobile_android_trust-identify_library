@@ -4,10 +4,10 @@ import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.telephony.TelephonyManager;
 
 import lat.trust.trusttrifles.utilities.AutomaticAudit;
+import lat.trust.trusttrifles.utilities.SavePendingAudit;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 import lat.trust.trusttrifles.utilities.Utils;
 
@@ -24,6 +24,9 @@ public class PhoneStatReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         TrustLogger.d("[CALL STATE RECEIVER] on receive");
+        SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
+
+
         if (intent.getAction().equals(Intent.ACTION_NEW_OUTGOING_CALL)) {
             incomingFlag = false;
             String phoneNumber = intent.getStringExtra(Intent.EXTRA_PHONE_NUMBER);
@@ -37,33 +40,72 @@ public class PhoneStatReceiver extends BroadcastReceiver {
                     incomingFlag = true;
                     incoming_number = intent.getStringExtra("incoming_number");
                     TrustLogger.d("[CALL STATE RECEIVER] RINGING :" + incoming_number);
-                    AutomaticAudit.createAutomaticAudit(
-                            OPERATION,
-                            METHOD,
-                            RESULT + " RINGING :" + incoming_number,
-                            context
-                    );
-                    break;
-                case TelephonyManager.CALL_STATE_OFFHOOK:
-                    if (incomingFlag) {
-                        TrustLogger.d("[CALL STATE RECEIVER] incoming ACCEPT :" + incoming_number);
+                    if (!Utils.getWifiState(context)) {
+                        savePendingAudit.saveAudit(
+                                OPERATION,
+                                METHOD,
+                                RESULT + " RINGING :" + incoming_number,
+                                Utils.getLatitude(context),
+                                Utils.getLongitude(context),
+                                Utils.getCurrentTimeStamp()
+                        );
+                    } else {
                         AutomaticAudit.createAutomaticAudit(
                                 OPERATION,
                                 METHOD,
-                                RESULT + "INCOMING ACCEPT :" + incoming_number,
+                                RESULT + " RINGING :" + incoming_number,
                                 context
                         );
                     }
+
                     break;
-                case TelephonyManager.CALL_STATE_IDLE:
-                    if (incomingFlag) {
-                        TrustLogger.d("[CALL STATE RECEIVER] incoming IDLE");
-                        AutomaticAudit.createAutomaticAudit(
+
+                case TelephonyManager.CALL_STATE_OFFHOOK:
+                    TrustLogger.d("[CALL STATE RECEIVER] incoming ACCEPT :" + incoming_number);
+
+                    if (!Utils.getWifiState(context)) {
+                        savePendingAudit.saveAudit(
                                 OPERATION,
                                 METHOD,
-                                RESULT + "INCOMING IDLE: " + incoming_number,
-                                context
+                                RESULT + " INCOMING ACCEPT :" + incoming_number,
+                                Utils.getLatitude(context),
+                                Utils.getLongitude(context),
+                                Utils.getCurrentTimeStamp()
                         );
+                    } else {
+                        if (incomingFlag) {
+                            AutomaticAudit.createAutomaticAudit(
+                                    OPERATION,
+                                    METHOD,
+                                    RESULT + " " + "INCOMING ACCEPT :" + incoming_number,
+                                    context
+                            );
+                        }
+                    }
+
+                    break;
+                case TelephonyManager.CALL_STATE_IDLE:
+                    TrustLogger.d("[CALL STATE RECEIVER] incoming IDLE");
+
+                    if (!Utils.getWifiState(context)) {
+
+                        savePendingAudit.saveAudit(
+                                OPERATION,
+                                METHOD,
+                                RESULT + " INCOMING IDLE :" + incoming_number,
+                                Utils.getLatitude(context),
+                                Utils.getLongitude(context),
+                                Utils.getCurrentTimeStamp()
+                        );
+                    } else {
+                        if (incomingFlag) {
+                            AutomaticAudit.createAutomaticAudit(
+                                    OPERATION,
+                                    METHOD,
+                                    RESULT + " INCOMING IDLE: " + incoming_number,
+                                    context
+                            );
+                        }
                     }
                     break;
             }

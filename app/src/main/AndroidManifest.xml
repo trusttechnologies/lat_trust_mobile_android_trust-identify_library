@@ -5,6 +5,11 @@
     android:sharedUserId="trust.trifles"
     android:sharedUserLabel="@string/shared_user_label">
 
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
 
     <application
         android:name=".TrustDemoApp"
@@ -15,9 +20,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-
         <activity
-            android:name=".MainActivity"
+            android:name=".SplashActivity"
             android:screenOrientation="sensorPortrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,9 +30,7 @@
             </intent-filter>
         </activity>
 
-
-
-            <!--FIREBASE SERVICE -->
+        <!-- FIREBASE SERVICE -->
         <service
             android:name=".TrustFirebaseMessagingService"
             android:stopWithTask="false">
@@ -36,10 +38,12 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="c2f2723ade81917cf6b8cac00d194cd208df72ad"
-            />
+            android:value="c2f2723ade81917cf6b8cac00d194cd208df72ad" />
+
+        <activity android:name=".MainActivity"></activity>
     </application>
 
 </manifest>

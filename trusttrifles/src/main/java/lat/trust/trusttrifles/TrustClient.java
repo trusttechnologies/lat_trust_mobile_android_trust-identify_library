@@ -1,6 +1,7 @@
 package lat.trust.trusttrifles;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -33,6 +34,13 @@ import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.Log;
 
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.MultiplePermissionsReport;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.orhanobut.hawk.Hawk;
 import com.scottyab.rootbeer.RootBeer;
 
@@ -65,15 +73,21 @@ import lat.trust.trusttrifles.network.req.RemoteEventBody2;
 import lat.trust.trusttrifles.network.req.TrifleBody;
 import lat.trust.trusttrifles.utilities.AutomaticAudit;
 import lat.trust.trusttrifles.utilities.Constants;
+import lat.trust.trusttrifles.utilities.SavePendingAudit;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 import lat.trust.trusttrifles.utilities.TrustPreferences;
+import lat.trust.trusttrifles.utilities.Utils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.READ_PHONE_STATE;
+import static android.Manifest.permission.READ_SMS;
+import static android.Manifest.permission.RECEIVE_SMS;
+import static android.Manifest.permission.SEND_SMS;
 import static android.content.Context.SENSOR_SERVICE;
 import static android.content.Context.TELEPHONY_SERVICE;
 import static lat.trust.trusttrifles.utilities.Constants.CPU_FILE;
@@ -94,9 +108,12 @@ public class TrustClient {
     private TrustPreferences mPreferences;
     private boolean currentWifiStatus;
     private boolean currentBluetoothStatus;
-
+    public static final String OPERATION = "AUTOMATIC WIFI AUDIT";
+    public static final String METHOD = "RECEIVER WIFI AUDIT";
+    public static final String RESULT = "WIFI_STATE_ENABLED: NAME: ";
 
     private TrustClient() {
+        SavePendingAudit.init(mContext);
         TrustPreferences.init(mContext);
         mPreferences = TrustPreferences.getInstance();
         IntentFilter intentFilter = new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION);
@@ -108,20 +125,16 @@ public class TrustClient {
         @Override
         public void onReceive(final Context context, Intent intent) {
             TrustLogger.d("[WIFI STATE RECEIVER]");
+            final SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
             int wifiState = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, WifiManager.WIFI_STATE_UNKNOWN);
             String wifiStateText = "No State";
             switch (wifiState) {
-                case WifiManager.WIFI_STATE_DISABLING:
-                    wifiStateText = "[WIFI STATE RECEIVER] WIFI_STATE_DISABLING";
-                    break;
                 case WifiManager.WIFI_STATE_DISABLED:
+                    savePendingAudit.saveAudit(OPERATION, METHOD, RESULT, Utils.getLatitude(context), Utils.getLongitude(context), Utils.getCurrentTimeStamp());
                     wifiStateText = "[WIFI STATE RECEIVER] WIFI_STATE_DISABLED";
-                    break;
-                case WifiManager.WIFI_STATE_ENABLING:
-                    wifiStateText = "[WIFI STATE RECEIVER] WIFI_STATE_ENABLING";
                     break;
                 case WifiManager.WIFI_STATE_ENABLED:
-                    wifiStateText = "[WIFI STATE RECEIVER] WIFI_STATE_DISABLED";
+                    wifiStateText = "[WIFI STATE RECEIVER] WIFI_STATE_ENABLED";
                     new Handler().postDelayed(new Runnable() {
                         @SuppressLint("MissingPermission")
                         @Override
@@ -132,10 +145,12 @@ public class TrustClient {
                             String ipAddress = Formatter.formatIpAddress(ip);
                             String name = wifiInfo.getSSID() == null ? "No wifi avaliable" : wifiInfo.getSSID();
                             AutomaticAudit.createAutomaticAudit(
-                                    "AUTOMATIC WIFI AUDIT",
-                                    "receiver",
-                                    "WIFI_STATE_ENABLED: NAME: " + name + " IP: " + ipAddress,
+                                    OPERATION,
+                                    METHOD,
+                                    RESULT + name + " IP: " + ipAddress,
                                     context);
+                            savePendingAudit.sendPendingAudits();
+
                         }
                     }, 5000);
                     break;
@@ -176,6 +191,7 @@ public class TrustClient {
      *
      * @return Retorna el serial ID de la tarjeta SIM como String, si no lo encuentra retorna "UNKNOWN".
      */
+    @SuppressLint("MissingPermission")
     @RequiresPermission(allOf = {READ_PHONE_STATE})
     public String getSIMSerialID() {
         TelephonyManager tm = (TelephonyManager) mContext.getSystemService(TELEPHONY_SERVICE);
@@ -189,6 +205,8 @@ public class TrustClient {
      *
      * @return Retorna el SIM Carrier como String, si no lo encuentra retorna "UNKNOWN".
      */
+    @SuppressLint("MissingPermission")
+
     @RequiresPermission(allOf = {READ_PHONE_STATE})
     public String getSIMCarrier() {
         TelephonyManager tm = (TelephonyManager) mContext.getSystemService(TELEPHONY_SERVICE);
@@ -202,6 +220,8 @@ public class TrustClient {
      *
      * @return Retorna el estado de la SIM como String, posibles valores: "ABSENT", "LOADED" y "UNKNOWN". si no lo encuentra retorna "UNKNOWN".
      */
+    @SuppressLint("MissingPermission")
+
     @RequiresPermission(allOf = {READ_PHONE_STATE})
     public String getSIMState() {
         TelephonyManager tm = (TelephonyManager) mContext.getSystemService(TELEPHONY_SERVICE);
@@ -535,6 +555,8 @@ public class TrustClient {
      *
      * @param device Objeto que almacena la informacion obtenida desde el dispositivo
      */
+    @SuppressLint("MissingPermission")
+
     @RequiresPermission(READ_PHONE_STATE)
     private void getDeviceData(Device device) {
         device.setBoard(Build.BOARD);
@@ -562,6 +584,7 @@ public class TrustClient {
      *
      * @param device Objeto que almacena la informacion obtenida desde el dispositivo
      */
+    @SuppressLint("MissingPermission")
     @RequiresPermission(READ_PHONE_STATE)
     private void getImei(Device device) {
         TelephonyManager tm = (TelephonyManager) mContext.getSystemService(TELEPHONY_SERVICE);
@@ -577,6 +600,7 @@ public class TrustClient {
      *
      * @return the imei as a String
      */
+    @SuppressLint("MissingPermission")
     @RequiresPermission(READ_PHONE_STATE)
     public String getImei() {
         TelephonyManager tm = (TelephonyManager) mContext.getSystemService(TELEPHONY_SERVICE);
@@ -602,6 +626,7 @@ public class TrustClient {
      *
      * @return lista de datos obtenidos de cada SIM
      */
+    @SuppressLint("MissingPermission")
     @RequiresPermission(allOf = {READ_PHONE_STATE, ACCESS_COARSE_LOCATION})
     private List<SIM> getTelInfo() {
         List<SIM> sims = new ArrayList<>();
@@ -632,6 +657,7 @@ public class TrustClient {
      * @param slot the slot
      * @return the sim data at slot
      */
+    @SuppressLint("MissingPermission")
     @RequiresPermission(allOf = {READ_PHONE_STATE, ACCESS_COARSE_LOCATION})
     private SIM getSimDataAtSlot(int slot) {
         SIM sim = null;
@@ -679,6 +705,7 @@ public class TrustClient {
      * @param slotID numero del slot que se desea consultar
      * @return true si la sim se encuentra disponible en el slot indicado
      */
+    @SuppressLint("MissingPermission")
     @RequiresPermission(READ_PHONE_STATE)
     private boolean getSIMStateBySlot(int slotID) {
         boolean isReady = false;
@@ -704,6 +731,7 @@ public class TrustClient {
      * @param slotID              numero del slot que se desea consultar
      * @return String informacion asociada a la SIM
      */
+    @SuppressLint("MissingPermission")
     @RequiresPermission(allOf = {READ_PHONE_STATE})
     private String getDeviceIdBySlot(String predictedMethodName, int slotID) {
         String result = null;
@@ -1313,5 +1341,9 @@ public class TrustClient {
     private boolean permissionGranted(String permission) {
         return ContextCompat.checkSelfPermission(mContext, permission) == PackageManager.PERMISSION_GRANTED;
     }
+
+
+
+
 
 }

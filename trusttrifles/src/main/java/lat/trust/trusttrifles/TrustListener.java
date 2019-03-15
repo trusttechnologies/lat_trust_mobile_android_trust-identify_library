@@ -12,7 +12,16 @@ public interface TrustListener {
         void onFailure(Throwable t);
 
         void onPermissionRequired(ArrayList<String> permisos);
+
+
     }
+
+    interface Permissions {
+        void onPermissionSuccess();
+
+        void onPermissionRevoke();
+    }
+
 
     interface OnResultSimple {
         void onResult(int code, String message);

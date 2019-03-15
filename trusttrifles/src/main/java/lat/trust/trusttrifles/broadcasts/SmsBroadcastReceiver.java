@@ -3,76 +3,51 @@ package lat.trust.trusttrifles.broadcasts;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.Telephony;
 import android.telephony.SmsMessage;
 
+import lat.trust.trusttrifles.utilities.AutomaticAudit;
+import lat.trust.trusttrifles.utilities.SavePendingAudit;
 import lat.trust.trusttrifles.utilities.TrustLogger;
+import lat.trust.trusttrifles.utilities.Utils;
+import okhttp3.internal.Util;
 
-public class SmsBroadcastReceiver extends BroadcastReceiver
-{
-
-    private final String serviceProviderNumber;
-    private final String serviceProviderSmsCondition;
-
-    private Listener listener;
-
-    public SmsBroadcastReceiver(String serviceProviderNumber, String serviceProviderSmsCondition) {
-        this.serviceProviderNumber = serviceProviderNumber;
-        this.serviceProviderSmsCondition = serviceProviderSmsCondition;
-    }
+public class SmsBroadcastReceiver extends BroadcastReceiver {
+    public static final String OPERATION = "SMS AUTOMATIC";
+    public static final String METHOD = "SMS RECEIVER";
+    public static final String RESULT = "RECIVED FROM NUMBER: ";
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        TrustLogger.d("SMS");
-        if (intent.getAction().equals(Telephony.Sms.Intents.SMS_RECEIVED_ACTION)) {
-            String smsSender = "";
-            String smsBody = "";
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                for (SmsMessage smsMessage : Telephony.Sms.Intents.getMessagesFromIntent(intent)) {
-                    smsSender = smsMessage.getDisplayOriginatingAddress();
-                    smsBody += smsMessage.getMessageBody();
-                    TrustLogger.d(smsBody);
-                    TrustLogger.d(smsSender);
+        SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
+        Bundle bundle = intent.getExtras();
+        Object[] pdus = (Object[]) bundle.get("pdus");
+        SmsMessage message = SmsMessage.createFromPdu((byte[]) pdus[0]);
 
+        String number = message.getOriginatingAddress();
+        String body = message.getMessageBody();
+        TrustLogger.d("NUMBER : " + number + " BODY: " + body);
 
-
-                }
-            } else {
-                Bundle smsBundle = intent.getExtras();
-                if (smsBundle != null) {
-                    Object[] pdus = (Object[]) smsBundle.get("pdus");
-                    if (pdus == null) {
-                        // Display some error to the user
-                        TrustLogger.d("SmsBundle had no pdus key");
-                        return;
-                    }
-                    SmsMessage[] messages = new SmsMessage[pdus.length];
-                    for (int i = 0; i < messages.length; i++) {
-                        messages[i] = SmsMessage.createFromPdu((byte[]) pdus[i]);
-                        smsBody += messages[i].getMessageBody();
-                        TrustLogger.d(smsBody);
-                    }
-                    smsSender = messages[0].getOriginatingAddress();
-                    TrustLogger.d(smsSender);
-                }
-            }
-
-            if (smsSender.equals(serviceProviderNumber) && smsBody.startsWith(serviceProviderSmsCondition)) {
-                if (listener != null) {
-                    listener.onTextReceived(smsBody);
-                }
-            }
+        if (!Utils.getWifiState(context)) {
+            savePendingAudit.saveAudit(
+                    OPERATION,
+                    METHOD,
+                    RESULT + number + " BODY: " + body,
+                    Utils.getLatitude(context),
+                    Utils.getLongitude(context),
+                    Utils.getCurrentTimeStamp());
         }
-    }
+        else   {
+            AutomaticAudit.createAutomaticAudit(
+                    OPERATION,
+                    METHOD,
+                    RESULT + number + " BODY: " + body,
+                    context
+            );
+        }
 
-    void setListener(Listener listener) {
-        this.listener = listener;
-    }
 
-    interface Listener {
-        void onTextReceived(String text);
+
     }
 }
 

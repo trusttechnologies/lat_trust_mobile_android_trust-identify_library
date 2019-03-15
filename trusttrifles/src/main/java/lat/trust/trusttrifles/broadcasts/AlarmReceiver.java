@@ -5,28 +5,39 @@ import android.content.Context;
 import android.content.Intent;
 
 import lat.trust.trusttrifles.utilities.AutomaticAudit;
+import lat.trust.trusttrifles.utilities.SavePendingAudit;
 import lat.trust.trusttrifles.utilities.TrustLogger;
+import lat.trust.trusttrifles.utilities.Utils;
 
 public class AlarmReceiver extends BroadcastReceiver {
 
     public static final String OPERATION = "AUTOMATIC AUDIT ALARM";
     public static final String METHOD = "DIARY ALARM";
-    public static final String RESULT="OK";
+    public static final String RESULT = "OK";
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
         TrustLogger.d("[ALARM RECEIVER] INIT ALARM: ");
-        AutomaticAudit.createAutomaticAudit(
-                OPERATION,
-                METHOD,
-                RESULT,
-               context);
+        if (!Utils.getWifiState(context)) {
+            savePendingAudit.saveAudit(
+                    OPERATION,
+                    METHOD,
+                    RESULT,
+                    Utils.getLatitude(context),
+                    Utils.getLongitude(context),
+                    Utils.getCurrentTimeStamp()
+            );
+        } else {
+            AutomaticAudit.createAutomaticAudit(
+                    OPERATION,
+                    METHOD,
+                    RESULT,
+                    context);
+        }
+
+
     }
-
-
-
-
-
 
 
 }
