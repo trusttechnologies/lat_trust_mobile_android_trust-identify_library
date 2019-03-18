@@ -24,9 +24,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                     OPERATION,
                     METHOD,
                     RESULT,
-                    Utils.getLatitude(context),
-                    Utils.getLongitude(context),
-                    Utils.getCurrentTimeStamp()
+                    context
             );
         } else {
             AutomaticAudit.createAutomaticAudit(

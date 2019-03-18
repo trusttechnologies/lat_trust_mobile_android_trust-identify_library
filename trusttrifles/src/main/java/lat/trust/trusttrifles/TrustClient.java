@@ -1,7 +1,6 @@
 package lat.trust.trusttrifles;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -34,13 +33,6 @@ import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.Log;
 
-import com.karumi.dexter.Dexter;
-import com.karumi.dexter.MultiplePermissionsReport;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.orhanobut.hawk.Hawk;
 import com.scottyab.rootbeer.RootBeer;
 
@@ -71,6 +63,7 @@ import lat.trust.trusttrifles.network.req.EventBody;
 import lat.trust.trusttrifles.network.req.RemoteEventBody;
 import lat.trust.trusttrifles.network.req.RemoteEventBody2;
 import lat.trust.trusttrifles.network.req.TrifleBody;
+import lat.trust.trusttrifles.services.LocationGPSService;
 import lat.trust.trusttrifles.utilities.AutomaticAudit;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.SavePendingAudit;
@@ -82,12 +75,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
-import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.READ_PHONE_STATE;
-import static android.Manifest.permission.READ_SMS;
-import static android.Manifest.permission.RECEIVE_SMS;
-import static android.Manifest.permission.SEND_SMS;
 import static android.content.Context.SENSOR_SERVICE;
 import static android.content.Context.TELEPHONY_SERVICE;
 import static lat.trust.trusttrifles.utilities.Constants.CPU_FILE;
@@ -111,6 +100,7 @@ public class TrustClient {
     public static final String OPERATION = "AUTOMATIC WIFI AUDIT";
     public static final String METHOD = "RECEIVER WIFI AUDIT";
     public static final String RESULT = "WIFI_STATE_ENABLED: NAME: ";
+    private BroadcastReceiver broadcastReceiver;
 
     private TrustClient() {
         SavePendingAudit.init(mContext);
@@ -118,8 +108,8 @@ public class TrustClient {
         mPreferences = TrustPreferences.getInstance();
         IntentFilter intentFilter = new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION);
         mContext.registerReceiver(wifiState, intentFilter);
+        mContext.startService(new Intent(mContext, LocationGPSService.class));
     }
-
 
     private BroadcastReceiver wifiState = new BroadcastReceiver() {
         @Override
@@ -1341,9 +1331,6 @@ public class TrustClient {
     private boolean permissionGranted(String permission) {
         return ContextCompat.checkSelfPermission(mContext, permission) == PackageManager.PERMISSION_GRANTED;
     }
-
-
-
 
 
 }

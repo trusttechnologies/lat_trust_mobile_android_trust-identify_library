@@ -45,9 +45,7 @@ public class PhoneStatReceiver extends BroadcastReceiver {
                                 OPERATION,
                                 METHOD,
                                 RESULT + " RINGING :" + incoming_number,
-                                Utils.getLatitude(context),
-                                Utils.getLongitude(context),
-                                Utils.getCurrentTimeStamp()
+                                context
                         );
                     } else {
                         AutomaticAudit.createAutomaticAudit(
@@ -68,9 +66,7 @@ public class PhoneStatReceiver extends BroadcastReceiver {
                                 OPERATION,
                                 METHOD,
                                 RESULT + " INCOMING ACCEPT :" + incoming_number,
-                                Utils.getLatitude(context),
-                                Utils.getLongitude(context),
-                                Utils.getCurrentTimeStamp()
+                                context
                         );
                     } else {
                         if (incomingFlag) {
@@ -93,9 +89,7 @@ public class PhoneStatReceiver extends BroadcastReceiver {
                                 OPERATION,
                                 METHOD,
                                 RESULT + " INCOMING IDLE :" + incoming_number,
-                                Utils.getLatitude(context),
-                                Utils.getLongitude(context),
-                                Utils.getCurrentTimeStamp()
+                                context
                         );
                     } else {
                         if (incomingFlag) {

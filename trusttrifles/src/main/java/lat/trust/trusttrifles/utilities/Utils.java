@@ -26,6 +26,13 @@ public class Utils {
         return null;
     }
 
+
+    /**
+     * Check if a service is actual running.
+     * @param serviceClass
+     * @param context
+     * @return
+     */
     public static boolean isMyServiceRunning(Class<?> serviceClass, Context context) {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
@@ -50,11 +57,20 @@ public class Utils {
         return null;
     }
 
+    /**
+     * return the actual current time stamp
+     * @return
+     */
     public static Long getCurrentTimeStamp() {
         return System.currentTimeMillis() / 1000;
 
     }
 
+    /**
+     * Return the actual latitude
+     * @param mContext
+     * @return
+     */
     public static String getLatitude(Context mContext) {
         LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -72,6 +88,11 @@ public class Utils {
 
     }
 
+    /**
+     * return the actual longitude
+     * @param mContext
+     * @return
+     */
     public static String getLongitude(Context mContext) {
         LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -88,7 +109,10 @@ public class Utils {
         return location != null ? String.valueOf(location.getLongitude()) : "Unable to find correct longitude.";
     }
 
-
+    /**
+     * turn on the wifi
+     * @param mContext
+     */
     public static void turnOnWifi(Context mContext) {
         final WifiManager wifiManager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         if (wifiManager != null) {
@@ -96,6 +120,10 @@ public class Utils {
         }
     }
 
+    /**
+     * turn off the wifi
+     * @param mContext
+     */
     public static void turnOffWifi(Context mContext) {
         final WifiManager wifiManager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         if (wifiManager != null) {
@@ -103,6 +131,11 @@ public class Utils {
         }
     }
 
+    /**
+     * get the current wifi state, true for connected.
+     * @param context
+     * @return
+     */
     public static boolean getWifiState(Context context) {
        /* final WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         return wifiManager == null || wifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED;*/

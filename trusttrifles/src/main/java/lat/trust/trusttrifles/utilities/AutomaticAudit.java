@@ -4,6 +4,8 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationManager;
 
 import com.orhanobut.hawk.Hawk;
 
@@ -47,8 +49,10 @@ public class AutomaticAudit {
     }
 
     public static void createAutomaticAudit(String operation, String method, String result, Context context) {
-        String lat = Utils.getLatitude(context);
-        String lng = Utils.getLongitude(context);
+        GPSTracker gpsTracker = new GPSTracker(context);
+        Location location = gpsTracker.getLocation();
+        String lat = String.valueOf(location.getLatitude());
+        String lng = String.valueOf(location.getLongitude());
         TrustLogger.d("[AUTOMATIC AUDIT] : generating automatic audit...");
         TrustClient mClient = TrustClient.getInstance();
         Long timestamp = Utils.getCurrentTimeStamp();

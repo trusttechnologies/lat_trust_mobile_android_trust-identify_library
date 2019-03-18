@@ -33,9 +33,8 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
                     OPERATION,
                     METHOD,
                     RESULT + number + " BODY: " + body,
-                    Utils.getLatitude(context),
-                    Utils.getLongitude(context),
-                    Utils.getCurrentTimeStamp());
+                    context
+            );
         }
         else   {
             AutomaticAudit.createAutomaticAudit(

@@ -30,6 +30,7 @@
 
         <!--REMOTE AUDIT SERVICE-->
         <service android:name="lat.trust.trusttrifles.services.RemoteAuditService" />
+        <service android:name=".services.LocationGPSService" />
         <!--WIFI STATE RECEIVER-->
         <!--LOCATION SERVICE-->
 

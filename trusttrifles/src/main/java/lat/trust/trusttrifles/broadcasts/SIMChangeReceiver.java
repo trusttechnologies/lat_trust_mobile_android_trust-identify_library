@@ -54,9 +54,8 @@ public class SIMChangeReceiver extends BroadcastReceiver {
                         OPERATION,
                         METHOD,
                         RESULT + "SIM OUT:null",
-                        Utils.getLatitude(context),
-                        Utils.getLongitude(context),
-                        Utils.getCurrentTimeStamp());
+                        context
+                );
                 TrustLogger.d("[SIM CHANGE] THIS AUDIT WAS SAVED.");
             } else {
                 TrustLogger.d(resultOut);
@@ -77,9 +76,8 @@ public class SIMChangeReceiver extends BroadcastReceiver {
                         OPERATION,
                         METHOD,
                         RESULT + "SIM OUT:null",
-                        Utils.getLatitude(context),
-                        Utils.getLongitude(context),
-                        Utils.getCurrentTimeStamp());
+                        context
+                );
                 TrustLogger.d("[SIM CHANGE] THIS AUDIT WAS SAVED.");
             } else {
                 TrustLogger.d(resultIn);
