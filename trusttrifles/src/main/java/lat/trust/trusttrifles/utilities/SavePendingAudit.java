@@ -62,13 +62,14 @@ public class SavePendingAudit {
         addAudit(new SavedAudit(operation, method, result, lat, lng, timestamp));
     }
 
-    public void saveAudit(String operation, String method, String result,Context context){
+    public void saveAudit(String operation, String method, String result, Context context) {
         GPSTracker gpsTracker = new GPSTracker(context);
         Location location = gpsTracker.getLocation();
-        String lat = String.valueOf(location.getLatitude());
-        String lng = String.valueOf(location.getLongitude());
-        addAudit(new SavedAudit(operation,method,result,lat ,lng , Utils.getCurrentTimeStamp()));
+        String lat = String.valueOf(location != null ? location.getLatitude() : "no latitude avaliable");
+        String lng = String.valueOf(location != null ? location.getLongitude() : "no longitude avaliable");
+        addAudit(new SavedAudit(operation, method, result, lat, lng, Utils.getCurrentTimeStamp()));
     }
+
     /**
      * return the actual size of the list of pendings audits
      *

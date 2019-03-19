@@ -46,8 +46,6 @@ public class MainActivity extends AppCompatActivity {
                 GPSTracker gpsTracker = new GPSTracker(mContext);
                 Location location = gpsTracker.getLocation();
 
-                TrustLogger.d("Activity lng: " + String.valueOf(location.getLongitude()));
-                TrustLogger.d("Activity lat: " + String.valueOf(location.getLatitude()));
             }
         });
     }
