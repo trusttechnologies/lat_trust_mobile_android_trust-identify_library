@@ -63,7 +63,6 @@ import lat.trust.trusttrifles.network.req.EventBody;
 import lat.trust.trusttrifles.network.req.RemoteEventBody;
 import lat.trust.trusttrifles.network.req.RemoteEventBody2;
 import lat.trust.trusttrifles.network.req.TrifleBody;
-import lat.trust.trusttrifles.services.LocationGPSService;
 import lat.trust.trusttrifles.utilities.AutomaticAudit;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.SavePendingAudit;
@@ -103,15 +102,26 @@ public class TrustClient {
     private BroadcastReceiver broadcastReceiver;
 
     private TrustClient() {
+        TrustLogger.d("[TRUST CLIENT] : CREATE A INSTANCE");
         SavePendingAudit.init(mContext);
         TrustPreferences.init(mContext);
         mPreferences = TrustPreferences.getInstance();
-        IntentFilter intentFilter = new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION);
-        mContext.registerReceiver(wifiState, intentFilter);
+        // IntentFilter intentFilter = new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION);
+        //  mContext.registerReceiver(wifiState, intentFilter);
+        // AutomaticAudit.setAutomaticAlarm(mContext, 14, 30, 0);
         //mContext.startService(new Intent(mContext, LocationGPSService.class));
     }
 
-    private BroadcastReceiver wifiState = new BroadcastReceiver() {
+
+    public static void start() {
+        TrustLogger.d("[TUST CLIENT] : START");
+        IntentFilter intentFilter = new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION);
+        mContext.registerReceiver(wifiState, intentFilter);
+        AutomaticAudit.setAutomaticAlarm(mContext, 14, 30, 0);
+    }
+
+
+    private static BroadcastReceiver wifiState = new BroadcastReceiver() {
         @Override
         public void onReceive(final Context context, Intent intent) {
             TrustLogger.d("[WIFI STATE RECEIVER]");
@@ -161,10 +171,9 @@ public class TrustClient {
      */
     public static void init(Context context) {
 
-        TrustLogger.d("[TRUST ID] init: ");
+        TrustLogger.d("[TRUST CLIENT] : INIT ");
         mContext = context;
         trustInstance = new TrustClient();
-        AutomaticAudit.setAutomaticAlarm(mContext, 14, 30, 0);
     }
 
     /**
@@ -315,6 +324,7 @@ public class TrustClient {
                     if (stringSet == null) stringSet = new HashSet<>();
                     stringSet.add(mBody.toJSON());
                     mPreferences.put(TRUST_TRIFLES, stringSet);
+
                 } else
                     listener.onPermissionRequired(permits);
                 restoreWIFIandBluetooth(forceWifi, forceBluetooth);
@@ -1179,7 +1189,7 @@ public class TrustClient {
     private void getWifiState(Device device) {
         final WifiManager wifiManager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         boolean state = wifiManager == null || wifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED;
-        TrustLogger.d("Wifi state: " + String.valueOf(state));
+        TrustLogger.d("[TRUST CLIENT] : WI-FI STATE: " + String.valueOf(state));
         device.setWifi_state(state);
     }
 
@@ -1191,7 +1201,7 @@ public class TrustClient {
     private void getBluetoothState(Device device) {
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         boolean state = mBluetoothAdapter == null || mBluetoothAdapter.isEnabled();
-        TrustLogger.d("BluetoothState: " + String.valueOf(state));
+        TrustLogger.d("[TRUST CLIENT] : BLUETOOTH STATE: " + String.valueOf(state));
         device.setBluetooth_state(state);
     }
 
@@ -1204,7 +1214,7 @@ public class TrustClient {
         ConnectivityManager connectivityManager = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         boolean state = (networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_MOBILE);
-        TrustLogger.d("RedGState" + String.valueOf(state));
+        TrustLogger.d("[TRUST CLIENT] : CURRENT STATE OF RED (3G,4G): " + String.valueOf(state));
         device.setRed_g_state(state);
     }
 
@@ -1239,8 +1249,8 @@ public class TrustClient {
     private void saveBluetoothWifiStatus(boolean forceWifi, boolean forceBluetooth) {
         if (forceWifi) currentWifiStatus = getCurrentWifiStatus();
         if (forceBluetooth) currentBluetoothStatus = getCurrentBluetoothStatus();
-        TrustLogger.d("wifi current state: " + String.valueOf(currentWifiStatus));
-        TrustLogger.d("bluetooth current state: " + String.valueOf(currentBluetoothStatus));
+        TrustLogger.d("[TRUST CLIENT] : CURRENT STATE OF WI-FI: " + String.valueOf(currentWifiStatus));
+        TrustLogger.d("[TRUST CLIENT] : CURRENT STATE OF BLUETOOTH: " + String.valueOf(currentBluetoothStatus));
     }
 
     /**
@@ -1252,19 +1262,19 @@ public class TrustClient {
     @SuppressLint("MissingPermission")
     private void restoreWIFIandBluetooth(boolean forceWifi, boolean forceBluetooth) {
 
-        TrustLogger.d("restaurando estados WiFi, Bluetooth:");
-        TrustLogger.d("WifI estado anterior: " + String.valueOf(currentBluetoothStatus));
-        TrustLogger.d("Bkuetooth estado anterior: : " + String.valueOf(currentWifiStatus));
+        TrustLogger.d("[TRUST CLIENT] : RESTORING STATE OF BLUETOOTH AND WI-FI:");
+        TrustLogger.d("[TRUST CLIENT] : BEFORE STATE BLUETOOTH: " + String.valueOf(currentBluetoothStatus));
+        TrustLogger.d("[TRUST CLIENT] : BEFORE STATE WI-FI : " + String.valueOf(currentWifiStatus));
         final WifiManager wifiManager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (forceWifi) {
             if (wifiManager != null) {
                 if (currentWifiStatus) {
                     wifiManager.setWifiEnabled(true);
-                    TrustLogger.d("wifi encendido");
+                    TrustLogger.d("[TRUST CLIENT] : WIFI TURN ON");
                 } else {
                     wifiManager.setWifiEnabled(false);
-                    TrustLogger.d("wifi apagado");
+                    TrustLogger.d("[TRUST CLIENT] : WIFI TURN OFF");
                 }
             }
         }
@@ -1272,10 +1282,10 @@ public class TrustClient {
             if (mBluetoothAdapter != null) {
                 if (currentBluetoothStatus) {
                     mBluetoothAdapter.enable();
-                    TrustLogger.d("bt encendido");
+                    TrustLogger.d("[TRUST CLIENT] : BLUETOOTH TURN ON");
                 } else {
                     mBluetoothAdapter.disable();
-                    TrustLogger.d("bt apagado");
+                    TrustLogger.d("[TRUST CLIENT] : BLUETOOTH TURN ON");
                 }
             }
         }

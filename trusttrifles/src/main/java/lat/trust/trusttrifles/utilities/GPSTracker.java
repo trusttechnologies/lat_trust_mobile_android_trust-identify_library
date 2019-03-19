@@ -15,6 +15,10 @@ public class GPSTracker implements LocationListener {
         this.mContext = mContext;
     }
 
+    /**
+     * return the actual location from GPS.
+     * @return Location
+     */
     @SuppressLint("MissingPermission")
     public Location getLocation() {
         LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);

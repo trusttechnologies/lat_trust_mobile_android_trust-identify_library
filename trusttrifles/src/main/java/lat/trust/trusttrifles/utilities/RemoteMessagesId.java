@@ -9,6 +9,13 @@ import lat.trust.trusttrifles.services.RemoteAuditService;
 
 public class RemoteMessagesId {
 
+    /**
+     * get the message from firebase for automatic audit or change the time of the diary audomatic audit.
+     * type: change_automatic_audit for change the time of the automatic audit
+     * type: remote_automatic_audit for start a automatic audit.
+     * @param context
+     * @param data
+     */
     public static void remoteMessageId(Context context, Map<String, String> data) {
         try {
             String type = data.get("type");

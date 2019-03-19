@@ -68,6 +68,7 @@ public class Utils {
 
     /**
      * Return the actual latitude
+     * @deprecated
      * @param mContext
      * @return
      */
@@ -90,6 +91,7 @@ public class Utils {
 
     /**
      * return the actual longitude
+     * @deprecated
      * @param mContext
      * @return
      */

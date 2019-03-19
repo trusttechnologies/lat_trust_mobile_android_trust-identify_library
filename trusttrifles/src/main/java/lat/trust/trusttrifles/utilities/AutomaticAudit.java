@@ -5,7 +5,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
-import android.location.LocationManager;
 
 import com.orhanobut.hawk.Hawk;
 
@@ -20,20 +19,39 @@ import lat.trust.trusttrifles.model.Audit;
 
 public class AutomaticAudit {
 
-
+    /**
+     * check if exist an trust id of device ; true for trust id
+     *
+     * @return
+     */
     private static boolean isTrustId() {
         TrustLogger.d("[AUTOMATIC AUDIT] : checking if trust id exist...");
         return Hawk.contains(Constants.TRUST_ID_AUTOMATIC);
     }
 
+    /**
+     * return the exist trust id
+     *
+     * @return
+     */
     public static String getSavedTrustId() {
         TrustLogger.d("[AUTOMATIC AUDIT] : getting saved trust id...");
         return Hawk.contains(Constants.TRUST_ID_AUTOMATIC) ? Hawk.get(Constants.TRUST_ID_AUTOMATIC).toString() : "NO_TRUST_ID";
     }
 
+    /**
+     * overload 1: create an automatic audit
+     *
+     * @param trustid
+     * @param operation
+     * @param method
+     * @param result
+     * @param timestamp
+     * @param lat
+     * @param lng
+     * @deprecated
+     */
     public static void createAutomaticAudit(String trustid, String operation, String method, String result, Long timestamp, String lat, String lng) {
-
-
         TrustLogger.d("[AUTOMATIC AUDIT] : generating automatic audit...");
         TrustClient mClient = TrustClient.getInstance();
         if (isTrustId()) {
@@ -48,6 +66,14 @@ public class AutomaticAudit {
         }
     }
 
+    /**
+     * overload 2: create an automatic audit
+     *
+     * @param operation
+     * @param method
+     * @param result
+     * @param context
+     */
     public static void createAutomaticAudit(String operation, String method, String result, Context context) {
         GPSTracker gpsTracker = new GPSTracker(context);
         Location location = gpsTracker.getLocation();
@@ -68,6 +94,17 @@ public class AutomaticAudit {
             generateTrustId(operation, method, result, timestamp, lat, lng);
         }
     }
+
+    /**
+     * generate a new trust id (one per device) and generate an audit.
+     *
+     * @param operation
+     * @param method
+     * @param result
+     * @param timestamp
+     * @param lat
+     * @param lng
+     */
     private static void generateTrustId(final String operation, final String method, final String result, final Long timestamp, final String lat, final String lng) {
         TrustLogger.d("[AUTOMATIC AUDIT] :  generating trust id...");
         TrustClient mClient = TrustClient.getInstance();
@@ -98,8 +135,15 @@ public class AutomaticAudit {
         });
     }
 
-
-    public static void setAutomaticAlarm(Context mContext,int hour,int minute,int second){
+    /**
+     * set a diary audit at a time, ej : all days at 14:00 pm
+     *
+     * @param mContext
+     * @param hour
+     * @param minute
+     * @param second
+     */
+    public static void setAutomaticAlarm(Context mContext, int hour, int minute, int second) {
         TrustLogger.d("[AUTOMATIC AUDIT] STARTING... ");
         AlarmManager manager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
         Date dat = new Date();

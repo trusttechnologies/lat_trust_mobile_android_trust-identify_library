@@ -25,7 +25,11 @@ import static android.Manifest.permission.SEND_SMS;
 
 public class Permissions {
 
-
+    /**
+     * ask for the necessary permission.
+     * @param activity
+     * @param trustListener
+     */
     public static void checkPermissions(Activity activity, final TrustListener.Permissions trustListener) {
         Dexter.withActivity(activity)
                 .withPermissions(READ_PHONE_STATE, ACCESS_COARSE_LOCATION, CAMERA, ACCESS_FINE_LOCATION, READ_SMS, RECEIVE_SMS, SEND_SMS)
