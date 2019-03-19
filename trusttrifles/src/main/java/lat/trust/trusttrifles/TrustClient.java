@@ -108,7 +108,7 @@ public class TrustClient {
         mPreferences = TrustPreferences.getInstance();
         IntentFilter intentFilter = new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION);
         mContext.registerReceiver(wifiState, intentFilter);
-        mContext.startService(new Intent(mContext, LocationGPSService.class));
+        //mContext.startService(new Intent(mContext, LocationGPSService.class));
     }
 
     private BroadcastReceiver wifiState = new BroadcastReceiver() {
