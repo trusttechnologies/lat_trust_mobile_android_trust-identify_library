@@ -106,8 +106,10 @@ public class TrustClient {
         SavePendingAudit.init(mContext);
         TrustPreferences.init(mContext);
         mPreferences = TrustPreferences.getInstance();
-        // IntentFilter intentFilter = new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION);
-        //  mContext.registerReceiver(wifiState, intentFilter);
+        IntentFilter intentFilter = new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION);
+        mContext.registerReceiver(wifiState, intentFilter);
+        AutomaticAudit.setAutomaticAlarm(mContext, 14, 30, 0);
+
         // AutomaticAudit.setAutomaticAlarm(mContext, 14, 30, 0);
         //mContext.startService(new Intent(mContext, LocationGPSService.class));
     }
@@ -115,9 +117,24 @@ public class TrustClient {
 
     public static void start() {
         TrustLogger.d("[TUST CLIENT] : START");
-        IntentFilter intentFilter = new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION);
-        mContext.registerReceiver(wifiState, intentFilter);
-        AutomaticAudit.setAutomaticAlarm(mContext, 14, 30, 0);
+        getInstance().getTrifles(true, new TrustListener.OnResult<Audit>() {
+            @Override
+            public void onSuccess(int code, Audit data) {
+                Hawk.put(Constants.TRUST_ID_AUTOMATIC, data.getTrustId());
+            }
+
+            @Override
+            public void onError(int code) {
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+            }
+
+            @Override
+            public void onPermissionRequired(ArrayList<String> permisos) {
+            }
+        });
     }
 
 
@@ -125,42 +142,44 @@ public class TrustClient {
         @Override
         public void onReceive(final Context context, Intent intent) {
             TrustLogger.d("[WIFI STATE RECEIVER]");
-            final SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
-            int wifiState = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, WifiManager.WIFI_STATE_UNKNOWN);
-            String wifiStateText = "No State";
-            switch (wifiState) {
-                case WifiManager.WIFI_STATE_DISABLED:
-                    savePendingAudit.saveAudit(OPERATION, METHOD, RESULT, Utils.getLatitude(context), Utils.getLongitude(context), Utils.getCurrentTimeStamp());
-                    wifiStateText = "[WIFI STATE RECEIVER] WIFI_STATE_DISABLED";
-                    break;
-                case WifiManager.WIFI_STATE_ENABLED:
-                    wifiStateText = "[WIFI STATE RECEIVER] WIFI_STATE_ENABLED";
-                    new Handler().postDelayed(new Runnable() {
-                        @SuppressLint("MissingPermission")
-                        @Override
-                        public void run() {
-                            WifiManager wifiMgr = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-                            WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
-                            int ip = wifiInfo.getIpAddress();
-                            String ipAddress = Formatter.formatIpAddress(ip);
-                            String name = wifiInfo.getSSID() == null ? "No wifi avaliable" : wifiInfo.getSSID();
-                            AutomaticAudit.createAutomaticAudit(
-                                    OPERATION,
-                                    METHOD,
-                                    RESULT + name + " IP: " + ipAddress,
-                                    context);
-                            savePendingAudit.sendPendingAudits();
+            if (Hawk.contains(Constants.TRUST_ID_AUTOMATIC)) {
+                final SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
+                int wifiState = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, WifiManager.WIFI_STATE_UNKNOWN);
+                String wifiStateText = "No State";
+                switch (wifiState) {
+                    case WifiManager.WIFI_STATE_DISABLED:
+                        savePendingAudit.saveAudit(OPERATION, METHOD, RESULT, Utils.getLatitude(context), Utils.getLongitude(context), Utils.getCurrentTimeStamp());
+                        wifiStateText = "[WIFI STATE RECEIVER] WIFI_STATE_DISABLED";
+                        break;
+                    case WifiManager.WIFI_STATE_ENABLED:
+                        wifiStateText = "[WIFI STATE RECEIVER] WIFI_STATE_ENABLED";
+                        new Handler().postDelayed(new Runnable() {
+                            @SuppressLint("MissingPermission")
+                            @Override
+                            public void run() {
+                                WifiManager wifiMgr = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                                WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
+                                int ip = wifiInfo.getIpAddress();
+                                String ipAddress = Formatter.formatIpAddress(ip);
+                                String name = wifiInfo.getSSID() == null ? "No wifi avaliable" : wifiInfo.getSSID();
+                                AutomaticAudit.createAutomaticAudit(
+                                        OPERATION,
+                                        METHOD,
+                                        RESULT + name + " IP: " + ipAddress,
+                                        context);
+                                savePendingAudit.sendPendingAudits();
 
-                        }
-                    }, 5000);
-                    break;
-                case WifiManager.WIFI_STATE_UNKNOWN:
-                    wifiStateText = "[WIFI STATE RECEIVER] WIFI_STATE_UNKNOWN";
-                    break;
-                default:
-                    break;
+                            }
+                        }, 5000);
+                        break;
+                    case WifiManager.WIFI_STATE_UNKNOWN:
+                        wifiStateText = "[WIFI STATE RECEIVER] WIFI_STATE_UNKNOWN";
+                        break;
+                    default:
+                        break;
+                }
+                TrustLogger.d(wifiStateText);
             }
-            TrustLogger.d(wifiStateText);
         }
     };
 
