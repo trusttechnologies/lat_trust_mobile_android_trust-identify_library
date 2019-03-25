@@ -6,7 +6,7 @@ public class Audit {
     @SerializedName("trustid")
     private String trustId;
     @SerializedName("_id")
-    private Audit.ID id;
+    private ID id;
     @SerializedName("created_at")
     private String createdAt;
     @SerializedName("updated_at")
@@ -16,7 +16,7 @@ public class Audit {
         return trustId;
     }
 
-    public Audit.ID getId() {
+    public ID getId() {
         return id;
     }
 

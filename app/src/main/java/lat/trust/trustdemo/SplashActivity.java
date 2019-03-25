@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+
 import lat.trust.trusttrifles.TrustClient;
 import lat.trust.trusttrifles.TrustListener;
 import lat.trust.trusttrifles.utilities.Permissions;
@@ -18,6 +20,7 @@ public class SplashActivity extends AppCompatActivity implements TrustListener.P
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         Permissions.checkPermissions(SplashActivity.this, this);
+//        TrustLogger.d(FirebaseInstanceId.getInstance().getToken());
     }
 
     @Override

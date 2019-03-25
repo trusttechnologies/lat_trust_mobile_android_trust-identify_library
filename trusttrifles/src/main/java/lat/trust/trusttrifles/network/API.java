@@ -1,6 +1,6 @@
 package lat.trust.trusttrifles.network;
 
-import lat.trust.trusttrifles.network.req.AuditBody;
+import lat.trust.trusttrifles.model.audit.AuditTest;
 import lat.trust.trusttrifles.network.req.EventBody;
 import lat.trust.trusttrifles.network.req.RemoteEventBody;
 import lat.trust.trusttrifles.network.req.RemoteEventBody2;
@@ -32,6 +32,7 @@ public interface API {
     @POST("trifle/remote")
     Call<TrifleResponse> remote2(@Body RemoteEventBody body);
 
-    @POST("audit")
-    Call<Void> createAudit(@Body AuditBody body);
+    @POST("api/v1/audit")
+    Call<Void> createAuditTest(@Body AuditTest body);
+
 }

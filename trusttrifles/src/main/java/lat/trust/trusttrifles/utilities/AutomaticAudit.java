@@ -16,6 +16,8 @@ import lat.trust.trusttrifles.TrustClient;
 import lat.trust.trusttrifles.TrustListener;
 import lat.trust.trusttrifles.broadcasts.AlarmReceiver;
 import lat.trust.trusttrifles.model.Audit;
+import lat.trust.trusttrifles.model.audit.AuditExtraData;
+import lat.trust.trusttrifles.model.audit.AuditTransaction;
 
 public class AutomaticAudit {
 
@@ -55,7 +57,8 @@ public class AutomaticAudit {
         TrustLogger.d("[AUTOMATIC AUDIT] : generating automatic audit...");
         TrustClient mClient = TrustClient.getInstance();
         if (isTrustId()) {
-            mClient.createAudit(trustid, operation, method, result, timestamp, lat, lng, new TrustListener.OnResultSimple() {
+            AuditTransaction auditTransaction = new AuditTransaction(result, method, operation, timestamp);
+            mClient.createAuditTest(trustid, auditTransaction, lat, lng, null, new TrustListener.OnResultSimple() {
                 @Override
                 public void onResult(int code, String message) {
                     TrustLogger.d("[AUTOMATIC AUDIT] : success automatic audit: " + message + " code: " + String.valueOf(code));
@@ -66,40 +69,52 @@ public class AutomaticAudit {
         }
     }
 
-    /**
-     * overload 2: create an automatic audit
-     *
-     * @param operation
-     * @param method
-     * @param result
-     * @param context
-     */
-    public static void createAutomaticAudit(String operation, String method, String result, Context context) {
+    public static void createAutomaticAudit(String operation, String method, String result, AuditExtraData auditExtraData, Context context) {
         try {
+            AuditTransaction auditTransaction = new AuditTransaction(result, method, operation, Utils.getCurrentTimeStamp());
+
             GPSTracker gpsTracker = new GPSTracker(context);
             Location location = gpsTracker.getLocation();
 
             String lat = String.valueOf(location != null ? location.getLatitude() : "no latitude avaliable");
             String lng = String.valueOf(location != null ? location.getLongitude() : "no longitude avaliable");
-            TrustLogger.d("[AUTOMATIC AUDIT] : generating automatic audit...");
             TrustClient mClient = TrustClient.getInstance();
-            Long timestamp = Utils.getCurrentTimeStamp();
+            mClient.createAuditTest(getSavedTrustId(), auditTransaction, lat, lng, auditExtraData, new TrustListener.OnResultSimple() {
+                @Override
+                public void onResult(int code, String message) {
+                    TrustLogger.d("[AUTOMATIC TEST AUDIT] : success automatic audit: " + message + " code: " + String.valueOf(code));
 
-            if (isTrustId()) {
-                mClient.createAudit(getSavedTrustId(), operation, method, result, timestamp, lat, lng, new TrustListener.OnResultSimple() {
-                    @Override
-                    public void onResult(int code, String message) {
-                        TrustLogger.d("[AUTOMATIC AUDIT] : success automatic audit: " + message + " code: " + String.valueOf(code));
-                    }
-                });
-            } else {
-                generateTrustId(operation, method, result, timestamp, lat, lng);
-            }
-        } catch (Exception e) {
-            TrustLogger.d("[AUTOMATIC AUDIT] : ERROR: " + e.getMessage());
+                }
+            });
+        } catch (Exception ex) {
+            TrustLogger.d("[AUTOMATIC TEST AUDIT] : ERROR: " + ex.getMessage());
+
         }
-
     }
+
+    public static void createAutomaticAudit(String operation, String method, String result, Context context) {
+        try {
+            AuditTransaction auditTransaction = new AuditTransaction(result, method, operation, Utils.getCurrentTimeStamp());
+            AuditExtraData auditExtraData = null;
+            GPSTracker gpsTracker = new GPSTracker(context);
+            Location location = gpsTracker.getLocation();
+
+            String lat = String.valueOf(location != null ? location.getLatitude() : "no latitude avaliable");
+            String lng = String.valueOf(location != null ? location.getLongitude() : "no longitude avaliable");
+            TrustClient mClient = TrustClient.getInstance();
+            mClient.createAuditTest(getSavedTrustId(), auditTransaction, lat, lng, auditExtraData, new TrustListener.OnResultSimple() {
+                @Override
+                public void onResult(int code, String message) {
+                    TrustLogger.d("[AUTOMATIC TEST AUDIT] : success automatic audit: " + message + " code: " + String.valueOf(code));
+
+                }
+            });
+        } catch (Exception ex) {
+            TrustLogger.d("[AUTOMATIC TEST AUDIT] : ERROR: " + ex.getMessage());
+
+        }
+    }
+
 
     /**
      * generate a new trust id (one per device) and generate an audit.

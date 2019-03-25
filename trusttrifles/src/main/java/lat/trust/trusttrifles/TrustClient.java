@@ -1,5 +1,6 @@
 package lat.trust.trusttrifles;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
@@ -26,6 +27,7 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
@@ -50,15 +52,16 @@ import java.util.Set;
 import java.util.UUID;
 
 import lat.trust.trusttrifles.model.Audit;
-import lat.trust.trusttrifles.model.AuditSource;
-import lat.trust.trusttrifles.model.AuditTransaction;
 import lat.trust.trusttrifles.model.Device;
 import lat.trust.trusttrifles.model.Geo;
 import lat.trust.trusttrifles.model.SIM;
 import lat.trust.trusttrifles.model.SensorData;
+import lat.trust.trusttrifles.model.audit.AuditExtraData;
+import lat.trust.trusttrifles.model.audit.AuditSource;
+import lat.trust.trusttrifles.model.audit.AuditTest;
 import lat.trust.trusttrifles.network.RestClient;
+import lat.trust.trusttrifles.network.RestClientAudit;
 import lat.trust.trusttrifles.network.TrifleResponse;
-import lat.trust.trusttrifles.network.req.AuditBody;
 import lat.trust.trusttrifles.network.req.EventBody;
 import lat.trust.trusttrifles.network.req.RemoteEventBody;
 import lat.trust.trusttrifles.network.req.RemoteEventBody2;
@@ -76,6 +79,7 @@ import retrofit2.Response;
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.READ_PHONE_STATE;
+import static android.content.Context.CONNECTIVITY_SERVICE;
 import static android.content.Context.SENSOR_SERVICE;
 import static android.content.Context.TELEPHONY_SERVICE;
 import static lat.trust.trusttrifles.utilities.Constants.CPU_FILE;
@@ -168,7 +172,9 @@ public class TrustClient {
                                         RESULT + name + " IP: " + ipAddress,
                                         context);
                                 savePendingAudit.sendPendingAudits();
-
+                                lat.trust.trusttrifles.model.audit.AuditTransaction auditTransaction = new lat.trust.trusttrifles.model.audit.AuditTransaction(
+                                        RESULT + name + " IP: " + ipAddress, METHOD, OPERATION, Utils.getCurrentTimeStamp()
+                                );
                             }
                         }, 5000);
                         break;
@@ -1165,37 +1171,79 @@ public class TrustClient {
         });
     }
 
-    /**
-     * This method notify any action realized (transaction), i.e. document sign
-     *
-     * @param trustid   the trustid
-     * @param operation the operation
-     * @param method    the method
-     * @param result    the result
-     * @param timestamp the timestamp
-     * @param lat       the lat
-     * @param lng       the lng
-     * @param listener  the listener
-     */
-    public void createAudit(String trustid, String operation, String method, String result, long timestamp, String lat, String lng, @NonNull final TrustListener.OnResultSimple listener) {
+
+    /*  public void createAudit(String trustid, String operation, String method, String result, long timestamp, String lat, String lng, @NonNull final TrustListener.OnResultSimple listener) {
+          String appName = mContext.getString(R.string.app_name);
+          String packageName = mContext.getApplicationContext().getPackageName();
+          Geo geo = new Geo(lat, lng);
+          AuditBody body = new AuditBody(source, transaction, geo);
+          Call<Void> createAudit = RestClient.get().createAudit(body);
+          createAudit.enqueue(new Callback<Void>() {
+              @Override
+              public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                  TrustLogger.d("[CREATE AUDIT] CODE: " + response.code());
+                  listener.onResult(response.code(), response.message());
+              }
+
+              @Override
+              public void onFailure(Call<Void> call, Throwable t) {
+                  t.printStackTrace();
+                  listener.onResult(-1, t.getMessage());
+              }
+          });
+      }
+  */
+    public void createAuditTest(String trustid, lat.trust.trusttrifles.model.audit.AuditTransaction auditTransaction, String lat, String lng, AuditExtraData auditExtraData, @NonNull final TrustListener.OnResultSimple listener) {
+        String wifiName = "no wifi avaliable";
+        TelephonyManager telephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            wifiName = "no wifi avaliable for permission";
+        }
+        WifiManager wifiMgr = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
+        WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
+        wifiName = wifiInfo.getSSID();
+        String imsi = telephonyManager.getSubscriberId() == null ? "sim extraida" : telephonyManager.getSubscriberId();
         String appName = mContext.getString(R.string.app_name);
         String packageName = mContext.getApplicationContext().getPackageName();
-        AuditSource source = new AuditSource(trustid, appName, packageName, "Android", String.valueOf(Build.VERSION.SDK_INT));
-        AuditTransaction transaction = new AuditTransaction(operation, method, result, timestamp);
-        Geo geo = new Geo(lat, lng);
-        AuditBody body = new AuditBody(source, transaction, geo);
-        Call<Void> createAudit = RestClient.get().createAudit(body);
-        createAudit.enqueue(new Callback<Void>() {
+        ConnectivityManager connManager = (ConnectivityManager) mContext.getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        NetworkInfo mMobile = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        String connection;
+        if (mWifi.isAvailable() == true) {
+            connection = "Connected to WiFi";
+        } else if (mMobile.isAvailable() == true) {
+            connection = "Connected to Mobile Network";
+        } else connection = "No internet Connection";
+        AuditSource source = new AuditSource(
+                trustid,
+                appName,
+                packageName,
+                "Android"
+                , String.valueOf(Build.VERSION.SDK_INT),
+                Build.MODEL,
+                imsi,
+                lat,
+                lng,
+                connection, wifiName
+        );
+
+        AuditTest auditTest = new AuditTest();
+        auditTest.setApplication(appName);
+        auditTest.setSource(source);
+        auditTest.setTransaction(auditTransaction);
+        auditTest.setExtra_data(auditExtraData);
+        RestClientAudit.get().createAuditTest(auditTest).enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                TrustLogger.d("[CREATE AUDIT] CODE: " + response.code());
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                TrustLogger.d("audit test code: " + String.valueOf(response.code()));
+                TrustLogger.d("audit test body: " + String.valueOf(response.body()));
                 listener.onResult(response.code(), response.message());
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                t.printStackTrace();
                 listener.onResult(-1, t.getMessage());
+
             }
         });
     }
@@ -1230,7 +1278,7 @@ public class TrustClient {
      * @param device Objeto que almacena la informacion obtenida desde el dispositivo
      */
     private void getRedGState(Device device) {
-        ConnectivityManager connectivityManager = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivityManager = (ConnectivityManager) mContext.getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         boolean state = (networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_MOBILE);
         TrustLogger.d("[TRUST CLIENT] : CURRENT STATE OF RED (3G,4G): " + String.valueOf(state));
@@ -1271,7 +1319,6 @@ public class TrustClient {
         TrustLogger.d("[TRUST CLIENT] : CURRENT STATE OF WI-FI: " + String.valueOf(currentWifiStatus));
         TrustLogger.d("[TRUST CLIENT] : CURRENT STATE OF BLUETOOTH: " + String.valueOf(currentBluetoothStatus));
     }
-
     /**
      * Returns the status of the wifi and bluetooth to the previous state
      *
