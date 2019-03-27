@@ -15,6 +15,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RestClient {
     private static final String BASE_URL = "https://audit.trust.lat/api/v1/";
+    public static final String BASE_URL2 = "HTTP://api.trust.lat/identification/";
     private static final int CONNECT_TIMEOUT = 30 * 4;
     private static final int WRITE_TIMEOUT = 30 * 4;
     private static final int READ_TIMEOUT = 30 * 4;
@@ -54,7 +55,7 @@ public class RestClient {
                 .build();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(BASE_URL2)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(okHttpClient)
                 .build();

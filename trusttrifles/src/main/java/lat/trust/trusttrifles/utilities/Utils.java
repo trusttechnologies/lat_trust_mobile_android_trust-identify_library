@@ -8,8 +8,12 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.support.v4.app.ActivityCompat;
+import android.text.format.Formatter;
+
+import static android.content.Context.CONNECTIVITY_SERVICE;
 
 public class Utils {
     /**
@@ -29,6 +33,7 @@ public class Utils {
 
     /**
      * Check if a service is actual running.
+     *
      * @param serviceClass
      * @param context
      * @return
@@ -59,6 +64,7 @@ public class Utils {
 
     /**
      * return the actual current time stamp
+     *
      * @return
      */
     public static Long getCurrentTimeStamp() {
@@ -68,9 +74,10 @@ public class Utils {
 
     /**
      * Return the actual latitude
-     * @deprecated
+     *
      * @param mContext
      * @return
+     * @deprecated
      */
     public static String getLatitude(Context mContext) {
         LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
@@ -91,9 +98,10 @@ public class Utils {
 
     /**
      * return the actual longitude
-     * @deprecated
+     *
      * @param mContext
      * @return
+     * @deprecated
      */
     public static String getLongitude(Context mContext) {
         LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
@@ -113,6 +121,7 @@ public class Utils {
 
     /**
      * turn on the wifi
+     *
      * @param mContext
      */
     public static void turnOnWifi(Context mContext) {
@@ -124,6 +133,7 @@ public class Utils {
 
     /**
      * turn off the wifi
+     *
      * @param mContext
      */
     public static void turnOffWifi(Context mContext) {
@@ -135,14 +145,101 @@ public class Utils {
 
     /**
      * get the current wifi state, true for connected.
+     *
      * @param context
      * @return
      */
     public static boolean getWifiState(Context context) {
+        try {
+            ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            return mWifi.isConnected();
+        } catch (Exception ex) {
+            TrustLogger.d("[UTILS GET WIFI STATE] ERROR: " + ex.getMessage());
+            return false;
+        }
        /* final WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         return wifiManager == null || wifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED;*/
-        ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        return mWifi.isConnected();
+
+    }
+
+    public static boolean get3gState(Context context) {
+        try {
+            ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(CONNECTIVITY_SERVICE);
+            NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            NetworkInfo mMobile = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+            return mMobile.isAvailable();
+        } catch (Exception ex) {
+            TrustLogger.d("[UTILS GET 3G STATE] ERROR: " + ex.getMessage());
+            return false;
+        }
+
+    }
+
+    public static String getNameOfWifi(Context context) {
+        try {
+            WifiManager wifiMgr = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
+            String name = wifiInfo.getSSID() == null ? "No wifi avaliable" : wifiInfo.getSSID();
+            return name;
+        } catch (Exception ex) {
+            TrustLogger.d("[UTILS GET NAME OF WIFI] ERROR: " + ex.getMessage());
+            return "";
+        }
+
+    }
+
+    public static String getIpOfWifi(Context context) {
+        try {
+            WifiManager wifiMgr = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
+            int ip = wifiInfo.getIpAddress();
+            String ipAddress = Formatter.formatIpAddress(ip);
+            return ipAddress;
+        } catch (Exception ex) {
+            TrustLogger.d("[UTILS GET IP OF WIFI] ERROR: " + ex.getMessage());
+            return "";
+        }
+
+    }
+
+    public static String getActualConnection(Context context) {
+        try {
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            String con = "disconnect";
+            if (activeNetwork != null) {
+                // connected to the internet
+                if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
+                    // connected to wifi
+                    con = Constants.WIFI_CONNECTION;
+                } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
+                    // connected to mobile data
+                    con = Constants.MOBILE_CONNECTION;
+                }
+            } else {
+                // not connected to the internet
+                con = Constants.DISCONNECT;
+            }
+            return con;
+
+        } catch (Exception ex) {
+            TrustLogger.d("[UTILS GET ACTUAL CONNECTION] ERROR: " + ex.getMessage());
+            return "";
+        }
+
+
+    }
+
+    public static String getTypeOf3GConnection(Context context) {
+        try {
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            return activeNetwork.getSubtypeName();
+        } catch (Exception ex) {
+            TrustLogger.d("[UTILS TYPE OF 3G CONNECTION] ERROR: " + ex.getMessage());
+            return "";
+        }
+
     }
 }

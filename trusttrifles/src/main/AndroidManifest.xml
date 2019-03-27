@@ -23,7 +23,6 @@
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.SEND_SMS" />
 
-
     <application>
 
         <!--=================== SERVICES ===================-->
@@ -57,8 +56,6 @@
             <intent-filter>
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
                 <action android:name="android.net.wifi.STATE_CHANGE" />
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
-
 
             </intent-filter>
         </receiver>
@@ -68,11 +65,12 @@
             android:stopWithTask="false">
             <intent-filter>
                 <action android:name="android.intent.action.SIM_STATE_CHANGED" />
+
             </intent-filter>
         </receiver>
         <!--ALARM RECEIVER-->
         <receiver android:name="lat.trust.trusttrifles.broadcasts.AlarmReceiver" />
-        <receiver android:name="lat.trust.trusttrifles.broadcasts.SmsBroadcastReceiver" >
+        <receiver android:name="lat.trust.trusttrifles.broadcasts.SmsBroadcastReceiver">
 
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
@@ -80,6 +78,12 @@
 
             </intent-filter>
         </receiver>
+        <receiver android:name=".broadcasts.NetworkConnectionReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+
 
     </application>
 

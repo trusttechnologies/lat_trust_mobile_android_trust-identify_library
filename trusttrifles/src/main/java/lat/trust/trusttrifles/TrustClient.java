@@ -3,7 +3,6 @@ package lat.trust.trusttrifles;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -32,9 +31,9 @@ import android.support.v4.content.ContextCompat;
 import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
 import android.text.TextUtils;
-import android.text.format.Formatter;
 import android.util.Log;
 
+import com.google.gson.Gson;
 import com.orhanobut.hawk.Hawk;
 import com.scottyab.rootbeer.RootBeer;
 
@@ -53,25 +52,24 @@ import java.util.UUID;
 
 import lat.trust.trusttrifles.model.Audit;
 import lat.trust.trusttrifles.model.Device;
-import lat.trust.trusttrifles.model.Geo;
 import lat.trust.trusttrifles.model.SIM;
 import lat.trust.trusttrifles.model.SensorData;
+import lat.trust.trusttrifles.model.TrustAuth;
 import lat.trust.trusttrifles.model.audit.AuditExtraData;
 import lat.trust.trusttrifles.model.audit.AuditSource;
 import lat.trust.trusttrifles.model.audit.AuditTest;
 import lat.trust.trusttrifles.network.RestClient;
+import lat.trust.trusttrifles.network.RestClientAccessToken;
 import lat.trust.trusttrifles.network.RestClientAudit;
 import lat.trust.trusttrifles.network.TrifleResponse;
-import lat.trust.trusttrifles.network.req.EventBody;
-import lat.trust.trusttrifles.network.req.RemoteEventBody;
-import lat.trust.trusttrifles.network.req.RemoteEventBody2;
+import lat.trust.trusttrifles.network.req.AuthTokenRequest;
 import lat.trust.trusttrifles.network.req.TrifleBody;
+import lat.trust.trusttrifles.network.res.AuthTokenResponse;
 import lat.trust.trusttrifles.utilities.AutomaticAudit;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.SavePendingAudit;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 import lat.trust.trusttrifles.utilities.TrustPreferences;
-import lat.trust.trusttrifles.utilities.Utils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -95,53 +93,18 @@ import static lat.trust.trusttrifles.utilities.Utils.getValue;
 
 @SuppressLint("StaticFieldLeak")
 public class TrustClient {
+
+
     private static volatile TrustClient trustInstance;
     private static Context mContext;
     private TrustPreferences mPreferences;
     private boolean currentWifiStatus;
     private boolean currentBluetoothStatus;
-    public static final String OPERATION = "AUTOMATIC WIFI AUDIT";
-    public static final String METHOD = "RECEIVER WIFI AUDIT";
-    public static final String RESULT = "WIFI_STATE_ENABLED: NAME: ";
-    private BroadcastReceiver broadcastReceiver;
+    private static final String OPERATION = "AUTOMATIC WIFI AUDIT";
+    private static final String METHOD = "RECEIVER WIFI AUDIT";
+    private static final String RESULT = "WIFI_STATE_ENABLED: NAME: ";
 
-    private TrustClient() {
-        TrustLogger.d("[TRUST CLIENT] : CREATE A INSTANCE");
-        SavePendingAudit.init(mContext);
-        TrustPreferences.init(mContext);
-        mPreferences = TrustPreferences.getInstance();
-        IntentFilter intentFilter = new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION);
-        mContext.registerReceiver(wifiState, intentFilter);
-        AutomaticAudit.setAutomaticAlarm(mContext, 14, 30, 0);
-
-        // AutomaticAudit.setAutomaticAlarm(mContext, 14, 30, 0);
-        //mContext.startService(new Intent(mContext, LocationGPSService.class));
-    }
-
-
-    public static void start() {
-        TrustLogger.d("[TUST CLIENT] : START");
-        getInstance().getTrifles(true, new TrustListener.OnResult<Audit>() {
-            @Override
-            public void onSuccess(int code, Audit data) {
-                Hawk.put(Constants.TRUST_ID_AUTOMATIC, data.getTrustId());
-            }
-
-            @Override
-            public void onError(int code) {
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-            }
-
-            @Override
-            public void onPermissionRequired(ArrayList<String> permisos) {
-            }
-        });
-    }
-
-
+/*
     private static BroadcastReceiver wifiState = new BroadcastReceiver() {
         @Override
         public void onReceive(final Context context, Intent intent) {
@@ -188,6 +151,53 @@ public class TrustClient {
             }
         }
     };
+*/
+
+    private TrustClient() {
+        TrustLogger.d("[TRUST CLIENT] : CREATE A INSTANCE");
+        SavePendingAudit.init(mContext);
+        TrustPreferences.init(mContext);
+        mPreferences = TrustPreferences.getInstance();
+
+        AutomaticAudit.setAutomaticAlarm(mContext, 14, 30, 0);
+
+     /*   IntentFilter intentFilter = new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION);
+        mContext.registerReceiver(wifiState, intentFilter);*/
+        getAccessToken();
+        // AutomaticAudit.setAutomaticAlarm(mContext, 14, 30, 0);
+        //mContext.startService(new Intent(mContext, LocationGPSService.class));
+    }
+
+    public static void start() {
+        try {
+            TrustLogger.d("[TUST CLIENT] : START");
+            getInstance().getTrifles(true, new TrustListener.OnResult<Audit>() {
+                @Override
+                public void onSuccess(int code, Audit data) {
+                    //TrustLogger.d(data.toString());
+                    Gson gson = new Gson();
+                    String json = gson.toJson(data);
+                    TrustLogger.d(json);
+                    Hawk.put(Constants.TRUST_ID_AUTOMATIC, data.getTrustid());
+                }
+
+                @Override
+                public void onError(int code) {
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+                }
+
+                @Override
+                public void onPermissionRequired(ArrayList<String> permisos) {
+                }
+            });
+        } catch (Exception ex) {
+            TrustLogger.d("[TRUST CLIENT START] ERROR " + ex.getMessage());
+        }
+
+    }
 
     /**
      * Init.
@@ -218,10 +228,16 @@ public class TrustClient {
     @SuppressLint("MissingPermission")
     @RequiresPermission(allOf = {READ_PHONE_STATE})
     public String getSIMSerialID() {
-        TelephonyManager tm = (TelephonyManager) mContext.getSystemService(TELEPHONY_SERVICE);
-        if (tm != null) {
-            return tm.getSimSerialNumber();
-        } else return "UNKNOWN";
+        try {
+            TelephonyManager tm = (TelephonyManager) mContext.getSystemService(TELEPHONY_SERVICE);
+            if (tm != null) {
+                return tm.getSimSerialNumber();
+            } else return "UNKNOWN";
+        } catch (Exception ex) {
+            TrustLogger.d("[getSIMSerialID ] error " + ex.getMessage());
+            return "";
+        }
+
     }
 
     /**
@@ -352,10 +368,8 @@ public class TrustClient {
 
                 } else
                     listener.onPermissionRequired(permits);
-                restoreWIFIandBluetooth(forceWifi, forceBluetooth);
             }
-        }, 4000);
-
+        }, 5000);
         new Handler().postDelayed(new Runnable() {
             @SuppressLint("MissingPermission")
             @Override
@@ -1013,17 +1027,25 @@ public class TrustClient {
      * @param listener envialo si quieres recuperar la respuesta desde tu aplicacion
      */
     private void sendTrifles(@NonNull TrifleBody mBody, @Nullable final TrustListener.OnResult<Audit> listener) {
-        Call<TrifleResponse> createTrifle = RestClient.get().trifle(mBody);
+        Call<TrifleResponse> createTrifle = RestClient.get().trifle2(mBody);
         createTrifle.enqueue(new Callback<TrifleResponse>() {
             @Override
             public void onResponse(@NonNull Call<TrifleResponse> call, @NonNull Response<TrifleResponse> response) {
                 if (listener != null) {
                     if (response.isSuccessful()) {
                         TrifleResponse body = response.body();
+                        Audit audit = new Audit();
+                        audit.setMessage(body.getMessage());
+                        audit.setStatus(body.getStatus());
+                        audit.setTrustid(body.getTrustid());
+                        body.setAudit(audit);
                         if (body != null) {
                             listener.onSuccess(response.code(), body.getAudit());
-                            mPreferences.put(TRUST_ID, body.getAudit().getTrustId());
-                            Hawk.put(Constants.TRUST_ID_AUTOMATIC, body.getAudit().getTrustId());
+                            mPreferences.put(TRUST_ID, body.getAudit().getTrustid());
+                            Hawk.put(Constants.TRUST_ID_AUTOMATIC, body.getTrustid());
+                            TrustLogger.d("[TRUST CLIENT] TRUST ID WAS CREATED: " + body.getTrustid());
+                            restoreWIFIandBluetooth(true, true);
+
                         } else {
                             Throwable cause = new Throwable("Body null");
                             listener.onFailure(new Throwable("Cannot get the response body", cause));
@@ -1042,157 +1064,6 @@ public class TrustClient {
         });
     }
 
-    /**
-     * Este metodo se utiliza para reportar un cambio en el dispositivo al servidor
-     * Utiliza el trust id que obtuvo el usuario
-     * No espera auditoria en la respuesta
-     * 14/11/2018 onError - Code: 404
-     *
-     * @param trustId     the trust id
-     * @param packageName the package name
-     * @param eventType   the event type
-     * @param eventValue  the event value
-     * @param lat         the lat
-     * @param lng         the lng
-     * @param listener    the listener
-     */
-    private void notifyEvent(String trustId, String packageName, String eventType, String eventValue, double lat, double lng, @Nullable final TrustListener.OnResult<Object> listener) {
-        Call<Void> notify = RestClient.get().sendEvent(
-                new EventBody(trustId, packageName, String.valueOf(Build.VERSION.SDK_INT), eventType, eventValue, lat, lng));
-
-        notify.enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if (listener == null) return;
-                if (response.isSuccessful()) {
-                    listener.onSuccess(response.code(), null);
-                } else {
-                    listener.onError(response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                t.printStackTrace();
-                if (listener == null) return;
-                listener.onFailure(t);
-            }
-        });
-    }
-
-    /**
-     * Este metodo se utiliza para reportar un cambio en el dispositivo hacia el servidor
-     * Utiliza el trust id almacenado por la libreria
-     * No espera auditoria en la respuesta
-     * 14/11/2018 onError - Code: 404
-     *
-     * @param packageName the package name
-     * @param eventType   the type of event e.g : Bluetooth
-     * @param eventValue  the value of the type event, e.g: Status:true
-     * @param lat         latitude in which the change occurred
-     * @param lng         length at which the change occurred
-     * @param listener    the listener
-     */
-    public void notifyEvent(String packageName, String eventType, String eventValue, double lat, double lng, @Nullable final TrustListener.OnResult<Object> listener) {
-        //TODO: obtener trust
-        String trustId = mPreferences.getString(TRUST_ID);
-        if (trustId != null) {
-            notifyEvent(trustId, packageName, eventType, eventValue, lat, lng, listener);
-        } else {
-            if (listener != null)
-                listener.onFailure(new Throwable("Trust id doesn't found"));
-        }
-    }
-
-    /**
-     * Metodo utilizado para reportar un cambio en el dispositivo al servidor
-     * Espera una auditoria en la respuesta.
-     * 14/11/2018 onError - Code: 500
-     *
-     * @param tid      the unique trust id
-     * @param object   the name of the object to report
-     * @param key      the name of the change e.g: Wifi
-     * @param value    the description or value of the change e.g: status :false
-     * @param lat      latitude in which the change occurred
-     * @param lng      length at which the change occurred
-     * @param listener the result
-     */
-    public void remoteEvent(String tid, String object, String key, String value, double lat, double lng, final TrustListener.OnResult<Object> listener) {
-        @SuppressLint("MissingPermission") final Call<TrifleResponse> remote = RestClient.get().remote(new RemoteEventBody2(tid, getSimDataAtSlot(0), key, value, new Geo(String.valueOf(lat), String.valueOf(lng))));
-        remote.enqueue(new Callback<TrifleResponse>() {
-
-
-            @Override
-            public void onResponse(Call<TrifleResponse> call, Response<TrifleResponse> response) {
-                if (listener == null) return;
-                if (response.isSuccessful()) {
-                    listener.onSuccess(response.code(), null);
-                } else {
-                    listener.onError(response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<TrifleResponse> call, Throwable t) {
-                t.printStackTrace();
-                if (listener == null) return;
-                listener.onFailure(t);
-            }
-        });
-    }
-
-    /**
-     * Metodo clon de remoteEvent, busca probar otro Body para el envio de informacion.
-     * Utiliza envio por String para info de SIM (uso previo a la creacion de SIM Class).
-     * Espera una auditoria en la respuesta.
-     * 14/11/2018 onError - Code: 500
-     *
-     * @param tid      the tid
-     * @param object   the name of the object to report
-     * @param key      the key
-     * @param value    the value
-     * @param lat      the latitude in which the change occurred
-     * @param lng      the length at which the change occurred
-     * @param onResult the on result
-     */
-    @SuppressLint("MissingPermission")
-    public void remoteEvent2(String tid, String object, String key, String value, double lat, double lng, @Nullable TrustListener.OnResult<Object> onResult) {
-        Call<TrifleResponse> remote = RestClient.get().remote2(new RemoteEventBody(tid, object, key, value, new Geo(String.valueOf(lat), String.valueOf(lng))));
-        remote.enqueue(new Callback<TrifleResponse>() {
-            @Override
-            public void onResponse(Call<TrifleResponse> call, Response<TrifleResponse> response) {
-                TrustLogger.d(String.valueOf(response.code()));
-            }
-
-            @Override
-            public void onFailure(Call<TrifleResponse> call, Throwable t) {
-                TrustLogger.d(t.getMessage());
-            }
-        });
-    }
-
-
-    /*  public void createAudit(String trustid, String operation, String method, String result, long timestamp, String lat, String lng, @NonNull final TrustListener.OnResultSimple listener) {
-          String appName = mContext.getString(R.string.app_name);
-          String packageName = mContext.getApplicationContext().getPackageName();
-          Geo geo = new Geo(lat, lng);
-          AuditBody body = new AuditBody(source, transaction, geo);
-          Call<Void> createAudit = RestClient.get().createAudit(body);
-          createAudit.enqueue(new Callback<Void>() {
-              @Override
-              public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                  TrustLogger.d("[CREATE AUDIT] CODE: " + response.code());
-                  listener.onResult(response.code(), response.message());
-              }
-
-              @Override
-              public void onFailure(Call<Void> call, Throwable t) {
-                  t.printStackTrace();
-                  listener.onResult(-1, t.getMessage());
-              }
-          });
-      }
-  */
     public void createAuditTest(String trustid, lat.trust.trusttrifles.model.audit.AuditTransaction auditTransaction, String lat, String lng, AuditExtraData auditExtraData, @NonNull final TrustListener.OnResultSimple listener) {
         String wifiName = "no wifi avaliable";
         TelephonyManager telephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
@@ -1210,10 +1081,10 @@ public class TrustClient {
         NetworkInfo mMobile = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
         String connection;
         if (mWifi.isAvailable() == true) {
-            connection = "Connected to WiFi";
+            connection = Constants.WIFI_CONNECTION;
         } else if (mMobile.isAvailable() == true) {
-            connection = "Connected to Mobile Network";
-        } else connection = "No internet Connection";
+            connection = Constants.MOBILE_CONNECTION;
+        } else connection = Constants.DISCONNECT;
         AuditSource source = new AuditSource(
                 trustid,
                 appName,
@@ -1319,6 +1190,7 @@ public class TrustClient {
         TrustLogger.d("[TRUST CLIENT] : CURRENT STATE OF WI-FI: " + String.valueOf(currentWifiStatus));
         TrustLogger.d("[TRUST CLIENT] : CURRENT STATE OF BLUETOOTH: " + String.valueOf(currentBluetoothStatus));
     }
+
     /**
      * Returns the status of the wifi and bluetooth to the previous state
      *
@@ -1408,5 +1280,32 @@ public class TrustClient {
         return ContextCompat.checkSelfPermission(mContext, permission) == PackageManager.PERMISSION_GRANTED;
     }
 
+
+    private void getAccessToken() {
+        AuthTokenRequest authTokenRequest = new AuthTokenRequest();
+        authTokenRequest.setClient_id(TrustAuth.CLIENT_ID);
+        authTokenRequest.setClient_secret(TrustAuth.CLIENT_SECRET);
+        authTokenRequest.setGrant_type(TrustAuth.GRANT_TYPE);
+        RestClientAccessToken.get().getAccessToken(authTokenRequest).enqueue(new Callback<AuthTokenResponse>() {
+            @Override
+            public void onResponse(Call<AuthTokenResponse> call, Response<AuthTokenResponse> response) {
+                if (response.isSuccessful()) {
+                    TrustLogger.d(response.body().toString());
+                    if (response.code() == 401) {
+                        Hawk.put("access_token", response.body().getAccess_token());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AuthTokenResponse> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void getAccessToken2() {
+
+    }
 
 }

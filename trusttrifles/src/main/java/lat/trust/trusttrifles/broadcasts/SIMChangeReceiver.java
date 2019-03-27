@@ -9,6 +9,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.telephony.TelephonyManager;
 
 import lat.trust.trusttrifles.utilities.AutomaticAudit;
+import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.SavePendingAudit;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 import lat.trust.trusttrifles.utilities.Utils;
@@ -37,61 +38,67 @@ public class SIMChangeReceiver extends BroadcastReceiver {
     @SuppressLint("MissingPermission")
     @Override
     public void onReceive(Context context, Intent intent) {
-        TrustLogger.d("[SIM CHANGE] detect sim change ");
-        TrustLogger.d("WIFI IS :" + String.valueOf(Utils.getWifiState(context)));
+        try {
+            TrustLogger.d("[SIM CHANGE] detect sim change ");
+            TrustLogger.d("WIFI IS :" + String.valueOf(Utils.getWifiState(context)));
 
-        TelephonyManager tm = (TelephonyManager)
-                context.getSystemService(Context.TELEPHONY_SERVICE);
-        String simID = tm.getSimSerialNumber();
-        String number = tm.getLine1Number();
+            TelephonyManager tm = (TelephonyManager)
+                    context.getSystemService(Context.TELEPHONY_SERVICE);
+            String simID = tm.getSimSerialNumber();
+            String country = tm.getSimCountryIso();
+            String company = "";
 
-        if (simID == null) {
-            String resultOut = "[SIM CHANGE] SIM OUT: null";
-            if (!Utils.getWifiState(context)) {
-                TrustLogger.d("[SIM CHANGE] NO WIFI AVALIABLE, SAVING THIS AUDIT...");
-                SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
-                savePendingAudit.saveAudit(
-                        OPERATION,
-                        METHOD,
-                        RESULT + "SIM OUT:null",
-                        context
-                );
-                TrustLogger.d("[SIM CHANGE] THIS AUDIT WAS SAVED.");
+            if (simID == null) {
+                String resultOut = "[SIM CHANGE] SIM OUT: null";
+                if (Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
+                    TrustLogger.d("[SIM CHANGE] NO WIFI AVALIABLE, SAVING THIS AUDIT...");
+                    SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
+                    savePendingAudit.saveAudit(
+                            OPERATION,
+                            METHOD,
+                            RESULT + "SIM OUT:null",
+                            context
+                    );
+                    TrustLogger.d("[SIM CHANGE] THIS AUDIT WAS SAVED.");
+                } else {
+                    TrustLogger.d(resultOut);
+                    AutomaticAudit.createAutomaticAudit(
+                            OPERATION,
+                            METHOD,
+                            RESULT + resultOut,
+                            context);
+                }
+
             } else {
-                TrustLogger.d(resultOut);
-                AutomaticAudit.createAutomaticAudit(
-                        OPERATION,
-                        METHOD,
-                        RESULT + resultOut,
-                        context);
+                String resultIn = "[SIM CHANGE] SIM IN id: " + simID + " country :" + country + " company: " + company;
+
+                if (Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
+                    TrustLogger.d("[SIM CHANGE] NO WIFI AVALIABLE, SAVING THIS AUDIT...");
+                    SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
+                    savePendingAudit.saveAudit(
+                            OPERATION,
+                            METHOD,
+                            RESULT + "SIM OUT:null",
+                            context
+                    );
+                    TrustLogger.d("[SIM CHANGE] THIS AUDIT WAS SAVED.");
+                } else {
+                    TrustLogger.d(resultIn);
+                    AutomaticAudit.createAutomaticAudit(
+                            OPERATION,
+                            METHOD,
+                            RESULT + resultIn,
+                            context);
+                }
+
             }
-
-        } else {
-            String resultIn = "[SIM CHANGE] SIM IN id: " + simID + " number :" + number;
-
-            if (!Utils.getWifiState(context)) {
-                TrustLogger.d("[SIM CHANGE] NO WIFI AVALIABLE, SAVING THIS AUDIT...");
-                SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
-                savePendingAudit.saveAudit(
-                        OPERATION,
-                        METHOD,
-                        RESULT + "SIM OUT:null",
-                        context
-                );
-                TrustLogger.d("[SIM CHANGE] THIS AUDIT WAS SAVED.");
-            } else {
-                TrustLogger.d(resultIn);
-                AutomaticAudit.createAutomaticAudit(
-                        OPERATION,
-                        METHOD,
-                        RESULT + resultIn,
-                        context);
-            }
-
+            LocalBroadcastManager mBM = LocalBroadcastManager.getInstance(context);
+            Intent broadcast = new Intent(SIM_RECEIVER_TAG);
+            broadcast.putExtras(intent);
+            mBM.sendBroadcast(broadcast);
+        } catch (Exception ex) {
+            TrustLogger.d("[SIMChangeReceiver] ERROR: " + ex.getMessage());
         }
-        LocalBroadcastManager mBM = LocalBroadcastManager.getInstance(context);
-        Intent broadcast = new Intent(SIM_RECEIVER_TAG);
-        broadcast.putExtras(intent);
-        mBM.sendBroadcast(broadcast);
+
     }
 }

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import lat.trust.trusttrifles.utilities.AutomaticAudit;
+import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.SavePendingAudit;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 import lat.trust.trusttrifles.utilities.Utils;
@@ -17,21 +18,25 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
-        TrustLogger.d("[ALARM RECEIVER] INIT ALARM: ");
-        if (!Utils.getWifiState(context)) {
-            savePendingAudit.saveAudit(
-                    OPERATION,
-                    METHOD,
-                    RESULT,
-                    context
-            );
-        } else {
-            AutomaticAudit.createAutomaticAudit(
-                    OPERATION,
-                    METHOD,
-                    RESULT,
-                    context);
+        try {
+            SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
+            TrustLogger.d("[ALARM RECEIVER] INIT ALARM: ");
+            if (Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
+                savePendingAudit.saveAudit(
+                        OPERATION,
+                        METHOD,
+                        RESULT,
+                        context
+                );
+            } else {
+                AutomaticAudit.createAutomaticAudit(
+                        OPERATION,
+                        METHOD,
+                        RESULT,
+                        context);
+            }
+        } catch (Exception ex) {
+            TrustLogger.d("[AlarmReceiver] ERROR: " + ex.getMessage());
         }
 
 

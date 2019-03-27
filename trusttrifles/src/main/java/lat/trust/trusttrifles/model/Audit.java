@@ -1,39 +1,34 @@
 package lat.trust.trusttrifles.model;
 
-import com.google.gson.annotations.SerializedName;
-
 public class Audit {
-    @SerializedName("trustid")
-    private String trustId;
-    @SerializedName("_id")
-    private ID id;
-    @SerializedName("created_at")
-    private String createdAt;
-    @SerializedName("updated_at")
-    String updatedAt;
+    private Boolean status;
+    private String message;
+    private String trustid;
 
-    public String getTrustId() {
-        return trustId;
+    public Audit() {
     }
 
-    public ID getId() {
-        return id;
+    public Boolean getStatus() {
+        return status;
     }
 
-    public String getCreatedAt() {
-        return createdAt;
+    public void setStatus(Boolean status) {
+        this.status = status;
     }
 
-    public String getUpdatedAt() {
-        return updatedAt;
+    public String getMessage() {
+        return message;
     }
 
-    public class ID {
-        @SerializedName("$oid")
-        private String id;
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
-        public String getId() {
-            return id;
-        }
+    public String getTrustid() {
+        return trustid;
+    }
+
+    public void setTrustid(String trustid) {
+        this.trustid = trustid;
     }
 }

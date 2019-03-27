@@ -2,7 +2,6 @@ package lat.trust.trustdemo;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.design.button.MaterialButton;
@@ -16,10 +15,9 @@ import com.crashlytics.android.Crashlytics;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import io.fabric.sdk.android.Fabric;
-
-import lat.trust.trusttrifles.utilities.GPSTracker;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 import lat.trust.trusttrifles.utilities.TrustPreferences;
+import lat.trust.trusttrifles.utilities.Utils;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -43,11 +41,10 @@ public class MainActivity extends AppCompatActivity {
         materialButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GPSTracker gpsTracker = new GPSTracker(mContext);
-                Location location = gpsTracker.getLocation();
-
+                TrustLogger.d(Utils.getActualConnection(MainActivity.this));
             }
         });
+        //TrustClient.start();
     }
 
 

@@ -17,12 +17,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8852bae7-b91c-4456-85cb-252ae64fc2f4" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/audit/AuditExtraData.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/audit/AuditSource.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/audit/AuditTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/audit/AuditTransaction.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/RestClientAudit.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/req/AuditBodyTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/NetworkConnectionReceiver.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/RestClientAccessToken.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/req/AuthTokenRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/res/AuthTokenResponse.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.6/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.6/fileHashes/fileHashes.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.6/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.6/fileHashes/fileHashes.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.6/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.6/fileHashes/resourceHashesCache.bin" afterDir="false" />
@@ -38,85 +36,31 @@
       <change beforePath="$PROJECT_DIR$/.gradle/5.2.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.2.1/fileHashes/fileHashes.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/5.2.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.2.1/fileHashes/fileHashes.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/5.2.1/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.2.1/javaCompile/javaCompile.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.2.1/javaCompile/taskHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.2.1/javaCompile/taskHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/cache.properties" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/cache.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__android_arch_core_runtime_1_1_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__android_arch_core_runtime_1_1_1.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__android_arch_lifecycle_livedata_1_1_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__android_arch_lifecycle_livedata_1_1_1.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__android_arch_lifecycle_livedata_core_1_1_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__android_arch_lifecycle_livedata_core_1_1_1.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__android_arch_lifecycle_runtime_1_1_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__android_arch_lifecycle_runtime_1_1_1.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__android_arch_lifecycle_viewmodel_1_1_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__android_arch_lifecycle_viewmodel_1_1_1.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_afollestad_material_dialogs_core_0_9_6_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_afollestad_material_dialogs_core_0_9_6_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_animated_vector_drawable_28_0_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_animated_vector_drawable_28_0_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_appcompat_v7_28_0_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_appcompat_v7_28_0_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_asynclayoutinflater_28_0_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_asynclayoutinflater_28_0_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_cardview_v7_28_0_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_cardview_v7_28_0_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_constraint_constraint_layout_1_1_3.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_constraint_constraint_layout_1_1_3.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_coordinatorlayout_28_0_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_coordinatorlayout_28_0_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_cursoradapter_28_0_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_cursoradapter_28_0_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_customview_28_0_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_customview_28_0_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_design_28_0_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_design_28_0_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_documentfile_28_0_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_documentfile_28_0_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_drawerlayout_28_0_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_drawerlayout_28_0_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_interpolator_28_0_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_interpolator_28_0_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_loader_28_0_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_loader_28_0_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_localbroadcastmanager_28_0_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_localbroadcastmanager_28_0_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_print_28_0_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_print_28_0_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_recyclerview_v7_28_0_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_recyclerview_v7_28_0_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_slidingpanelayout_28_0_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_slidingpanelayout_28_0_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_support_compat_28_0_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_support_compat_28_0_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_support_core_ui_28_0_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_support_core_ui_28_0_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_support_core_utils_28_0_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_support_core_utils_28_0_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_support_fragment_28_0_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_support_fragment_28_0_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_support_media_compat_26_1_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_support_media_compat_26_1_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_support_v4_26_1_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_support_v4_26_1_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_support_vector_drawable_28_0_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_support_vector_drawable_28_0_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_swiperefreshlayout_28_0_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_swiperefreshlayout_28_0_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_test_espresso_espresso_core_3_0_2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_test_espresso_espresso_core_3_0_2.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_test_espresso_espresso_idling_resource_3_0_2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_test_espresso_espresso_idling_resource_3_0_2.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_test_monitor_1_0_2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_test_monitor_1_0_2.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_test_runner_1_0_2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_test_runner_1_0_2.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_transition_28_0_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_transition_28_0_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_versionedparcelable_28_0_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_versionedparcelable_28_0_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_viewpager_28_0_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_viewpager_28_0_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_crashlytics_sdk_android_answers_1_4_7.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_crashlytics_sdk_android_answers_1_4_7.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_crashlytics_sdk_android_beta_1_2_10.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_crashlytics_sdk_android_beta_1_2_10.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_crashlytics_sdk_android_crashlytics_2_9_9.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_crashlytics_sdk_android_crashlytics_2_9_9.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_crashlytics_sdk_android_crashlytics_core_2_6_8.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_crashlytics_sdk_android_crashlytics_core_2_6_8.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_facebook_conceal_conceal_1_1_3.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_facebook_conceal_conceal_1_1_3.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_ads_identifier_16_0_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_ads_identifier_16_0_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_base_16_0_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_base_16_0_1.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_basement_16_0_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_basement_16_0_1.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_measurement_api_16_3_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_measurement_api_16_3_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_measurement_base_16_3_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_measurement_base_16_3_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_stats_16_0_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_stats_16_0_1.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_tasks_16_0_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_tasks_16_0_1.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_firebase_firebase_analytics_16_3_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_firebase_firebase_analytics_16_3_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_firebase_firebase_analytics_impl_16_3_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_firebase_firebase_analytics_impl_16_3_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_firebase_firebase_common_16_0_3.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_firebase_firebase_common_16_0_3.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_firebase_firebase_core_16_0_7.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_firebase_firebase_core_16_0_7.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_firebase_firebase_iid_17_1_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_firebase_firebase_iid_17_1_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_firebase_firebase_iid_interop_16_0_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_firebase_firebase_iid_interop_16_0_1.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_firebase_firebase_measurement_connector_17_0_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_firebase_firebase_measurement_connector_17_0_1.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_firebase_firebase_measurement_connector_impl_17_0_5.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_firebase_firebase_measurement_connector_impl_17_0_5.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_firebase_firebase_messaging_17_4_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_firebase_firebase_messaging_17_4_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_karumi_dexter_5_0_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_karumi_dexter_5_0_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_orhanobut_hawk_2_0_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_orhanobut_hawk_2_0_1.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_scottyab_rootbeer_lib_0_0_7.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_scottyab_rootbeer_lib_0_0_7.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__io_fabric_sdk_android_fabric_1_4_8.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__io_fabric_sdk_android_fabric_1_4_8.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__me_zhanghai_android_materialprogressbar_library_1_4_2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__me_zhanghai_android_materialprogressbar_library_1_4_2.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/lat/trust/trustdemo/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/lat/trust/trustdemo/MainActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/lat/trust/trustdemo/SplashActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/lat/trust/trustdemo/SplashActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/trusttrifles/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/trusttrifles/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/trusttrifles/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/trusttrifles/src/main/AndroidManifest.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/TrustClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/TrustClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/AlarmReceiver.java" beforeDir="false" afterPath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/AlarmReceiver.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/BootCompleted.java" beforeDir="false" afterPath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/BootCompleted.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/PhoneStatReceiver.java" beforeDir="false" afterPath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/PhoneStatReceiver.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/SIMChangeReceiver.java" beforeDir="false" afterPath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/SIMChangeReceiver.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/SmsBroadcastReceiver.java" beforeDir="false" afterPath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/SmsBroadcastReceiver.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/WifiStateReceiver.java" beforeDir="false" afterPath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/WifiStateReceiver.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/Audit.java" beforeDir="false" afterPath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/Audit.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/AuditSource.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/AuditTransaction.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/API.java" beforeDir="false" afterPath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/API.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/req/AuditBody.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/RestClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/RestClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/TrifleResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/TrifleResponse.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/AutomaticAudit.java" beforeDir="false" afterPath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/AutomaticAudit.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/Constants.java" beforeDir="false" afterPath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/Constants.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/Utils.java" beforeDir="false" afterPath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/Utils.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -145,8 +89,8 @@
       <file leaf-file-name="AndroidManifest.xml" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/AndroidManifest.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="268">
-              <caret line="38" column="28" selection-start-line="38" selection-start-column="28" selection-end-line="38" selection-end-column="28" />
+            <state relative-caret-position="105">
+              <caret line="7" selection-start-line="7" selection-end-line="7" />
             </state>
           </provider>
           <provider editor-type-id="android-manifest">
@@ -157,11 +101,8 @@
       <file leaf-file-name="AndroidManifest.xml" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/AndroidManifest.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="312">
-              <caret line="78" selection-start-line="78" selection-end-line="78" />
-              <folding>
-                <element signature="e#175#202#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="348">
+              <caret line="24" selection-start-line="24" selection-end-line="24" />
             </state>
           </provider>
           <provider editor-type-id="android-manifest">
@@ -169,13 +110,13 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TrustLogger.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/TrustLogger.java">
+      <file leaf-file-name="TrustClient.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/TrustClient.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="176">
-              <caret line="13" selection-start-line="13" selection-end-line="13" />
+            <state relative-caret-position="237">
+              <caret line="1044" column="52" selection-start-line="1044" selection-start-column="52" selection-end-line="1044" selection-end-column="52" />
               <folding>
-                <element signature="e#307#308#0" expanded="true" />
+                <element signature="imports" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -184,62 +125,71 @@
       <file leaf-file-name="AutomaticAudit.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/AutomaticAudit.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="888">
-              <caret line="131" column="78" selection-start-line="131" selection-start-column="78" selection-end-line="131" selection-end-column="78" />
+            <state relative-caret-position="1290">
+              <caret line="109" column="54" selection-start-line="109" selection-start-column="54" selection-end-line="109" selection-end-column="54" />
+              <folding>
+                <element signature="e#4533#4846#0" expanded="true" />
+                <element signature="e#4845#4846#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TrustFirebaseMessagingService.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/lat/trust/trustdemo/TrustFirebaseMessagingService.java">
+      <file leaf-file-name="Constants.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/Constants.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="135">
-              <caret line="15" column="32" selection-start-line="15" selection-start-column="32" selection-end-line="15" selection-end-column="32" />
+            <state relative-caret-position="394">
+              <caret line="32" column="57" selection-start-line="32" selection-start-column="57" selection-end-line="32" selection-end-column="57" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="RemoteMessagesId.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/RemoteMessagesId.java">
+      <file leaf-file-name="NetworkConnectionReceiver.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/NetworkConnectionReceiver.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="267">
-              <caret line="28" column="67" selection-start-line="28" selection-start-column="67" selection-end-line="28" selection-end-column="67" />
+            <state relative-caret-position="312">
+              <caret line="60" column="21" selection-start-line="60" selection-start-column="21" selection-end-line="60" selection-end-column="21" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#1048#2803#0" expanded="true" />
+                <element signature="e#2802#2803#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="RemoteAuditService.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/services/RemoteAuditService.java">
+      <file leaf-file-name="Utils.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/Utils.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
-              <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
+            <state relative-caret-position="241">
+              <caret line="218" selection-start-line="218" selection-end-line="218" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SIMChangeReceiver.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/SIMChangeReceiver.java">
+      <file leaf-file-name="API.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/API.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="389">
-              <caret line="58" column="22" selection-start-line="58" selection-start-column="22" selection-end-line="58" selection-end-column="22" />
+            <state relative-caret-position="312">
+              <caret line="36" column="24" selection-start-line="36" selection-start-column="18" selection-end-line="36" selection-end-column="24" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SmsBroadcastReceiver.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/SmsBroadcastReceiver.java">
+      <file leaf-file-name="build.gradle" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/trusttrifles/build.gradle">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="270">
-              <caret line="28" column="35" selection-start-line="28" selection-start-column="34" selection-end-line="28" selection-end-column="35" />
+            <state relative-caret-position="-82">
+              <caret line="56" selection-start-line="56" selection-end-line="56" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SplashActivity.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/lat/trust/trustdemo/SplashActivity.java">
+      <file leaf-file-name="Permissions.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/Permissions.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="315">
-              <caret line="32" column="21" lean-forward="true" selection-start-line="32" selection-start-column="21" selection-end-line="32" selection-end-column="21" />
+            <state relative-caret-position="536">
+              <caret line="63" column="1" selection-start-line="63" selection-start-column="1" selection-end-line="63" selection-end-column="1" />
             </state>
           </provider>
         </entry>
@@ -258,6 +208,16 @@
       <find>audit</find>
       <find>restclient</find>
       <find>createAudit</find>
+      <find>createaudit</find>
+      <find>event</find>
+      <find>send</find>
+      <find>remote</find>
+      <find>sendtr</find>
+      <find>start</find>
+      <find>trifle</find>
+      <find>sendTr</find>
+      <find>WIFI_STATE_CHAN</find>
+      <find>audit test body</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -3883,20 +3843,38 @@
         <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/Audit/AuditTest.java" />
         <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/audit/AuditSource.java" />
         <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/audit/AuditTransaction.java" />
-        <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/Audit.java" />
         <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/req/AuditBodyTest.java" />
         <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/audit/AuditExtraData.java" />
         <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/RestClientAudit.java" />
         <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/audit/AuditTest.java" />
-        <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/AutomaticAudit.java" />
         <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/req/AuditBody.java" />
-        <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/API.java" />
-        <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/TrustClient.java" />
-        <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/SIMChangeReceiver.java" />
         <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/RemoteMessagesId.java" />
+        <option value="$PROJECT_DIR$/trusttrifles/build.gradle" />
+        <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/RestClient.java" />
+        <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/TrifleResponse.java" />
+        <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/res/AuthTokenResponse.java" />
+        <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/Auth.java" />
+        <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/RestClientAccesToken.java" />
+        <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/req/AuthTokenRequest.java" />
+        <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/RestClientAccessToken.java" />
+        <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/TrustAuth.java" />
+        <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/API.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/lat/trust/trustdemo/MainActivity.java" />
+        <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/Audit.java" />
+        <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/WifiStateReceiver.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/lat/trust/trustdemo/SplashActivity.java" />
+        <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/NetworkConnectionReceiver.java" />
+        <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/AlarmReceiver.java" />
+        <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/BootCompleted.java" />
+        <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/PhoneStatReceiver.java" />
+        <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/SIMChangeReceiver.java" />
+        <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/SmsBroadcastReceiver.java" />
+        <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/TrustClient.java" />
         <option value="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/trusttrifles/src/main/AndroidManifest.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/lat/trust/trustdemo/SplashActivity.java" />
+        <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/Utils.java" />
+        <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/Constants.java" />
+        <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/AutomaticAudit.java" />
       </list>
     </option>
   </component>
@@ -3921,17 +3899,6 @@
             </path>
             <path>
               <item name="TrustID" type="1abcf292:AndroidViewProjectNode" />
-              <item name="app" type="feadf853:AndroidModuleNode" />
-              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
-            </path>
-            <path>
-              <item name="TrustID" type="1abcf292:AndroidViewProjectNode" />
-              <item name="app" type="feadf853:AndroidModuleNode" />
-              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
-              <item name="trustdemo" type="cbb59c9e:AndroidPsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TrustID" type="1abcf292:AndroidViewProjectNode" />
               <item name="trusttrifles" type="feadf853:AndroidModuleNode" />
             </path>
             <path>
@@ -3944,27 +3911,6 @@
               <item name="trusttrifles" type="feadf853:AndroidModuleNode" />
               <item name="java" type="edd41e36:AndroidSourceTypeNode" />
               <item name="trusttrifles" type="cbb59c9e:AndroidPsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TrustID" type="1abcf292:AndroidViewProjectNode" />
-              <item name="trusttrifles" type="feadf853:AndroidModuleNode" />
-              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
-              <item name="trusttrifles" type="cbb59c9e:AndroidPsiDirectoryNode" />
-              <item name="broadcasts" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TrustID" type="1abcf292:AndroidViewProjectNode" />
-              <item name="trusttrifles" type="feadf853:AndroidModuleNode" />
-              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
-              <item name="trusttrifles" type="cbb59c9e:AndroidPsiDirectoryNode" />
-              <item name="network" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TrustID" type="1abcf292:AndroidViewProjectNode" />
-              <item name="trusttrifles" type="feadf853:AndroidModuleNode" />
-              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
-              <item name="trusttrifles" type="cbb59c9e:AndroidPsiDirectoryNode" />
-              <item name="services" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="TrustID" type="1abcf292:AndroidViewProjectNode" />
@@ -3972,6 +3918,10 @@
               <item name="java" type="edd41e36:AndroidSourceTypeNode" />
               <item name="trusttrifles" type="cbb59c9e:AndroidPsiDirectoryNode" />
               <item name="utilities" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="TrustID" type="1abcf292:AndroidViewProjectNode" />
+              <item name="Gradle Scripts" type="ae0cef3a:AndroidBuildScriptsGroupNode" />
             </path>
           </expand>
           <select />
@@ -4132,11 +4082,11 @@
       <window_info anchor="bottom" id="Run" order="2" weight="0.32969698" />
       <window_info anchor="bottom" id="Version Control" />
       <window_info anchor="bottom" id="Terminal" weight="0.32969698" />
-      <window_info active="true" anchor="bottom" id="Logcat" visible="true" weight="0.32848486" />
+      <window_info anchor="bottom" id="Logcat" visible="true" weight="0.32848486" />
       <window_info id="Captures" order="2" weight="0.25" />
       <window_info id="Capture Tool" />
       <window_info id="Designer" />
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49909583" visible="true" weight="0.24964234" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49909583" visible="true" weight="0.24964234" />
       <window_info anchor="bottom" id="Build" weight="0.31151515" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32969698" />
       <window_info anchor="right" id="Gradle" />
@@ -4197,13 +4147,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/TrustListener.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="375">
-          <caret line="25" column="14" selection-start-line="25" selection-start-column="14" selection-end-line="25" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/audit/AuditTransaction.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="47">
@@ -4229,13 +4172,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/SavePendingAudit.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="269">
-          <caret line="91" column="38" selection-start-line="91" selection-start-column="38" selection-end-line="91" selection-end-column="38" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/AuditSource.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
@@ -4257,34 +4193,6 @@
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/AlarmReceiver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/BootCompleted.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/PhoneStatReceiver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="13" column="13" selection-start-line="13" selection-start-column="13" selection-end-line="13" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/WifiStateReceiver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="6" column="13" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
         </state>
       </provider>
     </entry>
@@ -4337,48 +4245,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/RestClient.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="394">
-          <caret line="40" selection-start-line="40" selection-end-line="40" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/RestClientAudit.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="52">
-          <caret line="18" column="5" selection-start-line="18" selection-start-column="5" selection-end-line="18" selection-end-column="5" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/API.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="176">
-          <caret line="22" column="14" selection-start-line="22" selection-start-column="14" selection-end-line="22" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/Audit.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="30" column="6" selection-start-line="30" selection-start-column="6" selection-end-line="30" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/TrifleResponse.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="10" column="11" selection-start-line="10" selection-start-column="11" selection-end-line="10" selection-end-column="11" />
-          <folding>
-            <element signature="e#251#252#0" expanded="true" />
-            <element signature="e#279#280#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/AuditTransaction.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="75">
@@ -4397,32 +4263,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/TrustClient.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="378">
-          <caret line="1228" selection-start-line="1228" selection-end-line="1228" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#5459#8266#0" expanded="true" />
-            <element signature="e#6510#7901#0" expanded="true" />
-            <element signature="e#7900#7901#0" expanded="true" />
-            <element signature="e#8265#8266#0" expanded="true" />
-            <element signature="e#11718#15085#0" expanded="true" />
-            <element signature="e#15084#15085#0" expanded="true" />
-            <element signature="e#15129#15474#0" expanded="true" />
-            <element signature="e#15473#15474#0" expanded="true" />
-            <element signature="e#50146#50183#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/AutomaticAudit.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="888">
-          <caret line="131" column="78" selection-start-line="131" selection-start-column="78" selection-end-line="131" selection-end-column="78" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/services/RemoteAuditService.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
@@ -4437,43 +4277,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/SIMChangeReceiver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="389">
-          <caret line="58" column="22" selection-start-line="58" selection-start-column="22" selection-end-line="58" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/SmsBroadcastReceiver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="28" column="35" selection-start-line="28" selection-start-column="34" selection-end-line="28" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/AndroidManifest.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="268">
-          <caret line="38" column="28" selection-start-line="38" selection-start-column="28" selection-end-line="38" selection-end-column="28" />
-        </state>
-      </provider>
-      <provider editor-type-id="android-manifest">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/AndroidManifest.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="312">
-          <caret line="78" selection-start-line="78" selection-end-line="78" />
-          <folding>
-            <element signature="e#175#202#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-      <provider editor-type-id="android-manifest">
-        <state />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/TrustLogger.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="176">
@@ -4484,17 +4287,325 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/lat/trust/trustdemo/SplashActivity.java">
+    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/RestClientAudit.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="32" column="21" lean-forward="true" selection-start-line="32" selection-start-column="21" selection-end-line="32" selection-end-column="21" />
+        <state relative-caret-position="52">
+          <caret line="18" column="5" selection-start-line="18" selection-start-column="5" selection-end-line="18" selection-end-column="5" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/TrustListener.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" column="39" selection-start-line="7" selection-start-column="35" selection-end-line="7" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/TrifleResponse.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="6" column="13" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
+          <folding>
+            <element signature="e#306#307#0" expanded="true" />
+            <element signature="e#334#335#0" expanded="true" />
+            <element signature="e#375#376#0" expanded="true" />
+            <element signature="e#409#410#0" expanded="true" />
+            <element signature="e#318#319#0" expanded="true" />
+            <element signature="e#347#348#0" expanded="true" />
+            <element signature="e#392#393#0" expanded="true" />
+            <element signature="e#428#429#0" expanded="true" />
+            <element signature="e#462#463#0" expanded="true" />
+            <element signature="e#492#493#0" expanded="true" />
+            <element signature="e#538#539#0" expanded="true" />
+            <element signature="e#576#577#0" expanded="true" />
+            <element signature="e#610#611#0" expanded="true" />
+            <element signature="e#640#641#0" expanded="true" />
+            <element signature="e#686#687#0" expanded="true" />
+            <element signature="e#724#725#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/req/TrifleBody.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="32" column="16" selection-start-line="32" selection-start-column="16" selection-end-line="32" selection-end-column="16" />
+          <folding>
+            <element signature="e#649#650#0" expanded="true" />
+            <element signature="e#679#680#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/lat/trust/trustdemo/TrustDemoApp.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="9" column="13" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Library/Android/sdk/sources/android-28/com/android/settingslib/wifi/WifiTracker.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="176">
+          <caret line="160" column="30" selection-start-line="160" selection-start-column="25" selection-end-line="160" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Library/Android/sdk/sources/android-28/android/net/wifi/WifiManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="175">
+          <caret line="329" column="44" selection-start-line="329" selection-start-column="9" selection-end-line="329" selection-end-column="44" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/res/AuthTokenResponse.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="11" column="37" selection-start-line="11" selection-start-column="37" selection-end-line="11" selection-end-column="37" />
+          <folding>
+            <element signature="e#318#319#0" expanded="true" />
+            <element signature="e#374#375#0" expanded="true" />
+            <element signature="e#422#423#0" expanded="true" />
+            <element signature="e#459#460#0" expanded="true" />
+            <element signature="e#492#493#0" expanded="true" />
+            <element signature="e#544#545#0" expanded="true" />
+            <element signature="e#588#589#0" expanded="true" />
+            <element signature="e#625#626#0" expanded="true" />
+            <element signature="e#658#659#0" expanded="true" />
+            <element signature="e#710#711#0" expanded="true" />
+            <element signature="e#754#755#0" expanded="true" />
+            <element signature="e#791#792#0" expanded="true" />
+            <element signature="e#824#825#0" expanded="true" />
+            <element signature="e#876#877#0" expanded="true" />
+            <element signature="e#920#921#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/RestClient.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="16" selection-start-line="16" selection-end-line="64" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/req/AuthTokenRequest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="17" column="35" selection-start-line="17" selection-start-column="35" selection-end-line="17" selection-end-column="35" />
+          <folding>
+            <element signature="e#247#248#0" expanded="true" />
+            <element signature="e#279#280#0" expanded="true" />
+            <element signature="e#329#330#0" expanded="true" />
+            <element signature="e#371#372#0" expanded="true" />
+            <element signature="e#411#412#0" expanded="true" />
+            <element signature="e#447#448#0" expanded="true" />
+            <element signature="e#505#506#0" expanded="true" />
+            <element signature="e#555#556#0" expanded="true" />
+            <element signature="e#592#593#0" expanded="true" />
+            <element signature="e#625#626#0" expanded="true" />
+            <element signature="e#677#678#0" expanded="true" />
+            <element signature="e#721#722#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/RestClientAccessToken.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="10" column="11" selection-start-line="10" selection-start-column="11" selection-end-line="10" selection-end-column="11" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/TrustAuth.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="9" selection-start-line="9" selection-end-line="9" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/lat/trust/trustdemo/TrustFirebaseMessagingService.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="135">
-          <caret line="15" column="32" selection-start-line="15" selection-start-column="32" selection-end-line="15" selection-end-column="32" />
+          <caret line="15" column="91" selection-start-line="15" selection-start-column="91" selection-end-line="15" selection-end-column="91" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Library/Android/sdk/sources/android-28/android/net/NetworkInfo.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1271">
+          <caret line="305" column="19" selection-start-line="305" selection-start-column="19" selection-end-line="305" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/Audit.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="23" column="21" selection-start-line="23" selection-start-column="21" selection-end-line="23" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/GPSTracker.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="12" column="13" selection-start-line="12" selection-start-column="13" selection-end-line="12" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/SavePendingAudit.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="200">
+          <caret line="91" column="34" selection-start-line="91" selection-start-column="34" selection-end-line="91" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/WifiStateReceiver.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="166">
+          <caret line="30" column="22" selection-start-line="30" selection-start-column="22" selection-end-line="30" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/AlarmReceiver.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="22" column="7" selection-start-line="22" selection-start-column="7" selection-end-line="22" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/BootCompleted.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="435">
+          <caret line="37" column="41" selection-start-line="37" selection-start-column="41" selection-end-line="37" selection-end-column="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/PhoneStatReceiver.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="312">
+          <caret line="109" column="45" selection-start-line="109" selection-start-column="45" selection-end-line="109" selection-end-column="45" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/SIMChangeReceiver.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="342">
+          <caret line="99" column="45" selection-start-line="99" selection-start-column="45" selection-end-line="99" selection-end-column="45" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/SmsBroadcastReceiver.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="163">
+          <caret line="29" column="67" selection-start-line="29" selection-start-column="67" selection-end-line="29" selection-end-column="67" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/lat/trust/trustdemo/SplashActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-193">
+          <caret line="32" column="57" selection-start-line="32" selection-start-column="57" selection-end-line="32" selection-end-column="57" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/lat/trust/trustdemo/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="273">
+          <caret line="46" column="30" selection-start-line="46" selection-start-column="30" selection-end-line="46" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/Permissions.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="536">
+          <caret line="63" column="1" selection-start-line="63" selection-start-column="1" selection-end-line="63" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/AndroidManifest.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" selection-start-line="7" selection-end-line="7" />
+        </state>
+      </provider>
+      <provider editor-type-id="android-manifest">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/AndroidManifest.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="348">
+          <caret line="24" selection-start-line="24" selection-end-line="24" />
+        </state>
+      </provider>
+      <provider editor-type-id="android-manifest">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/TrustClient.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="237">
+          <caret line="1044" column="52" selection-start-line="1044" selection-start-column="52" selection-end-line="1044" selection-end-column="52" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/broadcasts/NetworkConnectionReceiver.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="312">
+          <caret line="60" column="21" selection-start-line="60" selection-start-column="21" selection-end-line="60" selection-end-column="21" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#1048#2803#0" expanded="true" />
+            <element signature="e#2802#2803#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/Utils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="241">
+          <caret line="218" selection-start-line="218" selection-end-line="218" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/API.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="312">
+          <caret line="36" column="24" selection-start-line="36" selection-start-column="18" selection-end-line="36" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/Constants.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="394">
+          <caret line="32" column="57" selection-start-line="32" selection-start-column="57" selection-end-line="32" selection-end-column="57" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/AutomaticAudit.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1290">
+          <caret line="109" column="54" selection-start-line="109" selection-start-column="54" selection-end-line="109" selection-end-column="54" />
+          <folding>
+            <element signature="e#4533#4846#0" expanded="true" />
+            <element signature="e#4845#4846#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trusttrifles/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-82">
+          <caret line="56" selection-start-line="56" selection-end-line="56" />
         </state>
       </provider>
     </entry>

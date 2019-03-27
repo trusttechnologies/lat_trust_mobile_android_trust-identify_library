@@ -94,21 +94,31 @@ public class AutomaticAudit {
 
     public static void createAutomaticAudit(String operation, String method, String result, Context context) {
         try {
-            AuditTransaction auditTransaction = new AuditTransaction(result, method, operation, Utils.getCurrentTimeStamp());
-            AuditExtraData auditExtraData = null;
-            GPSTracker gpsTracker = new GPSTracker(context);
-            Location location = gpsTracker.getLocation();
+            if (!Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
+                AuditTransaction auditTransaction = new AuditTransaction(result, method, operation, Utils.getCurrentTimeStamp());
 
-            String lat = String.valueOf(location != null ? location.getLatitude() : "no latitude avaliable");
-            String lng = String.valueOf(location != null ? location.getLongitude() : "no longitude avaliable");
-            TrustClient mClient = TrustClient.getInstance();
-            mClient.createAuditTest(getSavedTrustId(), auditTransaction, lat, lng, auditExtraData, new TrustListener.OnResultSimple() {
-                @Override
-                public void onResult(int code, String message) {
-                    TrustLogger.d("[AUTOMATIC TEST AUDIT] : success automatic audit: " + message + " code: " + String.valueOf(code));
+                GPSTracker gpsTracker = new GPSTracker(context);
+                Location location = gpsTracker.getLocation();
+                String lat = String.valueOf(location != null ? location.getLatitude() : "no latitude avaliable");
+                String lng = String.valueOf(location != null ? location.getLongitude() : "no longitude avaliable");
 
+                AuditExtraData auditExtraData = null;
+                if (Hawk.contains("DNI")) {
+                    TrustLogger.d("TOKEN IS EXIST : " + Hawk.get("DNI"));
+                    auditExtraData = Hawk.get("DNI");
+                } else {
+                    TrustLogger.d("TOKEN NOT EXIST ");
                 }
-            });
+                TrustClient mClient = TrustClient.getInstance();
+
+
+                mClient.createAuditTest(getSavedTrustId(), auditTransaction, lat, lng, auditExtraData, new TrustListener.OnResultSimple() {
+                    @Override
+                    public void onResult(int code, String message) {
+                        TrustLogger.d("[AUTOMATIC TEST AUDIT] : success automatic audit: " + message + " code: " + String.valueOf(code));
+                    }
+                });
+            }
         } catch (Exception ex) {
             TrustLogger.d("[AUTOMATIC TEST AUDIT] : ERROR: " + ex.getMessage());
 
@@ -133,14 +143,13 @@ public class AutomaticAudit {
             @Override
             public void onSuccess(int code, Audit data) {
                 TrustLogger.d("[AUTOMATIC AUDIT] :  generating trust id success");
-                Hawk.put(Constants.TRUST_ID_AUTOMATIC, data.getTrustId());
-                createAutomaticAudit(data.getTrustId(), operation, method, result, timestamp, lat, lng);
+                Hawk.put(Constants.TRUST_ID_AUTOMATIC, data.getTrustid());
+                createAutomaticAudit(data.getTrustid(), operation, method, result, timestamp, lat, lng);
             }
 
             @Override
             public void onError(int code) {
                 TrustLogger.d("[AUTOMATIC AUDIT] : generating trust id error code: " + String.valueOf(code));
-
             }
 
             @Override

@@ -27,5 +27,9 @@ public class Constants {
 
     public static final String TRUST_ID_AUTOMATIC = "TRUST_ID_AUTOMATIC";
 
+    public static final String WIFI_CONNECTION = "WIFI";
+    public static final String MOBILE_CONNECTION = "MOBILE";
+
+    public static final String DISCONNECT = "DISCONNECT";
 
 }

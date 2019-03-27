@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import lat.trust.trusttrifles.utilities.AutomaticAudit;
+import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.SavePendingAudit;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 import lat.trust.trusttrifles.utilities.Utils;
@@ -16,22 +17,27 @@ public class BootCompleted extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        TrustLogger.d("[AUTOMATIC BOOT INIT] INIT");
-        SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
-        if (!Utils.getWifiState(context)) {
-            savePendingAudit.saveAudit(
-                    OPERATION,
-                    METHOD,
-                    RESULT,
-                    context
-            );
-        } else {
-            AutomaticAudit.createAutomaticAudit(
-                    OPERATION,
-                    METHOD,
-                    RESULT,
-                    context);
+        try{
+            TrustLogger.d("[AUTOMATIC BOOT INIT] INIT");
+            SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
+            if (Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
+                savePendingAudit.saveAudit(
+                        OPERATION,
+                        METHOD,
+                        RESULT,
+                        context
+                );
+            } else {
+                AutomaticAudit.createAutomaticAudit(
+                        OPERATION,
+                        METHOD,
+                        RESULT,
+                        context);
+            }
+        }catch (Exception ex){
+            TrustLogger.d("[BootCompleted] ERROR: " +ex.getMessage());
         }
+
 
     }
 }
