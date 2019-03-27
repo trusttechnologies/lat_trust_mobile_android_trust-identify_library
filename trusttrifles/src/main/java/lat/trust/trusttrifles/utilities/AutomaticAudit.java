@@ -102,12 +102,14 @@ public class AutomaticAudit {
                 String lat = String.valueOf(location != null ? location.getLatitude() : "no latitude avaliable");
                 String lng = String.valueOf(location != null ? location.getLongitude() : "no longitude avaliable");
 
-                AuditExtraData auditExtraData = null;
+                AuditExtraData auditExtraData = new AuditExtraData();
                 if (Hawk.contains("DNI")) {
                     TrustLogger.d("TOKEN IS EXIST : " + Hawk.get("DNI"));
-                    auditExtraData = Hawk.get("DNI");
+                    auditExtraData.setDni(Hawk.get("DNI").toString());
                 } else {
                     TrustLogger.d("TOKEN NOT EXIST ");
+                    auditExtraData.setDni("");
+
                 }
                 TrustClient mClient = TrustClient.getInstance();
 

@@ -13,6 +13,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.crashlytics.android.Crashlytics;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.orhanobut.hawk.Hawk;
 
 import io.fabric.sdk.android.Fabric;
 import lat.trust.trusttrifles.utilities.TrustLogger;
@@ -42,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 TrustLogger.d(Utils.getActualConnection(MainActivity.this));
+
+                Hawk.put("DNI", "18236924-1");
             }
         });
         //TrustClient.start();

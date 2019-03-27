@@ -1,13 +1,18 @@
 package lat.trust.trusttrifles.model.audit;
 
-import com.google.gson.Gson;
-
 public class AuditExtraData {
 
-    private String object_json;
+    private String dni;
 
-    private static String getObjectJson(Object myObj) {
-        Gson gson = new Gson();
-        return gson.toJson(myObj);
+
+    public AuditExtraData() {
+    }
+
+    public String getDni() {
+        return dni;
+    }
+
+    public void setDni(String dni) {
+        this.dni = dni;
     }
 }
