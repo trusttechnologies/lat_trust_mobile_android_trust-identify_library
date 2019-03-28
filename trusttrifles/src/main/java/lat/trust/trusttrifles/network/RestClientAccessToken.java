@@ -8,7 +8,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RestClientAccessToken {
-    private static final String BASE_URL = "http://3.16.85.43:3000/";
+    private static final String BASE_URL = "https://atenea.trust.lat/";
     private static final int CONNECT_TIMEOUT = 30 * 4;
     private static final int WRITE_TIMEOUT = 30 * 4;
     private static final int READ_TIMEOUT = 30 * 4;

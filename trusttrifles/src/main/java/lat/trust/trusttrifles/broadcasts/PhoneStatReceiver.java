@@ -32,7 +32,23 @@ public class PhoneStatReceiver extends BroadcastReceiver {
             if (intent.getAction().equals(Intent.ACTION_NEW_OUTGOING_CALL)) {
                 incomingFlag = false;
                 String phoneNumber = intent.getStringExtra(Intent.EXTRA_PHONE_NUMBER);
-                TrustLogger.d("[CALL STATE RECEIVER] call OUT:" + phoneNumber);
+                TrustLogger.d("[CALL STATE RECEIVER] call OUT TO:" + phoneNumber);
+                if (Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
+                    savePendingAudit.saveAudit(
+                            OPERATION,
+                            METHOD,
+                            RESULT + "CALL OUT TO: " + phoneNumber,
+                            context
+                    );
+                } else {
+                    AutomaticAudit.createAutomaticAudit(
+                            OPERATION,
+                            METHOD,
+                            RESULT + "CALL OUT: " + phoneNumber,
+                            context
+                    );
+                    savePendingAudit.sendPendingAudits();
+                }
             } else {
 
                 TelephonyManager tm = (TelephonyManager) context.getSystemService(Service.TELEPHONY_SERVICE);

@@ -113,7 +113,6 @@ public class AutomaticAudit {
                 }
                 TrustClient mClient = TrustClient.getInstance();
 
-
                 mClient.createAuditTest(getSavedTrustId(), auditTransaction, lat, lng, auditExtraData, new TrustListener.OnResultSimple() {
                     @Override
                     public void onResult(int code, String message) {
@@ -126,8 +125,6 @@ public class AutomaticAudit {
 
         }
     }
-
-
     /**
      * generate a new trust id (one per device) and generate an audit.
      *

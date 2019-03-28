@@ -91,7 +91,9 @@ public class SavePendingAudit {
             for (SavedAudit saved : lstAudit) {
                 AutomaticAudit.createAutomaticAudit(
                         saved.getOperation(),
-                        saved.getMethod(), saved.getResult(), mContext);
+                        saved.getMethod(),
+                        saved.getResult(),
+                        mContext);
             }
             TrustLogger.d("[SAVED AUDIT] PENDINGS AUDITS WAS SAVED");
             lstAudit.clear();
