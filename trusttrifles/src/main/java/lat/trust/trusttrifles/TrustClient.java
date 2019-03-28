@@ -3,6 +3,7 @@ package lat.trust.trusttrifles;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -104,54 +105,74 @@ public class TrustClient {
     private static final String METHOD = "RECEIVER WIFI AUDIT";
     private static final String RESULT = "WIFI_STATE_ENABLED: NAME: ";
 
-/*
-    private static BroadcastReceiver wifiState = new BroadcastReceiver() {
+
+  /*  private static BroadcastReceiver wifiState = new BroadcastReceiver() {
         @Override
         public void onReceive(final Context context, Intent intent) {
             TrustLogger.d("[WIFI STATE RECEIVER]");
-            if (Hawk.contains(Constants.TRUST_ID_AUTOMATIC)) {
-                final SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
-                int wifiState = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, WifiManager.WIFI_STATE_UNKNOWN);
-                String wifiStateText = "No State";
-                switch (wifiState) {
-                    case WifiManager.WIFI_STATE_DISABLED:
-                        savePendingAudit.saveAudit(OPERATION, METHOD, RESULT, Utils.getLatitude(context), Utils.getLongitude(context), Utils.getCurrentTimeStamp());
-                        wifiStateText = "[WIFI STATE RECEIVER] WIFI_STATE_DISABLED";
-                        break;
-                    case WifiManager.WIFI_STATE_ENABLED:
-                        wifiStateText = "[WIFI STATE RECEIVER] WIFI_STATE_ENABLED";
-                        new Handler().postDelayed(new Runnable() {
-                            @SuppressLint("MissingPermission")
-                            @Override
-                            public void run() {
-                                WifiManager wifiMgr = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-                                WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
-                                int ip = wifiInfo.getIpAddress();
-                                String ipAddress = Formatter.formatIpAddress(ip);
-                                String name = wifiInfo.getSSID() == null ? "No wifi avaliable" : wifiInfo.getSSID();
-                                AutomaticAudit.createAutomaticAudit(
-                                        OPERATION,
-                                        METHOD,
-                                        RESULT + name + " IP: " + ipAddress,
-                                        context);
-                                savePendingAudit.sendPendingAudits();
-                                lat.trust.trusttrifles.model.audit.AuditTransaction auditTransaction = new lat.trust.trusttrifles.model.audit.AuditTransaction(
-                                        RESULT + name + " IP: " + ipAddress, METHOD, OPERATION, Utils.getCurrentTimeStamp()
-                                );
-                            }
-                        }, 5000);
-                        break;
-                    case WifiManager.WIFI_STATE_UNKNOWN:
-                        wifiStateText = "[WIFI STATE RECEIVER] WIFI_STATE_UNKNOWN";
-                        break;
-                    default:
-                        break;
-                }
-                TrustLogger.d(wifiStateText);
+            final SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
+            int wifiState = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, WifiManager.WIFI_STATE_UNKNOWN);
+            String wifiStateText = "No State";
+            switch (wifiState) {
+                case WifiManager.WIFI_STATE_DISABLED:
+                    savePendingAudit.saveAudit(
+                            OPERATION,
+                            METHOD,
+                            RESULT,
+                            context);
+                    wifiStateText = "[WIFI STATE RECEIVER] WIFI_STATE_DISABLED";
+                    break;
+                case WifiManager.WIFI_STATE_ENABLED:
+                    wifiStateText = "[WIFI STATE RECEIVER] WIFI_STATE_ENABLED";
+                    new Handler().postDelayed(new Runnable() {
+                        @SuppressLint("MissingPermission")
+                        @Override
+                        public void run() {
+                            WifiManager wifiMgr = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                            WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
+                            int ip = wifiInfo.getIpAddress();
+                            String ipAddress = Formatter.formatIpAddress(ip);
+                            String name = wifiInfo.getSSID() == null ? "No wifi avaliable" : wifiInfo.getSSID();
+                            AutomaticAudit.createAutomaticAudit(
+                                    OPERATION,
+                                    METHOD,
+                                    RESULT + name + " IP: " + ipAddress,
+                                    context);
+                            savePendingAudit.sendPendingAudits();
+                        }
+                    }, 5000);
+                    break;
+                case WifiManager.WIFI_STATE_UNKNOWN:
+                    wifiStateText = "[WIFI STATE RECEIVER] WIFI_STATE_UNKNOWN";
+
+                    break;
+                default:
+                    break;
+            }
+            TrustLogger.d(wifiStateText);
+
+        }
+    };
+
+*/
+
+
+    private BroadcastReceiver wifiStateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int wifiStateExtra = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE,
+                    WifiManager.WIFI_STATE_UNKNOWN);
+
+            switch (wifiStateExtra) {
+                case WifiManager.WIFI_STATE_ENABLED:
+                    TrustLogger.d("**************** WIIIIIFIIIIIII OOOOOOOOOON");
+                    break;
+                case WifiManager.WIFI_STATE_DISABLED:
+                    TrustLogger.d("*************** WIIIIIFIIIIIII OOOOOOOOOON");
+                    break;
             }
         }
     };
-*/
 
     private TrustClient() {
         TrustLogger.d("[TRUST CLIENT] : CREATE A INSTANCE");
@@ -209,6 +230,8 @@ public class TrustClient {
         TrustLogger.d("[TRUST CLIENT] : INIT ");
         mContext = context;
         trustInstance = new TrustClient();
+
+
     }
 
     /**
@@ -1040,6 +1063,12 @@ public class TrustClient {
                         audit.setTrustid(body.getTrustid());
                         body.setAudit(audit);
                         if (body != null) {
+
+                            TrustLogger.d("[TRUST CLIENT] REGISTER WIFI RECEIVER");
+                            IntentFilter intentFilter = new IntentFilter();
+                            intentFilter.addAction(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
+                            mContext.registerReceiver(wifiStateReceiver, intentFilter);
+
                             listener.onSuccess(response.code(), body.getAudit());
                             mPreferences.put(TRUST_ID, body.getAudit().getTrustid());
                             Hawk.put(Constants.TRUST_ID_AUTOMATIC, body.getTrustid());

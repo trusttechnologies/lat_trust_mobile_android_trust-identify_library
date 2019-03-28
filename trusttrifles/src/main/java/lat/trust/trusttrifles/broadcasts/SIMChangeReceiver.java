@@ -47,12 +47,12 @@ public class SIMChangeReceiver extends BroadcastReceiver {
             String simID = tm.getSimSerialNumber();
             String country = tm.getSimCountryIso();
             String company = "";
+            SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
 
             if (simID == null) {
                 String resultOut = "[SIM CHANGE] SIM OUT: null";
                 if (Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
                     TrustLogger.d("[SIM CHANGE] NO WIFI AVALIABLE, SAVING THIS AUDIT...");
-                    SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
                     savePendingAudit.saveAudit(
                             OPERATION,
                             METHOD,
@@ -68,13 +68,11 @@ public class SIMChangeReceiver extends BroadcastReceiver {
                             RESULT + resultOut,
                             context);
                 }
-
             } else {
                 String resultIn = "[SIM CHANGE] SIM IN id: " + simID + " country :" + country + " company: " + company;
 
                 if (Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
                     TrustLogger.d("[SIM CHANGE] NO WIFI AVALIABLE, SAVING THIS AUDIT...");
-                    SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
                     savePendingAudit.saveAudit(
                             OPERATION,
                             METHOD,
