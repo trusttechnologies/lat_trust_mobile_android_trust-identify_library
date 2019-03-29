@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
                 Hawk.put(Constants.DNI_USER, "18236924-1");
                 Hawk.put(Constants.EMAIL_USER, "fcaro@trust.lat");
-                Hawk.put(Constants.LASNAME_USER, "Caro");
+                Hawk.put(Constants.LASTNAME_USER, "Caro");
                 Hawk.put(Constants.NAME_USER, "fFELIPE");
                 Hawk.put(Constants.PHONE_USER, "+56982110950");
             }
