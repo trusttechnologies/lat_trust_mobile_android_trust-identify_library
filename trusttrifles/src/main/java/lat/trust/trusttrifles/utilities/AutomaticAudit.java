@@ -16,6 +16,7 @@ import lat.trust.trusttrifles.TrustClient;
 import lat.trust.trusttrifles.TrustListener;
 import lat.trust.trusttrifles.broadcasts.AlarmReceiver;
 import lat.trust.trusttrifles.model.Audit;
+import lat.trust.trusttrifles.model.Identity;
 import lat.trust.trusttrifles.model.audit.AuditExtraData;
 import lat.trust.trusttrifles.model.audit.AuditTransaction;
 
@@ -103,13 +104,18 @@ public class AutomaticAudit {
                 String lng = String.valueOf(location != null ? location.getLongitude() : "no longitude avaliable");
 
                 AuditExtraData auditExtraData = new AuditExtraData();
-                if (Hawk.contains("DNI")) {
-                    TrustLogger.d("TOKEN IS EXIST : " + Hawk.get("DNI"));
-                    auditExtraData.setDni(Hawk.get("DNI").toString());
+                if (Hawk.contains(Constants.DNI_USER)) {
+                    TrustLogger.d("[AUTOMATIC AUDIT]TOKEN IS EXIST : " + Hawk.get("DNI"));
+                    Identity identity = new Identity();
+                    identity.setDni(Hawk.get(Constants.DNI_USER).toString());
+                    identity.setEmail(Hawk.get(Constants.EMAIL_USER).toString());
+                    identity.setLastname(Hawk.get(Constants.LASTNAME_USER).toString());
+                    identity.setName(Hawk.get(Constants.NAME_USER).toString());
+                    identity.setPhone(Hawk.get(Constants.PHONE_USER).toString());
+                    auditExtraData.setIdentity(identity);
                 } else {
                     TrustLogger.d("TOKEN NOT EXIST ");
-                    auditExtraData.setDni("");
-
+                    auditExtraData.setIdentity(new Identity());
                 }
                 TrustClient mClient = TrustClient.getInstance();
 
@@ -125,6 +131,7 @@ public class AutomaticAudit {
 
         }
     }
+
     /**
      * generate a new trust id (one per device) and generate an audit.
      *

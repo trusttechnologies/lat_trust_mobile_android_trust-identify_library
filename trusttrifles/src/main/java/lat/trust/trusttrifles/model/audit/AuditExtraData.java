@@ -1,18 +1,20 @@
 package lat.trust.trusttrifles.model.audit;
 
+import lat.trust.trusttrifles.model.Identity;
+
 public class AuditExtraData {
 
-    private String dni;
+    private Identity identity;
 
+    public Identity getIdentity() {
+        return identity;
+    }
+
+    public void setIdentity(Identity identity) {
+        this.identity = identity;
+    }
 
     public AuditExtraData() {
     }
 
-    public String getDni() {
-        return dni;
-    }
-
-    public void setDni(String dni) {
-        this.dni = dni;
-    }
 }

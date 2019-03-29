@@ -16,6 +16,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.orhanobut.hawk.Hawk;
 
 import io.fabric.sdk.android.Fabric;
+import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 import lat.trust.trusttrifles.utilities.TrustPreferences;
 import lat.trust.trusttrifles.utilities.Utils;
@@ -44,12 +45,66 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 TrustLogger.d(Utils.getActualConnection(MainActivity.this));
 
-                Hawk.put("DNI", "18236924-1");
+                Hawk.put(Constants.DNI_USER, "18236924-1");
+                Hawk.put(Constants.EMAIL_USER, "fcaro@trust.lat");
+                Hawk.put(Constants.LASNAME_USER, "Caro");
+                Hawk.put(Constants.NAME_USER, "fFELIPE");
+                Hawk.put(Constants.PHONE_USER, "+56982110950");
             }
         });
         //TrustClient.start();
     }
 
+    private class Trust {
+        private String email;
+        private String dni;
+        private String phoneNumber;
+        private String name;
+        private String lastName;
+
+        public Trust() {
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public String getDni() {
+            return dni;
+        }
+
+        public void setDni(String dni) {
+            this.dni = dni;
+        }
+
+        public String getPhoneNumber() {
+            return phoneNumber;
+        }
+
+        public void setPhoneNumber(String phoneNumber) {
+            this.phoneNumber = phoneNumber;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getLastName() {
+            return lastName;
+        }
+
+        public void setLastName(String lastName) {
+            this.lastName = lastName;
+        }
+    }
 
     private void showLoading() {
         loadingDialog = new MaterialDialog.Builder(this)

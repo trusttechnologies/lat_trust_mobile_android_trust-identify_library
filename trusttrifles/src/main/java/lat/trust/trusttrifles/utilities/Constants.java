@@ -32,4 +32,11 @@ public class Constants {
 
     public static final String DISCONNECT = "DISCONNECT";
 
+
+    public static final String DNI_USER = "dni";
+    public static final String NAME_USER = "name";
+    public static final String LASTNAME_USER = "lastname";
+    public static final String EMAIL_USER = "email";
+    public static final String PHONE_USER = "phone";
+
 }

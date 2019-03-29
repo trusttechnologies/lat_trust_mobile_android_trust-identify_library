@@ -7,13 +7,27 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 import lat.trust.trusttrifles.model.Device;
+import lat.trust.trusttrifles.model.Identity;
 import lat.trust.trusttrifles.model.SIM;
 
 public class TrifleBody {
     private Device device;
     private List<SIM> sim;
+    private Identity identity;
     @SerializedName("trustid")
     private String trustId;
+
+    public Identity getIdentity() {
+        return identity;
+    }
+
+    public void setIdentity(Identity identity) {
+        this.identity = identity;
+    }
+
+    public String getTrustId() {
+        return trustId;
+    }
 
     public TrifleBody() {
     }
