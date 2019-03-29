@@ -328,77 +328,72 @@ public class TrustClient {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    try {
-                        ArrayList<String> permits = new ArrayList<>();
-                        boolean permits_found = true;
-                        if (required_permits) {
-                            if (!permissionGranted(READ_PHONE_STATE)) {
-                                permits.add(READ_PHONE_STATE);
-                                permits_found = false;
-                            }
-                            if (!permissionGranted(CAMERA)) {
-                                permits.add(CAMERA);
-                                permits_found = false;
-                            }
-                            if (!permissionGranted(ACCESS_COARSE_LOCATION)) {
-                                permits.add(ACCESS_COARSE_LOCATION);
-                                permits_found = false;
-                            }
-                            permits_found_collection.add(permits_found);
-                            if (!required_permits || permits_found) {
-                                Device device = new Device();
-                                //@RequiresPermission(READ_PHONE_STATE)
-                                if (permissionGranted(READ_PHONE_STATE))
-                                    getDeviceData(device);
-                                getBatteryData(device);
-                                getSensorsData(device);
-                                //@RequiresPermission(CAMERA)
-                                if (permissionGranted(CAMERA))
-                                    getCameraData(device);
-                                getNFCData(device);
-                                getMemDataCat(device);
-                                getCPUDataCat(device);
-                                //@RequiresPermission(READ_PHONE_STATE)
-                                if (permissionGranted(READ_PHONE_STATE))
-                                    getImei(device);
-
-                                getWifiState(device);
-                                getBluetoothState(device);
-                                //@RequiresPermission(READ_PHONE_STATE)
-                                if (permissionGranted(READ_PHONE_STATE))
-                                    getRedGState(device);
-                                device.setWlan0Mac(getMacAddress());
-                                device.setGoogle_service_framework_gsf(getGoogleServiceFramework());
-                                device.setAndroid_device_id(getAndroidDeviceID());
-                                device.setRoot(getRooted());
-                                String uuid = UUID.randomUUID().toString();
-                                device.setUUID(uuid);
-
-                                List<SIM> simList = null;
-                                //@RequiresPermission(allOf = {READ_PHONE_STATE, ACCESS_COARSE_LOCATION})
-                                if (permissionGranted(READ_PHONE_STATE) && permissionGranted(ACCESS_COARSE_LOCATION))
-                                    simList = getTelInfo();
-
-                                mBody.setDevice(device);
-                                if (simList != null)
-                                    mBody.setSim(simList);
-                                else
-                                    mBody.setSim(new ArrayList<SIM>());
-
-                                String trustId = mPreferences.getString(TRUST_ID);
-                                mBody.setTrustId(trustId);
-
-                                Set<String> stringSet = mPreferences.getStringSet(TRUST_TRIFLES);
-                                if (stringSet == null) stringSet = new HashSet<>();
-                                stringSet.add(mBody.toJSON());
-                                mPreferences.put(TRUST_TRIFLES, stringSet);
-
-                            } else
-                                listener.onPermissionRequired(permits);
+                    ArrayList<String> permits = new ArrayList<>();
+                    boolean permits_found = true;
+                    if (required_permits) {
+                        if (!permissionGranted(READ_PHONE_STATE)) {
+                            permits.add(READ_PHONE_STATE);
+                            permits_found = false;
                         }
-                    } catch (Exception ex) {
-                        TrustLogger.d("[TRUST CLIENT] TOKEN NO EXIST ");
+                        if (!permissionGranted(CAMERA)) {
+                            permits.add(CAMERA);
+                            permits_found = false;
+                        }
+                        if (!permissionGranted(ACCESS_COARSE_LOCATION)) {
+                            permits.add(ACCESS_COARSE_LOCATION);
+                            permits_found = false;
+                        }
+                        permits_found_collection.add(permits_found);
+                        if (!required_permits || permits_found) {
+                            Device device = new Device();
+                            //@RequiresPermission(READ_PHONE_STATE)
+                            if (permissionGranted(READ_PHONE_STATE))
+                                getDeviceData(device);
+                            getBatteryData(device);
+                            getSensorsData(device);
+                            //@RequiresPermission(CAMERA)
+                            if (permissionGranted(CAMERA))
+                                getCameraData(device);
+                            getNFCData(device);
+                            getMemDataCat(device);
+                            getCPUDataCat(device);
+                            //@RequiresPermission(READ_PHONE_STATE)
+                            if (permissionGranted(READ_PHONE_STATE))
+                                getImei(device);
 
+                            getWifiState(device);
+                            getBluetoothState(device);
+                            //@RequiresPermission(READ_PHONE_STATE)
+                            if (permissionGranted(READ_PHONE_STATE))
+                                getRedGState(device);
+                            device.setWlan0Mac(getMacAddress());
+                            device.setGoogle_service_framework_gsf(getGoogleServiceFramework());
+                            device.setAndroid_device_id(getAndroidDeviceID());
+                            device.setRoot(getRooted());
+                            String uuid = UUID.randomUUID().toString();
+                            device.setUUID(uuid);
+
+                            List<SIM> simList = null;
+                            //@RequiresPermission(allOf = {READ_PHONE_STATE, ACCESS_COARSE_LOCATION})
+                            if (permissionGranted(READ_PHONE_STATE) && permissionGranted(ACCESS_COARSE_LOCATION))
+                                simList = getTelInfo();
+
+                            mBody.setDevice(device);
+                            if (simList != null)
+                                mBody.setSim(simList);
+                            else
+                                mBody.setSim(new ArrayList<SIM>());
+
+                            String trustId = mPreferences.getString(TRUST_ID);
+                            mBody.setTrustId(trustId);
+
+                            Set<String> stringSet = mPreferences.getStringSet(TRUST_TRIFLES);
+                            if (stringSet == null) stringSet = new HashSet<>();
+                            stringSet.add(mBody.toJSON());
+                            mPreferences.put(TRUST_TRIFLES, stringSet);
+
+                        } else
+                            listener.onPermissionRequired(permits);
                     }
                 }
             }, 5000);
@@ -406,27 +401,23 @@ public class TrustClient {
                 @SuppressLint("MissingPermission")
                 @Override
                 public void run() {
-                    try {
-                        if (requestTrustId && permits_found_collection.size() > 0
-                                && permits_found_collection.get(0)) {
-                            if (Hawk.contains(Constants.DNI_USER)) {
-                                Identity identity = new Identity();
-                                TrustLogger.d("[TRUST CLIENT] TOKEN IS EXIST : " + Hawk.get("DNI"));
-                                identity.setDni(Hawk.get(Constants.DNI_USER).toString());
-                                identity.setEmail(Hawk.get(Constants.EMAIL_USER).toString());
-                                identity.setLastname(Hawk.get(Constants.LASTNAME_USER).toString());
-                                identity.setName(Hawk.get(Constants.NAME_USER).toString());
-                                identity.setPhone(Hawk.get(Constants.PHONE_USER).toString());
-                                mBody.setIdentity(identity);
-                            } else {
-                                TrustLogger.d("[TRUST CLIENT] TOKEN NO EXIST ");
-
-                            }
-                            sendTrifles(mBody, listener);
+                    if (requestTrustId && permits_found_collection.size() > 0
+                            && permits_found_collection.get(0)) {
+                        if (Hawk.contains(Constants.DNI_USER)) {
+                            Identity identity = new Identity();
+                            TrustLogger.d("[TRUST CLIENT] TOKEN IS EXIST : " + Hawk.get("DNI"));
+                            identity.setDni(Hawk.get(Constants.DNI_USER).toString());
+                            identity.setEmail(Hawk.get(Constants.EMAIL_USER).toString());
+                            identity.setLastname(Hawk.get(Constants.LASTNAME_USER).toString());
+                            identity.setName(Hawk.get(Constants.NAME_USER).toString());
+                            identity.setPhone(Hawk.get(Constants.PHONE_USER).toString());
+                            mBody.setIdentity(identity);
+                        } else {
+                            TrustLogger.d("[TRUST CLIENT] TOKEN NO EXIST ");
                         }
-                    } catch (Exception ex) {
-                        TrustLogger.d("[TRUST CLIENT] Error send trifles: " + ex.getMessage());
+                        sendTrifles(mBody, listener);
                     }
+
 
                 }
             }, 10000);
@@ -1094,16 +1085,12 @@ public class TrustClient {
                         body.setAudit(audit);
                         if (body != null) {
 
-                            TrustLogger.d("[TRUST CLIENT] REGISTER WIFI RECEIVER");
-                            IntentFilter intentFilter = new IntentFilter();
-                            intentFilter.addAction(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
-                            mContext.registerReceiver(wifiStateReceiver, intentFilter);
 
-                            listener.onSuccess(response.code(), body.getAudit());
                             mPreferences.put(TRUST_ID, body.getAudit().getTrustid());
                             Hawk.put(Constants.TRUST_ID_AUTOMATIC, body.getTrustid());
                             TrustLogger.d("[TRUST CLIENT] TRUST ID WAS CREATED: " + body.getTrustid());
                             restoreWIFIandBluetooth(true, true);
+                            listener.onSuccess(response.code(), body.getAudit());
 
                         } else {
                             Throwable cause = new Throwable("Body null");
