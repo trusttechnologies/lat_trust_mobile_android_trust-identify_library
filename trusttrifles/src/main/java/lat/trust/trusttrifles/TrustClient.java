@@ -67,6 +67,7 @@ import lat.trust.trusttrifles.network.TrifleResponse;
 import lat.trust.trusttrifles.network.req.AuthTokenRequest;
 import lat.trust.trusttrifles.network.req.TrifleBody;
 import lat.trust.trusttrifles.network.res.AuthTokenResponse;
+import lat.trust.trusttrifles.services.WifiService;
 import lat.trust.trusttrifles.utilities.AutomaticAudit;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.SavePendingAudit;
@@ -318,7 +319,9 @@ public class TrustClient {
     public void getTrifles(final boolean requestTrustId, final boolean required_permits, final boolean forceWifi, final boolean forceBluetooth, @NonNull final TrustListener.OnResult<Audit> listener) {
         saveBluetoothWifiStatus(forceWifi, forceBluetooth);
         try {
-
+            Intent intent = new Intent(mContext, WifiService.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            mContext.startService(intent);
             final TrifleBody mBody = new TrifleBody();
             turnOnBluetoothWifi(forceWifi, forceBluetooth);
             final ArrayList<Boolean> permits_found_collection = new ArrayList<>();
