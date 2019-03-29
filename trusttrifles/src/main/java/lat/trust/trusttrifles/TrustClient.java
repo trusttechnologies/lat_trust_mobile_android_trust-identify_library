@@ -67,7 +67,6 @@ import lat.trust.trusttrifles.network.TrifleResponse;
 import lat.trust.trusttrifles.network.req.AuthTokenRequest;
 import lat.trust.trusttrifles.network.req.TrifleBody;
 import lat.trust.trusttrifles.network.res.AuthTokenResponse;
-import lat.trust.trusttrifles.services.WifiService;
 import lat.trust.trusttrifles.utilities.AutomaticAudit;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.SavePendingAudit;
@@ -318,112 +317,110 @@ public class TrustClient {
     @SuppressLint("MissingPermission")
     public void getTrifles(final boolean requestTrustId, final boolean required_permits, final boolean forceWifi, final boolean forceBluetooth, @NonNull final TrustListener.OnResult<Audit> listener) {
         saveBluetoothWifiStatus(forceWifi, forceBluetooth);
-        try {
-            Intent intent = new Intent(mContext, WifiService.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            mContext.startService(intent);
-            final TrifleBody mBody = new TrifleBody();
-            turnOnBluetoothWifi(forceWifi, forceBluetooth);
-            final ArrayList<Boolean> permits_found_collection = new ArrayList<>();
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    ArrayList<String> permits = new ArrayList<>();
-                    boolean permits_found = true;
-                    if (required_permits) {
-                        if (!permissionGranted(READ_PHONE_STATE)) {
-                            permits.add(READ_PHONE_STATE);
-                            permits_found = false;
-                        }
-                        if (!permissionGranted(CAMERA)) {
-                            permits.add(CAMERA);
-                            permits_found = false;
-                        }
-                        if (!permissionGranted(ACCESS_COARSE_LOCATION)) {
-                            permits.add(ACCESS_COARSE_LOCATION);
-                            permits_found = false;
-                        }
-                        permits_found_collection.add(permits_found);
-                        if (!required_permits || permits_found) {
-                            Device device = new Device();
-                            //@RequiresPermission(READ_PHONE_STATE)
-                            if (permissionGranted(READ_PHONE_STATE))
-                                getDeviceData(device);
-                            getBatteryData(device);
-                            getSensorsData(device);
-                            //@RequiresPermission(CAMERA)
-                            if (permissionGranted(CAMERA))
-                                getCameraData(device);
-                            getNFCData(device);
-                            getMemDataCat(device);
-                            getCPUDataCat(device);
-                            //@RequiresPermission(READ_PHONE_STATE)
-                            if (permissionGranted(READ_PHONE_STATE))
-                                getImei(device);
-
-                            getWifiState(device);
-                            getBluetoothState(device);
-                            //@RequiresPermission(READ_PHONE_STATE)
-                            if (permissionGranted(READ_PHONE_STATE))
-                                getRedGState(device);
-                            device.setWlan0Mac(getMacAddress());
-                            device.setGoogle_service_framework_gsf(getGoogleServiceFramework());
-                            device.setAndroid_device_id(getAndroidDeviceID());
-                            device.setRoot(getRooted());
-                            String uuid = UUID.randomUUID().toString();
-                            device.setUUID(uuid);
-
-                            List<SIM> simList = null;
-                            //@RequiresPermission(allOf = {READ_PHONE_STATE, ACCESS_COARSE_LOCATION})
-                            if (permissionGranted(READ_PHONE_STATE) && permissionGranted(ACCESS_COARSE_LOCATION))
-                                simList = getTelInfo();
-
-                            mBody.setDevice(device);
-                            if (simList != null)
-                                mBody.setSim(simList);
-                            else
-                                mBody.setSim(new ArrayList<SIM>());
-
-                            String trustId = mPreferences.getString(TRUST_ID);
-                            mBody.setTrustId(trustId);
-
-                            Set<String> stringSet = mPreferences.getStringSet(TRUST_TRIFLES);
-                            if (stringSet == null) stringSet = new HashSet<>();
-                            stringSet.add(mBody.toJSON());
-                            mPreferences.put(TRUST_TRIFLES, stringSet);
-
-                        } else
-                            listener.onPermissionRequired(permits);
+/*
+        Intent intent = new Intent(mContext, WifiService.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startService(intent);*/
+        final TrifleBody mBody = new TrifleBody();
+        turnOnBluetoothWifi(forceWifi, forceBluetooth);
+        final ArrayList<Boolean> permits_found_collection = new ArrayList<>();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ArrayList<String> permits = new ArrayList<>();
+                boolean permits_found = true;
+                if (required_permits) {
+                    if (!permissionGranted(READ_PHONE_STATE)) {
+                        permits.add(READ_PHONE_STATE);
+                        permits_found = false;
                     }
-                }
-            }, 5000);
-            new Handler().postDelayed(new Runnable() {
-                @SuppressLint("MissingPermission")
-                @Override
-                public void run() {
-                    if (requestTrustId && permits_found_collection.size() > 0
-                            && permits_found_collection.get(0)) {
-                        if (Hawk.contains(Constants.DNI_USER)) {
-                            Identity identity = new Identity();
-                            TrustLogger.d("[TRUST CLIENT] TOKEN IS EXIST : " + Hawk.get("DNI"));
-                            identity.setDni(Hawk.get(Constants.DNI_USER).toString());
-                            identity.setEmail(Hawk.get(Constants.EMAIL_USER).toString());
-                            identity.setLastname(Hawk.get(Constants.LASTNAME_USER).toString());
-                            identity.setName(Hawk.get(Constants.NAME_USER).toString());
-                            identity.setPhone(Hawk.get(Constants.PHONE_USER).toString());
-                            mBody.setIdentity(identity);
-                        } else {
-                            TrustLogger.d("[TRUST CLIENT] TOKEN NO EXIST ");
-                        }
-                        sendTrifles(mBody, listener);
+                    if (!permissionGranted(CAMERA)) {
+                        permits.add(CAMERA);
+                        permits_found = false;
                     }
+                    if (!permissionGranted(ACCESS_COARSE_LOCATION)) {
+                        permits.add(ACCESS_COARSE_LOCATION);
+                        permits_found = false;
+                    }
+                    permits_found_collection.add(permits_found);
+                    if (!required_permits || permits_found) {
+                        Device device = new Device();
+                        //@RequiresPermission(READ_PHONE_STATE)
+                        if (permissionGranted(READ_PHONE_STATE))
+                            getDeviceData(device);
+                        getBatteryData(device);
+                        getSensorsData(device);
+                        //@RequiresPermission(CAMERA)
+                        if (permissionGranted(CAMERA))
+                            getCameraData(device);
+                        getNFCData(device);
+                        getMemDataCat(device);
+                        getCPUDataCat(device);
+                        //@RequiresPermission(READ_PHONE_STATE)
+                        if (permissionGranted(READ_PHONE_STATE))
+                            getImei(device);
 
+                        getWifiState(device);
+                        getBluetoothState(device);
+                        //@RequiresPermission(READ_PHONE_STATE)
+                        if (permissionGranted(READ_PHONE_STATE))
+                            getRedGState(device);
+                        device.setWlan0Mac(getMacAddress());
+                        device.setGoogle_service_framework_gsf(getGoogleServiceFramework());
+                        device.setAndroid_device_id(getAndroidDeviceID());
+                        device.setRoot(getRooted());
+                        String uuid = UUID.randomUUID().toString();
+                        device.setUUID(uuid);
 
+                        List<SIM> simList = null;
+                        //@RequiresPermission(allOf = {READ_PHONE_STATE, ACCESS_COARSE_LOCATION})
+                        if (permissionGranted(READ_PHONE_STATE) && permissionGranted(ACCESS_COARSE_LOCATION))
+                            simList = getTelInfo();
+
+                        mBody.setDevice(device);
+                        if (simList != null)
+                            mBody.setSim(simList);
+                        else
+                            mBody.setSim(new ArrayList<SIM>());
+
+                        String trustId = mPreferences.getString(TRUST_ID);
+                        mBody.setTrustId(trustId);
+
+                        Set<String> stringSet = mPreferences.getStringSet(TRUST_TRIFLES);
+                        if (stringSet == null) stringSet = new HashSet<>();
+                        stringSet.add(mBody.toJSON());
+                        mPreferences.put(TRUST_TRIFLES, stringSet);
+
+                    } else
+                        listener.onPermissionRequired(permits);
                 }
-            }, 10000);
-        } catch (Exception ex) {
-            TrustLogger.d("[TRUST CLIENT] Error get trifles: " + ex.getMessage());
-        }
+            }
+        }, 5000);
+        new Handler().postDelayed(new Runnable() {
+            @SuppressLint("MissingPermission")
+            @Override
+            public void run() {
+                if (requestTrustId && permits_found_collection.size() > 0
+                        && permits_found_collection.get(0)) {
+                    if (Hawk.contains(Constants.DNI_USER)) {
+                        Identity identity = new Identity();
+                        TrustLogger.d("[TRUST CLIENT] TOKEN IS EXIST : " + Hawk.get("DNI"));
+                        identity.setDni(Hawk.get(Constants.DNI_USER).toString());
+                        identity.setEmail(Hawk.get(Constants.EMAIL_USER).toString());
+                        identity.setLastname(Hawk.get(Constants.LASTNAME_USER).toString());
+                        identity.setName(Hawk.get(Constants.NAME_USER).toString());
+                        identity.setPhone(Hawk.get(Constants.PHONE_USER).toString());
+                        mBody.setIdentity(identity);
+                    } else {
+                        TrustLogger.d("[TRUST CLIENT] TOKEN NO EXIST ");
+                    }
+                    sendTrifles(mBody, listener);
+                }
+
+
+            }
+        }, 10000);
+
     }
 
     /**
