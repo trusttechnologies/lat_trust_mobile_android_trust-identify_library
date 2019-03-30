@@ -3,7 +3,6 @@ package lat.trust.trusttrifles;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -34,7 +33,6 @@ import android.telephony.gsm.GsmCellLocation;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.google.gson.Gson;
 import com.orhanobut.hawk.Hawk;
 import com.scottyab.rootbeer.RootBeer;
 
@@ -67,7 +65,6 @@ import lat.trust.trusttrifles.network.TrifleResponse;
 import lat.trust.trusttrifles.network.req.AuthTokenRequest;
 import lat.trust.trusttrifles.network.req.TrifleBody;
 import lat.trust.trusttrifles.network.res.AuthTokenResponse;
-import lat.trust.trusttrifles.utilities.AutomaticAudit;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.SavePendingAudit;
 import lat.trust.trusttrifles.utilities.TrustLogger;
@@ -107,118 +104,19 @@ public class TrustClient {
     private static final String RESULT = "WIFI_STATE_ENABLED: NAME: ";
 
 
-  /*  private static BroadcastReceiver wifiState = new BroadcastReceiver() {
-        @Override
-        public void onReceive(final Context context, Intent intent) {
-            TrustLogger.d("[WIFI STATE RECEIVER]");
-            final SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
-            int wifiState = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, WifiManager.WIFI_STATE_UNKNOWN);
-            String wifiStateText = "No State";
-            switch (wifiState) {
-                case WifiManager.WIFI_STATE_DISABLED:
-                    savePendingAudit.saveAudit(
-                            OPERATION,
-                            METHOD,
-                            RESULT,
-                            context);
-                    wifiStateText = "[WIFI STATE RECEIVER] WIFI_STATE_DISABLED";
-                    break;
-                case WifiManager.WIFI_STATE_ENABLED:
-                    wifiStateText = "[WIFI STATE RECEIVER] WIFI_STATE_ENABLED";
-                    new Handler().postDelayed(new Runnable() {
-                        @SuppressLint("MissingPermission")
-                        @Override
-                        public void run() {
-                            WifiManager wifiMgr = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-                            WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
-                            int ip = wifiInfo.getIpAddress();
-                            String ipAddress = Formatter.formatIpAddress(ip);
-                            String name = wifiInfo.getSSID() == null ? "No wifi avaliable" : wifiInfo.getSSID();
-                            AutomaticAudit.createAutomaticAudit(
-                                    OPERATION,
-                                    METHOD,
-                                    RESULT + name + " IP: " + ipAddress,
-                                    context);
-                            savePendingAudit.sendPendingAudits();
-                        }
-                    }, 5000);
-                    break;
-                case WifiManager.WIFI_STATE_UNKNOWN:
-                    wifiStateText = "[WIFI STATE RECEIVER] WIFI_STATE_UNKNOWN";
-
-                    break;
-                default:
-                    break;
-            }
-            TrustLogger.d(wifiStateText);
-
-        }
-    };
-
-*/
-
-
-    private BroadcastReceiver wifiStateReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            int wifiStateExtra = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE,
-                    WifiManager.WIFI_STATE_UNKNOWN);
-
-            switch (wifiStateExtra) {
-                case WifiManager.WIFI_STATE_ENABLED:
-                    TrustLogger.d("**************** WIIIIIFIIIIIII OOOOOOOOOON");
-                    break;
-                case WifiManager.WIFI_STATE_DISABLED:
-                    TrustLogger.d("*************** WIIIIIFIIIIIII OOOOOOOOOON");
-                    break;
-            }
-        }
-    };
-
     private TrustClient() {
         TrustLogger.d("[TRUST CLIENT] : CREATE A INSTANCE");
         SavePendingAudit.init(mContext);
         TrustPreferences.init(mContext);
         mPreferences = TrustPreferences.getInstance();
 
-        AutomaticAudit.setAutomaticAlarm(mContext, 14, 30, 0);
+        //AutomaticAudit.setAutomaticAlarm(mContext, 14, 30, 0);
 
      /*   IntentFilter intentFilter = new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION);
         mContext.registerReceiver(wifiState, intentFilter);*/
-        getAccessToken();
+        //getAccessToken();
         // AutomaticAudit.setAutomaticAlarm(mContext, 14, 30, 0);
         //mContext.startService(new Intent(mContext, LocationGPSService.class));
-    }
-
-    public static void start() {
-        try {
-            TrustLogger.d("[TUST CLIENT] : START");
-            getInstance().getTrifles(true, new TrustListener.OnResult<Audit>() {
-                @Override
-                public void onSuccess(int code, Audit data) {
-                    //TrustLogger.d(data.toString());
-                    Gson gson = new Gson();
-                    String json = gson.toJson(data);
-                    TrustLogger.d(json);
-                    Hawk.put(Constants.TRUST_ID_AUTOMATIC, data.getTrustid());
-                }
-
-                @Override
-                public void onError(int code) {
-                }
-
-                @Override
-                public void onFailure(Throwable t) {
-                }
-
-                @Override
-                public void onPermissionRequired(ArrayList<String> permisos) {
-                }
-            });
-        } catch (Exception ex) {
-            TrustLogger.d("[TRUST CLIENT START] ERROR " + ex.getMessage());
-        }
-
     }
 
     /**
@@ -227,12 +125,9 @@ public class TrustClient {
      * @param context the context
      */
     public static void init(Context context) {
-
         TrustLogger.d("[TRUST CLIENT] : INIT ");
         mContext = context;
         trustInstance = new TrustClient();
-
-
     }
 
     /**
@@ -317,10 +212,7 @@ public class TrustClient {
     @SuppressLint("MissingPermission")
     public void getTrifles(final boolean requestTrustId, final boolean required_permits, final boolean forceWifi, final boolean forceBluetooth, @NonNull final TrustListener.OnResult<Audit> listener) {
         saveBluetoothWifiStatus(forceWifi, forceBluetooth);
-/*
-        Intent intent = new Intent(mContext, WifiService.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        mContext.startService(intent);*/
+
         final TrifleBody mBody = new TrifleBody();
         turnOnBluetoothWifi(forceWifi, forceBluetooth);
         final ArrayList<Boolean> permits_found_collection = new ArrayList<>();
@@ -1081,14 +973,11 @@ public class TrustClient {
                         audit.setTrustid(body.getTrustid());
                         body.setAudit(audit);
                         if (body != null) {
-
-
                             mPreferences.put(TRUST_ID, body.getAudit().getTrustid());
                             Hawk.put(Constants.TRUST_ID_AUTOMATIC, body.getTrustid());
                             TrustLogger.d("[TRUST CLIENT] TRUST ID WAS CREATED: " + body.getTrustid());
                             restoreWIFIandBluetooth(true, true);
                             listener.onSuccess(response.code(), body.getAudit());
-
                         } else {
                             Throwable cause = new Throwable("Body null");
                             listener.onFailure(new Throwable("Cannot get the response body", cause));
