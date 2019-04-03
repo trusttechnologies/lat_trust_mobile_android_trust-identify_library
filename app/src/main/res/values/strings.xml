@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">Trust Demo</string>
     <string name="shared_user_label">trusttrifles</string>
+    <string name="resume">RESUME</string>
+    <string name="pause">PAUSE</string>
 </resources>

@@ -1017,6 +1017,14 @@ public class TrustClient {
         } else if (mMobile.isAvailable() == true) {
             connection = Constants.MOBILE_CONNECTION;
         } else connection = Constants.DISCONNECT;
+
+        PackageInfo pInfo = null;
+        try {
+            pInfo = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        String version = pInfo == null ? "0.0" : pInfo.versionName;
         AuditSource source = new AuditSource(
                 trustid,
                 appName,
@@ -1027,10 +1035,13 @@ public class TrustClient {
                 imsi,
                 lat,
                 lng,
-                connection, wifiName
+                connection,
+                wifiName,
+                version
         );
 
         AuditTest auditTest = new AuditTest();
+        auditTest.setType_audit("trust identify");
         auditTest.setApplication(appName);
         auditTest.setSource(source);
         auditTest.setTransaction(auditTransaction);

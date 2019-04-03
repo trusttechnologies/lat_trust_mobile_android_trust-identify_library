@@ -5,10 +5,7 @@
     android:sharedUserId="trust.trifles"
     android:sharedUserLabel="@string/shared_user_label">
 
-
-
     <application
-        android:usesCleartextTraffic="true"
         android:name=".TrustDemoApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -16,6 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
             android:name=".SplashActivity"
@@ -40,7 +38,8 @@
             android:name="io.fabric.ApiKey"
             android:value="c2f2723ade81917cf6b8cac00d194cd208df72ad" />
 
-        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".MainActivity" />
+        <activity android:name=".TestLocationActivity" />
     </application>
 
 </manifest>

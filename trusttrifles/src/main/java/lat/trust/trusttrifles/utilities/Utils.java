@@ -250,8 +250,10 @@ public class Utils {
                 connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
             //we are connected to a network
             connected = true;
-        } else
-            connected = false;
+        }
+
         return connected;
     }
+
+
 }

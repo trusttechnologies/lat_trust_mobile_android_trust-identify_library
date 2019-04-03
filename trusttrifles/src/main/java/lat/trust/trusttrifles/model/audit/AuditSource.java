@@ -12,11 +12,21 @@ public class AuditSource {
     private String lonGeo;
     private String connection_type;
     private String connection_name;
+    private String version_app;
+
 
     public AuditSource() {
     }
 
-    public AuditSource(String trust_id, String app_name, String bundle_id, String os, String os_version, String device_name, String imsi, String latGeo, String lonGeo, String connection_type, String connection_name) {
+    public String getVersion_app() {
+        return version_app;
+    }
+
+    public void setVersion_app(String version_app) {
+        this.version_app = version_app;
+    }
+
+    public AuditSource(String trust_id, String app_name, String bundle_id, String os, String os_version, String device_name, String imsi, String latGeo, String lonGeo, String connection_type, String connection_name, String version_app) {
         this.trust_id = trust_id;
         this.app_name = app_name;
         this.bundle_id = bundle_id;
@@ -28,6 +38,7 @@ public class AuditSource {
         this.lonGeo = lonGeo;
         this.connection_type = connection_type;
         this.connection_name = connection_name;
+        this.version_app = version_app;
     }
 
     public String getTrust_id() {

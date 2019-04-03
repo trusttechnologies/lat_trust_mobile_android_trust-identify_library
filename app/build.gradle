@@ -12,7 +12,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 28
         versionCode 1
-        versionName "1.0"
+        versionName "1.19"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -54,5 +54,9 @@ dependencies {
 
 
     implementation project(path: ':trusttrifles')
+    implementation 'com.google.android.gms:play-services:12.0.1'
+
+    implementation 'com.google.firebase:firebase-core:9.2.0'
+    implementation 'com.google.firebase:firebase-auth:9.2.0'
 
 }

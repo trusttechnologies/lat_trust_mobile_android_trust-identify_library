@@ -2,6 +2,7 @@ package lat.trust.trustdemo;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.design.button.MaterialButton;
@@ -44,15 +45,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 TrustLogger.d(Utils.getActualConnection(MainActivity.this));
-
                 Hawk.put(Constants.DNI_USER, "18236924-1");
                 Hawk.put(Constants.EMAIL_USER, "fcaro@trust.lat");
                 Hawk.put(Constants.LASTNAME_USER, "Caro");
                 Hawk.put(Constants.NAME_USER, "fFELIPE");
                 Hawk.put(Constants.PHONE_USER, "+56982110950");
+
+                startActivity(new Intent(MainActivity.this,TestLocationActivity.class));
             }
         });
-        //TrustClient.start();
     }
 
     private class Trust {
