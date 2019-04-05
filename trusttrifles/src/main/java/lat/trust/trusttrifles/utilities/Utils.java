@@ -116,6 +116,8 @@ public class Utils {
             return "Need permission";
         }
         Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+
         return location != null ? String.valueOf(location.getLongitude()) : "Unable to find correct longitude.";
     }
 

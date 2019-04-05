@@ -4,7 +4,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.design.button.MaterialButton;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +19,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.orhanobut.hawk.Hawk;
 
 import io.fabric.sdk.android.Fabric;
+import lat.trust.trusttrifles.utilities.AutomaticAudit;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 import lat.trust.trusttrifles.utilities.TrustPreferences;
@@ -44,18 +47,35 @@ public class MainActivity extends AppCompatActivity {
         materialButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //turnGPSOn();
+
                 TrustLogger.d(Utils.getActualConnection(MainActivity.this));
                 Hawk.put(Constants.DNI_USER, "18236924-1");
                 Hawk.put(Constants.EMAIL_USER, "fcaro@trust.lat");
                 Hawk.put(Constants.LASTNAME_USER, "Caro");
                 Hawk.put(Constants.NAME_USER, "fFELIPE");
                 Hawk.put(Constants.PHONE_USER, "+56982110950");
-
-                startActivity(new Intent(MainActivity.this,TestLocationActivity.class));
+                AutomaticAudit.createAutomaticAudit(
+                        "OPERACION DE PRUEBA",
+                        "metodo de prueba",
+                        "testing result",
+                        MainActivity.this
+                );
+                // startActivity(new Intent(MainActivity.this,TestLocationActivity.class));
             }
         });
     }
+    private void turnGPSOn(){
+        String provider = Settings.Secure.getString(getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
 
+        if(!provider.contains("gps")){ //if gps is disabled
+            final Intent poke = new Intent();
+            poke.setClassName("com.android.settings", "com.android.settings.widget.SettingsAppWidgetProvider");
+            poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
+            poke.setData(Uri.parse("3"));
+            sendBroadcast(poke);
+        }
+    }
     private class Trust {
         private String email;
         private String dni;

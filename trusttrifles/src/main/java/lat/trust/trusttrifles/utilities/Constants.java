@@ -39,4 +39,7 @@ public class Constants {
     public static final String EMAIL_USER = "email";
     public static final String PHONE_USER = "phone";
 
+    public static final String LATITUDE ="lat";
+    public static final String LONGITUDE ="lng";
+
 }
