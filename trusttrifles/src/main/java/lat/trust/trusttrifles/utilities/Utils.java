@@ -13,6 +13,8 @@ import android.net.wifi.WifiManager;
 import android.support.v4.app.ActivityCompat;
 import android.text.format.Formatter;
 
+import io.sentry.Sentry;
+
 import static android.content.Context.CONNECTIVITY_SERVICE;
 
 public class Utils {
@@ -157,6 +159,7 @@ public class Utils {
             NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
             return mWifi.isConnected();
         } catch (Exception ex) {
+            Sentry.capture(ex);
             TrustLogger.d("[UTILS GET WIFI STATE] ERROR: " + ex.getMessage());
             return false;
         }
@@ -172,6 +175,7 @@ public class Utils {
             NetworkInfo mMobile = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
             return mMobile.isAvailable();
         } catch (Exception ex) {
+            Sentry.capture(ex);
             TrustLogger.d("[UTILS GET 3G STATE] ERROR: " + ex.getMessage());
             return false;
         }
@@ -185,6 +189,7 @@ public class Utils {
             String name = wifiInfo.getSSID() == null ? "No wifi avaliable" : wifiInfo.getSSID();
             return name;
         } catch (Exception ex) {
+            Sentry.capture(ex);
             TrustLogger.d("[UTILS GET NAME OF WIFI] ERROR: " + ex.getMessage());
             return "";
         }
@@ -199,6 +204,7 @@ public class Utils {
             String ipAddress = Formatter.formatIpAddress(ip);
             return ipAddress;
         } catch (Exception ex) {
+            Sentry.capture(ex);
             TrustLogger.d("[UTILS GET IP OF WIFI] ERROR: " + ex.getMessage());
             return "";
         }
@@ -226,6 +232,7 @@ public class Utils {
             return con;
 
         } catch (Exception ex) {
+            Sentry.capture(ex);
             TrustLogger.d("[UTILS GET ACTUAL CONNECTION] ERROR: " + ex.getMessage());
             return "";
         }
@@ -239,6 +246,7 @@ public class Utils {
             NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
             return activeNetwork.getSubtypeName();
         } catch (Exception ex) {
+            Sentry.capture(ex);
             TrustLogger.d("[UTILS TYPE OF 3G CONNECTION] ERROR: " + ex.getMessage());
             return "";
         }

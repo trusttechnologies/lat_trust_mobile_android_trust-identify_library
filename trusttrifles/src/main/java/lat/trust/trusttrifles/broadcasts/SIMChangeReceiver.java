@@ -8,6 +8,7 @@ import android.support.annotation.RequiresPermission;
 import android.support.v4.content.LocalBroadcastManager;
 import android.telephony.TelephonyManager;
 
+import io.sentry.Sentry;
 import lat.trust.trusttrifles.utilities.AutomaticAudit;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.SavePendingAudit;
@@ -95,6 +96,7 @@ public class SIMChangeReceiver extends BroadcastReceiver {
             broadcast.putExtras(intent);
             mBM.sendBroadcast(broadcast);
         } catch (Exception ex) {
+            Sentry.capture(ex);
             TrustLogger.d("[SIMChangeReceiver] ERROR: " + ex.getMessage());
         }
 

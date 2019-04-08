@@ -5,6 +5,7 @@ import android.content.Intent;
 
 import java.util.Map;
 
+import io.sentry.Sentry;
 import lat.trust.trusttrifles.services.RemoteAuditService;
 
 public class RemoteMessagesId {
@@ -32,6 +33,7 @@ public class RemoteMessagesId {
                     TrustLogger.d("[RemoteMessages id] Invalid request");
             }
         } catch (Exception e) {
+            Sentry.capture(e);
             TrustLogger.d("[RemoteMessages id] error : " + e.getMessage());
         }
     }

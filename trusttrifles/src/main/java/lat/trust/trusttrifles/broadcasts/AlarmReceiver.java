@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import io.sentry.Sentry;
 import lat.trust.trusttrifles.utilities.AutomaticAudit;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.SavePendingAudit;
@@ -36,6 +37,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                         context);
             }
         } catch (Exception ex) {
+            Sentry.capture(ex);
             TrustLogger.d("[AlarmReceiver] ERROR: " + ex.getMessage());
         }
 

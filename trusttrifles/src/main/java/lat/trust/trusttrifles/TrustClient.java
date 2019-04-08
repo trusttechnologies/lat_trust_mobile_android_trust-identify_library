@@ -49,6 +49,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import io.sentry.Sentry;
+import io.sentry.android.AndroidSentryClientFactory;
 import lat.trust.trusttrifles.model.Audit;
 import lat.trust.trusttrifles.model.Device;
 import lat.trust.trusttrifles.model.Identity;
@@ -128,6 +130,11 @@ public class TrustClient {
         TrustLogger.d("[TRUST CLIENT] : INIT ");
         mContext = context;
         trustInstance = new TrustClient();
+        sentryInit(context);
+    }
+
+    private static void sentryInit(Context context) {
+        Sentry.init(Constants.SENTRY_DSN, new AndroidSentryClientFactory(context));
     }
 
     /**
@@ -154,6 +161,7 @@ public class TrustClient {
             } else return "UNKNOWN";
         } catch (Exception ex) {
             TrustLogger.d("[getSIMSerialID ] error " + ex.getMessage());
+            Sentry.capture(ex);
             return "";
         }
 
@@ -168,10 +176,16 @@ public class TrustClient {
 
     @RequiresPermission(allOf = {READ_PHONE_STATE})
     public String getSIMCarrier() {
-        TelephonyManager tm = (TelephonyManager) mContext.getSystemService(TELEPHONY_SERVICE);
-        if (tm != null) {
-            return tm.getSimOperatorName();
-        } else return "UNKNOWN";
+        try {
+            TelephonyManager tm = (TelephonyManager) mContext.getSystemService(TELEPHONY_SERVICE);
+            if (tm != null) {
+                return tm.getSimOperatorName();
+            } else return "UNKNOWN";
+        } catch (Exception e) {
+            Sentry.capture(e);
+            return "UNKNOWN";
+        }
+
     }
 
     /**
@@ -183,18 +197,24 @@ public class TrustClient {
 
     @RequiresPermission(allOf = {READ_PHONE_STATE})
     public String getSIMState() {
-        TelephonyManager tm = (TelephonyManager) mContext.getSystemService(TELEPHONY_SERVICE);
-        if (tm != null) {
-            int simState = tm.getSimState();
-            switch (simState) {
-                case TelephonyManager.SIM_STATE_ABSENT:
-                    return "ABSENT";
-                case TelephonyManager.SIM_STATE_READY:
-                    return "LOADED";
-                default:
-                    return "UNKNOWN";
-            }
-        } else return "UNKNOWN";
+        try {
+            TelephonyManager tm = (TelephonyManager) mContext.getSystemService(TELEPHONY_SERVICE);
+            if (tm != null) {
+                int simState = tm.getSimState();
+                switch (simState) {
+                    case TelephonyManager.SIM_STATE_ABSENT:
+                        return "ABSENT";
+                    case TelephonyManager.SIM_STATE_READY:
+                        return "LOADED";
+                    default:
+                        return "UNKNOWN";
+                }
+            } else return "UNKNOWN";
+        } catch (Exception e) {
+            Sentry.capture(e);
+            return "UNKNOWN";
+        }
+
     }
 
     /**
@@ -334,80 +354,87 @@ public class TrustClient {
      */
     @RequiresPermission(CAMERA)
     private void getCameraData(Device device) {
-        int numberOfCameras = Camera.getNumberOfCameras();
-        device.setCameras_size(String.valueOf(numberOfCameras));
-        List<lat.trust.trusttrifles.model.Camera> cameras = new ArrayList<>();
 
-        for (int i = 0; i < numberOfCameras; i++) {
-            lat.trust.trusttrifles.model.Camera camera = new lat.trust.trusttrifles.model.Camera();
-            Camera.CameraInfo info = new Camera.CameraInfo();
-            Camera.getCameraInfo(i, info);
-            try {
-                if (info.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
-                    camera.setType("BACK");
+        try {
+            int numberOfCameras = Camera.getNumberOfCameras();
+            device.setCameras_size(String.valueOf(numberOfCameras));
+            List<lat.trust.trusttrifles.model.Camera> cameras = new ArrayList<>();
+
+            for (int i = 0; i < numberOfCameras; i++) {
+                lat.trust.trusttrifles.model.Camera camera = new lat.trust.trusttrifles.model.Camera();
+                Camera.CameraInfo info = new Camera.CameraInfo();
+                Camera.getCameraInfo(i, info);
+                try {
+                    if (info.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
+                        camera.setType("BACK");
+                    }
+                    if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                        camera.setType("FRONT");
+                    }
+                    Camera cam = Camera.open(i);
+                    Class camClass = cam.getClass();
+
+                    //Internally, Android goes into native code to retrieve this String of values
+                    Method getNativeParams = camClass.getDeclaredMethod("native_getParameters");
+                    getNativeParams.setAccessible(true);
+
+                    //Boom. Here's the raw String from the hardware
+                    String rawParamsStr = (String) getNativeParams.invoke(cam);
+
+                    //But let's do better. Here's what Android uses to parse the
+                    //String into a usable Map -- a simple ';' StringSplitter, followed
+                    //by splitting on '='
+                    //
+                    //Taken from Camera.Parameters unflatten() method
+                    TextUtils.StringSplitter splitter = new TextUtils.SimpleStringSplitter(';');
+                    splitter.setString(rawParamsStr);
+
+                    for (String kv : splitter) {
+                        int pos = kv.indexOf('=');
+                        if (pos == -1) {
+                            continue;
+                        }
+                        String k = kv.substring(0, pos);
+                        String v = kv.substring(pos + 1);
+                        if (k.equals("picture-size")) {
+                            int mega = (Integer.valueOf(v.split("x")[0]) * Integer.valueOf(v.split("x")[1]))
+                                    / 1000000;
+                            camera.setMega_pixels(String.valueOf(mega));
+                        }
+                        if (k.equals("horizontal-view-angle")) {
+                            camera.setHorizontal_view_angle(v);
+                        }
+                        if (k.equals("vertical-view-angle")) {
+                            camera.setVertical_view_angle(v);
+                        }
+                        if (k.equals("focal-length")) {
+                            camera.setFocal_length(v);
+                        }
+                        if (k.equals("max-exposure-compensation")) {
+                            camera.setMax_exposure_comp(v);
+                        }
+                        if (k.equals("min-exposure-compensation")) {
+                            camera.setMin_exposure_comp(v);
+                        }
+                    }
+                    cameras.add(camera);
+                    cam.release();
+
+                    //And voila, you have a map of ALL supported parameters
+                } catch (NoSuchMethodException ex) {
+                    Log.e("ex", ex.toString());
+                } catch (IllegalAccessException ex) {
+                    Log.e("ex", ex.toString());
+                } catch (InvocationTargetException ex) {
+                    Log.e("ex", ex.toString());
                 }
-                if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-                    camera.setType("FRONT");
-                }
-                Camera cam = Camera.open(i);
-                Class camClass = cam.getClass();
-
-                //Internally, Android goes into native code to retrieve this String of values
-                Method getNativeParams = camClass.getDeclaredMethod("native_getParameters");
-                getNativeParams.setAccessible(true);
-
-                //Boom. Here's the raw String from the hardware
-                String rawParamsStr = (String) getNativeParams.invoke(cam);
-
-                //But let's do better. Here's what Android uses to parse the
-                //String into a usable Map -- a simple ';' StringSplitter, followed
-                //by splitting on '='
-                //
-                //Taken from Camera.Parameters unflatten() method
-                TextUtils.StringSplitter splitter = new TextUtils.SimpleStringSplitter(';');
-                splitter.setString(rawParamsStr);
-
-                for (String kv : splitter) {
-                    int pos = kv.indexOf('=');
-                    if (pos == -1) {
-                        continue;
-                    }
-                    String k = kv.substring(0, pos);
-                    String v = kv.substring(pos + 1);
-                    if (k.equals("picture-size")) {
-                        int mega = (Integer.valueOf(v.split("x")[0]) * Integer.valueOf(v.split("x")[1]))
-                                / 1000000;
-                        camera.setMega_pixels(String.valueOf(mega));
-                    }
-                    if (k.equals("horizontal-view-angle")) {
-                        camera.setHorizontal_view_angle(v);
-                    }
-                    if (k.equals("vertical-view-angle")) {
-                        camera.setVertical_view_angle(v);
-                    }
-                    if (k.equals("focal-length")) {
-                        camera.setFocal_length(v);
-                    }
-                    if (k.equals("max-exposure-compensation")) {
-                        camera.setMax_exposure_comp(v);
-                    }
-                    if (k.equals("min-exposure-compensation")) {
-                        camera.setMin_exposure_comp(v);
-                    }
-                }
-                cameras.add(camera);
-                cam.release();
-
-                //And voila, you have a map of ALL supported parameters
-            } catch (NoSuchMethodException ex) {
-                Log.e("ex", ex.toString());
-            } catch (IllegalAccessException ex) {
-                Log.e("ex", ex.toString());
-            } catch (InvocationTargetException ex) {
-                Log.e("ex", ex.toString());
             }
+            device.setCameras(cameras);
+        } catch (Exception e) {
+            Sentry.capture(e);
+
         }
-        device.setCameras(cameras);
+
     }
 
     /**
@@ -416,16 +443,21 @@ public class TrustClient {
      * @param device Objeto que almacena la informacion obtenida desde el dispositivo
      */
     private void getNFCData(Device device) {
-        NfcManager manager = (NfcManager) mContext.getSystemService(Context.NFC_SERVICE);
-        NfcAdapter adapter;
-        if (manager != null) {
-            adapter = manager.getDefaultAdapter();
-            if (adapter != null /*&& adapter.isEnabled()*/) {
-                device.setNfc("YES");
+        try {
+            NfcManager manager = (NfcManager) mContext.getSystemService(Context.NFC_SERVICE);
+            NfcAdapter adapter;
+            if (manager != null) {
+                adapter = manager.getDefaultAdapter();
+                if (adapter != null /*&& adapter.isEnabled()*/) {
+                    device.setNfc("YES");
+                } else
+                    device.setNfc("NO");
             } else
-                device.setNfc("NO");
-        } else
-            device.setNfc("NO");//
+                device.setNfc("NO");//
+        } catch (Exception e) {
+            Sentry.capture(e);
+        }
+
     }
 
     /**
@@ -434,35 +466,40 @@ public class TrustClient {
      * @param device Objeto que almacena la informacion obtenida desde el dispositivo
      */
     private void getBatteryData(Device device) {
-        IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-        Intent intent = mContext.registerReceiver(null, ifilter);
-        String technology = null;
-        Boolean present = null;
-        String capacidad;
-        if (intent != null) {
-            present = intent.getBooleanExtra(BatteryManager.EXTRA_PRESENT, false);
-            if (intent.getExtras() != null) {
-                technology = intent.getExtras().getString(BatteryManager.EXTRA_TECHNOLOGY);
+        try {
+            IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+            Intent intent = mContext.registerReceiver(null, ifilter);
+            String technology = null;
+            Boolean present = null;
+            String capacidad;
+            if (intent != null) {
+                present = intent.getBooleanExtra(BatteryManager.EXTRA_PRESENT, false);
+                if (intent.getExtras() != null) {
+                    technology = intent.getExtras().getString(BatteryManager.EXTRA_TECHNOLOGY);
+                }
             }
+            String bateria;
+            if (present != null && present)
+                bateria = "Presente ";
+            else
+                bateria = "Ausente ";
+            if (technology == null)
+                technology = "NOT FOUND";
+            int capacity = (int) getBatteryCapacity(mContext);
 
+            if (capacity == 0)
+                capacidad = "NOT FOUND";
+            else
+                capacidad = String.valueOf(capacity) + " mAh";
+
+            device.setBattery(bateria);
+            device.setBattery_capacity(capacidad);
+            device.setBattery_technology(technology);
+
+        } catch (Exception e) {
+            Sentry.capture(e);
         }
-        String bateria;
-        if (present != null && present)
-            bateria = "Presente ";
-        else
-            bateria = "Ausente ";
-        if (technology == null)
-            technology = "NOT FOUND";
-        int capacity = (int) getBatteryCapacity(mContext);
 
-        if (capacity == 0)
-            capacidad = "NOT FOUND";
-        else
-            capacidad = String.valueOf(capacity) + " mAh";
-
-        device.setBattery(bateria);
-        device.setBattery_capacity(capacidad);
-        device.setBattery_technology(technology);
     }
 
     /**
@@ -473,6 +510,7 @@ public class TrustClient {
      */
     @SuppressLint("PrivateApi")
     private double getBatteryCapacity(Context context) {
+
         Object mPowerProfile;
         double batteryCapacity = 0;
         final String POWER_PROFILE_CLASS = "com.android.internal.os.PowerProfile";
@@ -488,6 +526,7 @@ public class TrustClient {
                     .invoke(mPowerProfile);
 
         } catch (Exception e) {
+            Sentry.capture(e);
             e.printStackTrace();
         }
 
@@ -502,24 +541,29 @@ public class TrustClient {
      * @param device Objeto que almacena la informacion obtenida desde el dispositivo
      */
     private void getSensorsData(Device device) {
-        SensorManager mSensorManager = (SensorManager) mContext.getSystemService(SENSOR_SERVICE);
+        try {
+            SensorManager mSensorManager = (SensorManager) mContext.getSystemService(SENSOR_SERVICE);
 
-        // List of Sensors Available
-        List<Sensor> msensorList = mSensorManager.getSensorList(Sensor.TYPE_ALL);
+            // List of Sensors Available
+            List<Sensor> msensorList = mSensorManager.getSensorList(Sensor.TYPE_ALL);
 
-        // Print each SensorData available using sSensList as the String to be printed
-        Sensor tmp;
-        List<SensorData> sensorData = new ArrayList<>();
-        int i;
-        for (i = 0; i < msensorList.size(); i++) {
-            tmp = msensorList.get(i);
-            SensorData sensor = new SensorData();
-            sensor.setName(tmp.getName());
-            sensor.setVendor(tmp.getVendor());
-            sensorData.add(sensor);
+            // Print each SensorData available using sSensList as the String to be printed
+            Sensor tmp;
+            List<SensorData> sensorData = new ArrayList<>();
+            int i;
+            for (i = 0; i < msensorList.size(); i++) {
+                tmp = msensorList.get(i);
+                SensorData sensor = new SensorData();
+                sensor.setName(tmp.getName());
+                sensor.setVendor(tmp.getVendor());
+                sensorData.add(sensor);
+            }
+            device.setSensor_size(String.valueOf(msensorList.size()));
+            device.setSensorData(sensorData);
+        } catch (Exception e) {
+            Sentry.capture(e);
         }
-        device.setSensor_size(String.valueOf(msensorList.size()));
-        device.setSensorData(sensorData);
+
     }
 
     /**
@@ -531,24 +575,29 @@ public class TrustClient {
 
     @RequiresPermission(READ_PHONE_STATE)
     private void getDeviceData(Device device) {
-        device.setBoard(Build.BOARD);
-        device.setBrand(Build.BRAND);
-        device.setDisplay(Build.DISPLAY);
-        device.setDevice(Build.DEVICE);
-        device.setSystemVersion(String.valueOf(Build.VERSION.SDK_INT));
-        device.setFingerprint(Build.FINGERPRINT);
-        device.setHardware(Build.HARDWARE);
-        device.setId(Build.ID);
-        device.setHost(Build.HOST);
-        device.setManufacturer(Build.MANUFACTURER);
-        device.setModel(Build.MODEL);
-        device.setProduct(Build.PRODUCT);
-        device.setBluetoothMac(getBluetoothMacAddress());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            device.setSerial(Build.getSerial());
-        } else {
-            device.setSerial(Build.SERIAL);
+        try {
+            device.setBoard(Build.BOARD);
+            device.setBrand(Build.BRAND);
+            device.setDisplay(Build.DISPLAY);
+            device.setDevice(Build.DEVICE);
+            device.setSystemVersion(String.valueOf(Build.VERSION.SDK_INT));
+            device.setFingerprint(Build.FINGERPRINT);
+            device.setHardware(Build.HARDWARE);
+            device.setId(Build.ID);
+            device.setHost(Build.HOST);
+            device.setManufacturer(Build.MANUFACTURER);
+            device.setModel(Build.MODEL);
+            device.setProduct(Build.PRODUCT);
+            device.setBluetoothMac(getBluetoothMacAddress());
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                device.setSerial(Build.getSerial());
+            } else {
+                device.setSerial(Build.SERIAL);
+            }
+        } catch (Exception e) {
+            Sentry.capture(e);
         }
+
     }
 
     /**
@@ -559,12 +608,17 @@ public class TrustClient {
     @SuppressLint("MissingPermission")
     @RequiresPermission(READ_PHONE_STATE)
     private void getImei(Device device) {
-        TelephonyManager tm = (TelephonyManager) mContext.getSystemService(TELEPHONY_SERVICE);
+        try {
+            TelephonyManager tm = (TelephonyManager) mContext.getSystemService(TELEPHONY_SERVICE);
 
-        if (tm != null) {
-            device.setImei(tm.getDeviceId());
-            device.setSoftwareVersion(tm.getDeviceSoftwareVersion());
+            if (tm != null) {
+                device.setImei(tm.getDeviceId());
+                device.setSoftwareVersion(tm.getDeviceSoftwareVersion());
+            }
+        } catch (Exception e) {
+            Sentry.capture(e);
         }
+
     }
 
     /**
@@ -575,13 +629,19 @@ public class TrustClient {
     @SuppressLint("MissingPermission")
     @RequiresPermission(READ_PHONE_STATE)
     public String getImei() {
-        TelephonyManager tm = (TelephonyManager) mContext.getSystemService(TELEPHONY_SERVICE);
+        try {
+            TelephonyManager tm = (TelephonyManager) mContext.getSystemService(TELEPHONY_SERVICE);
 
-        if (tm != null) {
-            return tm.getDeviceId();
-        } else {
+            if (tm != null) {
+                return tm.getDeviceId();
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            Sentry.capture(e);
             return null;
         }
+
     }
 
     /**
@@ -601,26 +661,32 @@ public class TrustClient {
     @SuppressLint("MissingPermission")
     @RequiresPermission(allOf = {READ_PHONE_STATE, ACCESS_COARSE_LOCATION})
     private List<SIM> getTelInfo() {
-        List<SIM> sims = new ArrayList<>();
+        try {
+            List<SIM> sims = new ArrayList<>();
 
-        TelephonyManager telephonyManager = (TelephonyManager) mContext.getSystemService(TELEPHONY_SERVICE);
-        //Por defecto asumiremos que tiene 2 slots
-        //Se comprueba antes si esta disponible la SIM en el slot consultado asi que no hay riesgo de errors
+            TelephonyManager telephonyManager = (TelephonyManager) mContext.getSystemService(TELEPHONY_SERVICE);
+            //Por defecto asumiremos que tiene 2 slots
+            //Se comprueba antes si esta disponible la SIM en el slot consultado asi que no hay riesgo de errors
 
-        int simCount = 2;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (telephonyManager != null)
-                //Desde API 22 se puede obtener el numero de SIMs disponibles
-                simCount = telephonyManager.getPhoneCount();
+            int simCount = 2;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (telephonyManager != null)
+                    //Desde API 22 se puede obtener el numero de SIMs disponibles
+                    simCount = telephonyManager.getPhoneCount();
+            }
+
+            //Iteramos para ver si esta disponible la informacion en cada sim
+            for (int i = 0; i < simCount; i++) {
+                SIM sim = getSimDataAtSlot(i);
+                if (sim != null) sims.add(sim);
+            }
+
+            return sims;
+        } catch (Exception e) {
+            Sentry.capture(e);
+            return new ArrayList<>();
         }
 
-        //Iteramos para ver si esta disponible la informacion en cada sim
-        for (int i = 0; i < simCount; i++) {
-            SIM sim = getSimDataAtSlot(i);
-            if (sim != null) sims.add(sim);
-        }
-
-        return sims;
     }
 
     /**
@@ -664,7 +730,9 @@ public class TrustClient {
                 }
             }
         } catch (Exception e) {
+            Sentry.capture(e);
             e.printStackTrace();
+
         }
 
         return sim;
@@ -690,6 +758,7 @@ public class TrustClient {
                 }
             }
         } catch (Exception e) {
+            Sentry.capture(e);
             e.printStackTrace();
         }
 
@@ -722,6 +791,7 @@ public class TrustClient {
                 result = ob_phone.toString();
             }
         } catch (Exception e) {
+            Sentry.capture(e);
             e.printStackTrace();
         }
 
@@ -780,6 +850,7 @@ public class TrustClient {
             device.setProcessorQuantity(String.valueOf(processorsCount));
 
         } catch (Exception e) {
+            Sentry.capture(e);
             e.printStackTrace();
         }
     }
@@ -813,6 +884,7 @@ public class TrustClient {
 
 
         } catch (Exception e) {
+            Sentry.capture(e);
             e.printStackTrace();
         }
     }
@@ -845,6 +917,7 @@ public class TrustClient {
                 return res1.toString();
             }
         } catch (Exception ignore) {
+            Sentry.capture(ignore);
         }
         return "02:00:00:00:00:00";
     }
@@ -869,7 +942,8 @@ public class TrustClient {
                     if (btManagerService != null) {
                         bluetoothMacAddress = (String) btManagerService.getClass().getMethod("getAddress").invoke(btManagerService);
                     }
-                } catch (NoSuchFieldException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                } catch (Exception ex) {
+                    Sentry.capture(ex);
 
                 }
             } else {
@@ -891,10 +965,16 @@ public class TrustClient {
      */
     @SuppressLint({"MissingPermission", "HardwareIds"})
     private String getAndroidDeviceID() {
-        String androidId = Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.ANDROID_ID);
-        if (androidId != null && !androidId.isEmpty())
-            return androidId;
-        else return "Not found";
+        try {
+            String androidId = Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.ANDROID_ID);
+            if (androidId != null && !androidId.isEmpty())
+                return androidId;
+            else return "Not found";
+        } catch (Exception e) {
+            Sentry.capture(e);
+            return "Not found";
+        }
+
     }
 
     /**
@@ -924,9 +1004,11 @@ public class TrustClient {
             query.close();
             return toHexString.toUpperCase().trim();
         } catch (SecurityException e) {
+            Sentry.capture(e);
             e.printStackTrace();
             return null;
         } catch (Exception e2) {
+            Sentry.capture(e2);
             e2.printStackTrace();
             return null;
         }
@@ -941,15 +1023,20 @@ public class TrustClient {
      */
     @SuppressLint({"MissingPermission", "HardwareIds"})
     private String getRooted() {
-
-        RootBeer rootBeer = new RootBeer(mContext);
-        if (rootBeer.isRooted()) {
-            return "Rooted";
-            //we found indication of root
-        } else {
+        try {
+            RootBeer rootBeer = new RootBeer(mContext);
+            if (rootBeer.isRooted()) {
+                return "Rooted";
+                //we found indication of root
+            } else {
+                return "No Rooted";
+                //we didn't find indication of root
+            }
+        } catch (Exception e) {
+            Sentry.capture(e);
             return "No Rooted";
-            //we didn't find indication of root
         }
+
         //return "";
     }
 
@@ -1068,10 +1155,15 @@ public class TrustClient {
      * @param device Objeto que almacena la informacion obtenida desde el dispositivo
      */
     private void getWifiState(Device device) {
-        final WifiManager wifiManager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        boolean state = wifiManager == null || wifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED;
-        TrustLogger.d("[TRUST CLIENT] : WI-FI STATE: " + String.valueOf(state));
-        device.setWifi_state(state);
+        try {
+            final WifiManager wifiManager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            boolean state = wifiManager == null || wifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED;
+            TrustLogger.d("[TRUST CLIENT] : WI-FI STATE: " + String.valueOf(state));
+            device.setWifi_state(state);
+        } catch (Exception e) {
+            Sentry.capture(e);
+        }
+
     }
 
     /**
@@ -1080,10 +1172,15 @@ public class TrustClient {
      * @param device Objeto que almacena la informacion obtenida desde el dispositivo
      */
     private void getBluetoothState(Device device) {
-        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        boolean state = mBluetoothAdapter == null || mBluetoothAdapter.isEnabled();
-        TrustLogger.d("[TRUST CLIENT] : BLUETOOTH STATE: " + String.valueOf(state));
-        device.setBluetooth_state(state);
+        try {
+            BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            boolean state = mBluetoothAdapter == null || mBluetoothAdapter.isEnabled();
+            TrustLogger.d("[TRUST CLIENT] : BLUETOOTH STATE: " + String.valueOf(state));
+            device.setBluetooth_state(state);
+        } catch (Exception e) {
+            Sentry.capture(e);
+        }
+
     }
 
     /**
@@ -1092,11 +1189,16 @@ public class TrustClient {
      * @param device Objeto que almacena la informacion obtenida desde el dispositivo
      */
     private void getRedGState(Device device) {
-        ConnectivityManager connectivityManager = (ConnectivityManager) mContext.getSystemService(CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        boolean state = (networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_MOBILE);
-        TrustLogger.d("[TRUST CLIENT] : CURRENT STATE OF RED (3G,4G): " + String.valueOf(state));
-        device.setRed_g_state(state);
+        try {
+            ConnectivityManager connectivityManager = (ConnectivityManager) mContext.getSystemService(CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+            boolean state = (networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_MOBILE);
+            TrustLogger.d("[TRUST CLIENT] : CURRENT STATE OF RED (3G,4G): " + String.valueOf(state));
+            device.setRed_g_state(state);
+        } catch (Exception e) {
+            Sentry.capture(e);
+        }
+
     }
 
     /**
@@ -1106,8 +1208,14 @@ public class TrustClient {
      */
     @SuppressLint("MissingPermission")
     private boolean getCurrentBluetoothStatus() {
-        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        return mBluetoothAdapter != null && mBluetoothAdapter.isEnabled();
+        try {
+            BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            return mBluetoothAdapter != null && mBluetoothAdapter.isEnabled();
+        } catch (Exception e) {
+            Sentry.capture(e);
+            return false;
+        }
+
     }
 
     /**
@@ -1116,9 +1224,15 @@ public class TrustClient {
      * @return returns the current Wifi status true ON , false OFF
      */
     private boolean getCurrentWifiStatus() {
-        final WifiManager wifiManager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        @SuppressLint("MissingPermission") boolean state = wifiManager == null || wifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED;
-        return state;
+        try {
+            final WifiManager wifiManager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            @SuppressLint("MissingPermission") boolean state = wifiManager == null || wifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED;
+            return state;
+        } catch (Exception e) {
+            Sentry.capture(e);
+            return false;
+        }
+
     }
 
     /**
@@ -1128,10 +1242,16 @@ public class TrustClient {
      * @param forceBluetooth inform if you should save the current status of Bluetooth
      */
     private void saveBluetoothWifiStatus(boolean forceWifi, boolean forceBluetooth) {
-        if (forceWifi) currentWifiStatus = getCurrentWifiStatus();
-        if (forceBluetooth) currentBluetoothStatus = getCurrentBluetoothStatus();
-        TrustLogger.d("[TRUST CLIENT] : CURRENT STATE OF WI-FI: " + String.valueOf(currentWifiStatus));
-        TrustLogger.d("[TRUST CLIENT] : CURRENT STATE OF BLUETOOTH: " + String.valueOf(currentBluetoothStatus));
+        try {
+            if (forceWifi) currentWifiStatus = getCurrentWifiStatus();
+            if (forceBluetooth) currentBluetoothStatus = getCurrentBluetoothStatus();
+            TrustLogger.d("[TRUST CLIENT] : CURRENT STATE OF WI-FI: " + String.valueOf(currentWifiStatus));
+            TrustLogger.d("[TRUST CLIENT] : CURRENT STATE OF BLUETOOTH: " + String.valueOf(currentBluetoothStatus));
+        } catch (Exception e) {
+            Sentry.capture(e);
+        }
+
+
     }
 
     /**
@@ -1142,34 +1262,38 @@ public class TrustClient {
      */
     @SuppressLint("MissingPermission")
     private void restoreWIFIandBluetooth(boolean forceWifi, boolean forceBluetooth) {
+        try {
+            TrustLogger.d("[TRUST CLIENT] : RESTORING STATE OF BLUETOOTH AND WI-FI:");
+            TrustLogger.d("[TRUST CLIENT] : BEFORE STATE BLUETOOTH: " + String.valueOf(currentBluetoothStatus));
+            TrustLogger.d("[TRUST CLIENT] : BEFORE STATE WI-FI : " + String.valueOf(currentWifiStatus));
+            final WifiManager wifiManager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            if (forceWifi) {
+                if (wifiManager != null) {
+                    if (currentWifiStatus) {
+                        wifiManager.setWifiEnabled(true);
+                        TrustLogger.d("[TRUST CLIENT] : WIFI TURN ON");
+                    } else {
+                        wifiManager.setWifiEnabled(false);
+                        TrustLogger.d("[TRUST CLIENT] : WIFI TURN OFF");
+                    }
+                }
+            }
+            if (forceBluetooth) {
+                if (mBluetoothAdapter != null) {
+                    if (currentBluetoothStatus) {
+                        mBluetoothAdapter.enable();
+                        TrustLogger.d("[TRUST CLIENT] : BLUETOOTH TURN ON");
+                    } else {
+                        mBluetoothAdapter.disable();
+                        TrustLogger.d("[TRUST CLIENT] : BLUETOOTH TURN ON");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Sentry.capture(e);
+        }
 
-        TrustLogger.d("[TRUST CLIENT] : RESTORING STATE OF BLUETOOTH AND WI-FI:");
-        TrustLogger.d("[TRUST CLIENT] : BEFORE STATE BLUETOOTH: " + String.valueOf(currentBluetoothStatus));
-        TrustLogger.d("[TRUST CLIENT] : BEFORE STATE WI-FI : " + String.valueOf(currentWifiStatus));
-        final WifiManager wifiManager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (forceWifi) {
-            if (wifiManager != null) {
-                if (currentWifiStatus) {
-                    wifiManager.setWifiEnabled(true);
-                    TrustLogger.d("[TRUST CLIENT] : WIFI TURN ON");
-                } else {
-                    wifiManager.setWifiEnabled(false);
-                    TrustLogger.d("[TRUST CLIENT] : WIFI TURN OFF");
-                }
-            }
-        }
-        if (forceBluetooth) {
-            if (mBluetoothAdapter != null) {
-                if (currentBluetoothStatus) {
-                    mBluetoothAdapter.enable();
-                    TrustLogger.d("[TRUST CLIENT] : BLUETOOTH TURN ON");
-                } else {
-                    mBluetoothAdapter.disable();
-                    TrustLogger.d("[TRUST CLIENT] : BLUETOOTH TURN ON");
-                }
-            }
-        }
     }
 
     /**
@@ -1180,14 +1304,19 @@ public class TrustClient {
      */
     @SuppressLint("MissingPermission")
     private void turnOnBluetoothWifi(boolean forceWifi, boolean forceBluetooth) {
-        final WifiManager wifiManager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (wifiManager != null && forceWifi) {
-            wifiManager.setWifiEnabled(true);
+        try {
+            final WifiManager wifiManager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            if (wifiManager != null && forceWifi) {
+                wifiManager.setWifiEnabled(true);
+            }
+            if (mBluetoothAdapter != null && forceBluetooth) {
+                mBluetoothAdapter.enable();
+            }
+        } catch (Exception e) {
+            Sentry.capture(e);
         }
-        if (mBluetoothAdapter != null && forceBluetooth) {
-            mBluetoothAdapter.enable();
-        }
+
     }
 
     /**
@@ -1207,6 +1336,7 @@ public class TrustClient {
                 }
             }
         } catch (Exception e) {
+            Sentry.capture(e);
             e.printStackTrace();
         }
         return false;

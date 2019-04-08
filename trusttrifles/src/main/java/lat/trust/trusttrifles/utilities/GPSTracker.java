@@ -11,6 +11,8 @@ import android.support.v4.app.ActivityCompat;
 
 import com.orhanobut.hawk.Hawk;
 
+import io.sentry.Sentry;
+
 public class GPSTracker implements LocationListener {
 
     private Context mContext;
@@ -46,6 +48,7 @@ public class GPSTracker implements LocationListener {
                 return null;
             }
         } catch (Exception ex) {
+            Sentry.capture(ex);
             TrustLogger.d(ex.getMessage());
             return null;
         }

@@ -39,7 +39,9 @@ public class Constants {
     public static final String EMAIL_USER = "email";
     public static final String PHONE_USER = "phone";
 
-    public static final String LATITUDE ="lat";
-    public static final String LONGITUDE ="lng";
+    public static final String LATITUDE = "lat";
+    public static final String LONGITUDE = "lng";
+
+    public static final String SENTRY_DSN = "https://c591083c8bb54bea810e97db7ae38f51@sentry.io/1433867";
 
 }

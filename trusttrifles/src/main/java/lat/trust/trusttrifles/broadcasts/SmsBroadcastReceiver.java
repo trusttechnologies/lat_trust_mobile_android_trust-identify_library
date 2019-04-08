@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
 
+import io.sentry.Sentry;
 import lat.trust.trusttrifles.utilities.AutomaticAudit;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.SavePendingAudit;
@@ -45,6 +46,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
             }
 
         } catch (Exception ex) {
+            Sentry.capture(ex);
             TrustLogger.d("[SmsBroadcastReceiver] ERROR: " + ex.getMessage());
         }
 

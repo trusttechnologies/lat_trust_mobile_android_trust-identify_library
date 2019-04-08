@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 
+import io.sentry.Sentry;
 import lat.trust.trusttrifles.utilities.AutomaticAudit;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.SavePendingAudit;
@@ -60,6 +61,7 @@ public class NetworkConnectionReceiver extends BroadcastReceiver {
                 }
             }, 7000);
         } catch (Exception ex) {
+            Sentry.capture(ex);
             TrustLogger.d("[NetworkConnectionReceiver ] ERROR: " + ex.getMessage());
         }
 

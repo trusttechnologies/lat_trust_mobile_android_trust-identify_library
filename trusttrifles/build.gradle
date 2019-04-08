@@ -17,8 +17,8 @@ buildscript {
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 
-group='com.github.trusttechnologies.trust-device-info'
-version='1.1.8'
+group = 'com.github.trusttechnologies.trust-device-info'
+version = '1.1.8'
 
 android {
     compileSdkVersion 28
@@ -55,7 +55,7 @@ ext {
     siteUrl = 'https://github.com/trusttechnologies/lat_trust_mobile_android_trust-identify_library'
     gitUrl = 'https://github.com/trusttechnologies/lat_trust_mobile_android_trust-identify_library.git'
 
-    libraryVersion = '1.0.26'
+    libraryVersion = '1.0.27'
 
     developerId = 'fcaro'
     developerName = 'Felipe Caro'
@@ -87,6 +87,10 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
+
+    //---------SENTRY--------------
+    implementation 'io.sentry:sentry-android:1.7.16'
+
     // -- HAWK
     api "com.orhanobut:hawk:2.0.1"
 
@@ -112,15 +116,6 @@ dependencies {
 }
 
 com.google.gms.googleservices.GoogleServicesPlugin.config.disableVersionCheck = true
-
-
-
-
-
-
-
-
-
 
 //apply from: 'LINK_TO_SCRIPT'
 group = publishedGroupId
