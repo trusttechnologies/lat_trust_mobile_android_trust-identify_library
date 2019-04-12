@@ -22,6 +22,7 @@ import io.fabric.sdk.android.Fabric;
 import lat.trust.trusttrifles.TrustConfig;
 import lat.trust.trusttrifles.services.TestLocationService;
 import lat.trust.trusttrifles.utilities.Constants;
+import lat.trust.trusttrifles.utilities.SaveDeviceInfo;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 import lat.trust.trusttrifles.utilities.TrustPreferences;
 import lat.trust.trusttrifles.utilities.Utils;
@@ -44,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
         mContext = this;
         TrustLogger.d(FirebaseInstanceId.getInstance().getToken() != null ? FirebaseInstanceId.getInstance().getToken() : "no firebase token id");
         Fabric.with(this, new Crashlytics());
-
         materialButton = findViewById(R.id.button);
         materialButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,11 +57,10 @@ public class MainActivity extends AppCompatActivity {
                 Hawk.put(Constants.LASTNAME_USER, "Caro");
                 Hawk.put(Constants.NAME_USER, "FELIPE");
                 Hawk.put(Constants.PHONE_USER, "+56982110950");
-
-
-                Intent gps = new Intent(MainActivity.this, TestLocationService.class);
+               /* Intent gps = new Intent(MainActivity.this, TestLocationService.class);
                 gps.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startService(gps);
+                startService(gps);*/
+                SaveDeviceInfo.saveDeviceInfo(Hawk.get(Constants.DNI_USER).toString(),MainActivity.this);
                 // startActivity(new Intent(MainActivity.this,TestLocationActivity.class));
             }
         });

@@ -44,4 +44,6 @@ public class Constants {
 
     public static final String SENTRY_DSN = "https://c591083c8bb54bea810e97db7ae38f51@sentry.io/1433867";
 
+public static final String BUNDLE_ID = "bundle";
+
 }

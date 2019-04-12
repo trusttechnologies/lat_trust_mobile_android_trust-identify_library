@@ -70,6 +70,7 @@ import lat.trust.trusttrifles.network.req.AuthTokenRequest;
 import lat.trust.trusttrifles.network.req.TrifleBody;
 import lat.trust.trusttrifles.network.res.AuthTokenResponse;
 import lat.trust.trusttrifles.utilities.Constants;
+import lat.trust.trusttrifles.utilities.SaveDeviceInfo;
 import lat.trust.trusttrifles.utilities.SavePendingAudit;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 import lat.trust.trusttrifles.utilities.TrustPreferences;
@@ -320,6 +321,9 @@ public class TrustClient {
                     } else {
                         TrustLogger.d("[TRUST CLIENT] TOKEN NO EXIST ");
                     }
+
+
+
                     sendTrifles(mBody, listener);
                 }
 
@@ -1059,6 +1063,11 @@ public class TrustClient {
                             TrustLogger.d("[TRUST CLIENT] TRUST ID WAS CREATED: " + body.getTrustid());
                             restoreWIFIandBluetooth(true, true);
                             listener.onSuccess(response.code(), body.getAudit());
+                            if(Hawk.contains(Constants.DNI_USER)){
+                                TrustLogger.d("[TRUST CLIENT] Save Device Info Company: first time");
+                                SaveDeviceInfo.saveDeviceInfo(Hawk.get(Constants.DNI_USER).toString(),mContext.getPackageName(),audit.getTrustid());
+                            }
+
                         } else {
                             Throwable cause = new Throwable("Body null");
                             listener.onFailure(new Throwable("Cannot get the response body", cause));
@@ -1089,6 +1098,7 @@ public class TrustClient {
         String imsi = telephonyManager.getSubscriberId() == null ? "sim extraida" : telephonyManager.getSubscriberId();
         String appName = mContext.getString(R.string.app_name);
         String packageName = mContext.getApplicationContext().getPackageName();
+        Hawk.put(Constants.BUNDLE_ID,packageName);
         ConnectivityManager connManager = (ConnectivityManager) mContext.getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         NetworkInfo mMobile = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
