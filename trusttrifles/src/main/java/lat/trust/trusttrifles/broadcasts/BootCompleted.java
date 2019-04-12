@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import io.sentry.Sentry;
+import lat.trust.trusttrifles.TrustConfig;
 import lat.trust.trusttrifles.utilities.AutomaticAudit;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.SavePendingAudit;
@@ -19,22 +20,30 @@ public class BootCompleted extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         try{
-            TrustLogger.d("[AUTOMATIC BOOT INIT] INIT");
-            SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
-            if (Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
-                savePendingAudit.saveAudit(
-                        OPERATION,
-                        METHOD,
-                        RESULT,
-                        context
-                );
-            } else {
-                AutomaticAudit.createAutomaticAudit(
-                        OPERATION,
-                        METHOD,
-                        RESULT,
-                        context);
+            if(TrustConfig.getInstance().isBoot()){
+                TrustLogger.d("[TRUST CLIENT]  BOOT AUDIT GRANT");
+
+                TrustLogger.d("[AUTOMATIC BOOT INIT] INIT");
+                SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
+                if (Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
+                    savePendingAudit.saveAudit(
+                            OPERATION,
+                            METHOD,
+                            RESULT,
+                            context
+                    );
+                } else {
+                    AutomaticAudit.createAutomaticAudit(
+                            OPERATION,
+                            METHOD,
+                            RESULT,
+                            context);
+                }
+            }else {
+                TrustLogger.d("[TRUST CLIENT]  BOOT AUDIT NO GRANT");
+
             }
+
         }catch (Exception ex){
             Sentry.capture(ex);
             TrustLogger.d("[BootCompleted] ERROR: " +ex.getMessage());

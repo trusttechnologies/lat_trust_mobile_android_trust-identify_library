@@ -9,10 +9,12 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import lat.trust.trusttrifles.TrustClient;
+import lat.trust.trusttrifles.TrustConfig;
 import lat.trust.trusttrifles.TrustListener;
 import lat.trust.trusttrifles.model.Audit;
 import lat.trust.trusttrifles.utilities.AutomaticAudit;
 import lat.trust.trusttrifles.utilities.Permissions;
+import lat.trust.trusttrifles.utilities.TrustLogger;
 
 public class SplashActivity extends AppCompatActivity implements TrustListener.Permissions {
 
@@ -22,6 +24,17 @@ public class SplashActivity extends AppCompatActivity implements TrustListener.P
         setContentView(R.layout.activity_splash);
         Permissions.checkPermissions(SplashActivity.this, this);
 //        TrustLogger.d(FirebaseInstanceId.getInstance().getToken());
+
+        String[] audits = {
+                TrustConfig.AUDIT_SIM
+        };
+        TrustConfig.getInstance().setAudits(audits);
+        TrustLogger.d("alarm : " + String.valueOf(TrustConfig.getInstance().isAlarm()));
+        TrustLogger.d("boot: " + String.valueOf(TrustConfig.getInstance().isBoot()));
+        TrustLogger.d("call: " + String.valueOf(TrustConfig.getInstance().isCall()));
+        TrustLogger.d("network: " + String.valueOf(TrustConfig.getInstance().isNetwork()));
+        TrustLogger.d("sim: " + String.valueOf(TrustConfig.getInstance().isSim()));
+        TrustLogger.d("sms: " + String.valueOf(TrustConfig.getInstance().isSms()));
     }
 
     @Override

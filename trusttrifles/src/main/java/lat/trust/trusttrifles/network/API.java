@@ -1,5 +1,6 @@
 package lat.trust.trusttrifles.network;
 
+import lat.trust.trusttrifles.authToken.AuthToken;
 import lat.trust.trusttrifles.model.audit.AuditTest;
 import lat.trust.trusttrifles.network.req.AuthTokenRequest;
 import lat.trust.trusttrifles.network.req.SaveDeviceInfoRequest;
@@ -7,6 +8,9 @@ import lat.trust.trusttrifles.network.req.TrifleBody;
 import lat.trust.trusttrifles.network.res.AuthTokenResponse;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.HEAD;
+import retrofit2.http.Header;
+import retrofit2.http.Headers;
 import retrofit2.http.POST;
 
 /**
@@ -27,6 +31,8 @@ public interface API {
     @POST("api/v1/device")
     Call<TrifleResponse> trifle2(@Body TrifleBody body);
 
+
+    @Headers("Authorization: Bearer token")
     @POST("api/v1/audit")
     Call<Void> createAuditTest(@Body AuditTest body);
 

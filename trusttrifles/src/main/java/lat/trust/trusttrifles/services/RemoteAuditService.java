@@ -9,7 +9,7 @@ import android.support.annotation.Nullable;
 import lat.trust.trusttrifles.utilities.AutomaticAudit;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 
-public class RemoteAuditService extends Service {
+public class  RemoteAuditService extends Service {
 
     private Context mContext;
     private static final String OPERATION = "REMOTE AUDIT BY FIREBASE";
@@ -41,7 +41,7 @@ public class RemoteAuditService extends Service {
                 mContext);
         stopSelf();
         return super.onStartCommand(intent, flags, startId);
-    }
+    } 
 
     @Override
     public void onDestroy() {

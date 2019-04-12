@@ -30,49 +30,7 @@ public class WifiStateReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, final Intent intent) {
 
- /*       TrustLogger.d("[WIFI STATE RECEIVER]");
 
-        if (Hawk.contains(Constants.TRUST_ID_AUTOMATIC)) {
-            final SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
-            int wifiState = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, WifiManager.WIFI_STATE_UNKNOWN);
-            String wifiStateText = "No State";
-            switch (wifiState) {
-                case WifiManager.WIFI_STATE_DISABLED:
-                    savePendingAudit.saveAudit(OPERATION, METHOD, RESULT, Utils.getLatitude(context), Utils.getLongitude(context), Utils.getCurrentTimeStamp());
-                    wifiStateText = "[WIFI STATE RECEIVER] WIFI_STATE_DISABLED";
-                    break;
-                case WifiManager.WIFI_STATE_ENABLED:
-                    wifiStateText = "[WIFI STATE RECEIVER] WIFI_STATE_ENABLED";
-                    new Handler().postDelayed(new Runnable() {
-                        @SuppressLint("MissingPermission")
-                        @Override
-                        public void run() {
-                            WifiManager wifiMgr = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-                            WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
-                            int ip = wifiInfo.getIpAddress();
-                            String ipAddress = Formatter.formatIpAddress(ip);
-                            String name = wifiInfo.getSSID() == null ? "No wifi avaliable" : wifiInfo.getSSID();
-                            AutomaticAudit.createAutomaticAudit(
-                                    OPERATION,
-                                    METHOD,
-                                    RESULT + name + " IP: " + ipAddress,
-                                    context);
-                            savePendingAudit.sendPendingAudits();
-                            lat.trust.trusttrifles.model.audit.AuditTransaction auditTransaction = new lat.trust.trusttrifles.model.audit.AuditTransaction(
-                                    RESULT + name + " IP: " + ipAddress, METHOD, OPERATION, Utils.getCurrentTimeStamp()
-                            );
-                        }
-                    }, 5000);
-                    break;
-                case WifiManager.WIFI_STATE_UNKNOWN:
-                    wifiStateText = "[WIFI STATE RECEIVER] WIFI_STATE_UNKNOWN";
-                    break;
-                default:
-                    break;
-            }
-            TrustLogger.d(wifiStateText);
-        }
-*/
     }
 
 

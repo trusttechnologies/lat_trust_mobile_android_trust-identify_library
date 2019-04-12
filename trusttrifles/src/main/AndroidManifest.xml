@@ -19,10 +19,17 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+
+
+    <!--   <uses-permission android:name="android.permission.READ_CALL_LOG"/>
+       <uses-permission android:name="android.permission.WRITE_CALL_LOG"/>
+       <uses-permission android:name="android.permission.READ_CONTACTS" />
+       <uses-permission android:name="android.permission.WRITE_CONTACTS"/>-->
+
+
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.SEND_SMS" />
-
 
 
     <application>
@@ -71,8 +78,20 @@
 
             </intent-filter>
         </receiver>
+        <!--SMS
+                <receiver android:name=".broadcasts.SmsBroadcastReceiver" android:exported="true">
+                    <intent-filter>
+                        <action android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVED"/>
+                    </intent-filter>
+                </receiver>
+
+        -->
+
+
         <!--ALARM RECEIVER-->
         <receiver android:name="lat.trust.trusttrifles.broadcasts.AlarmReceiver" />
+
+        <!--SMS RECEIVER-->
         <receiver android:name="lat.trust.trusttrifles.broadcasts.SmsBroadcastReceiver">
 
             <intent-filter>
@@ -81,6 +100,7 @@
 
             </intent-filter>
         </receiver>
+
         <receiver android:name=".broadcasts.NetworkConnectionReceiver">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />

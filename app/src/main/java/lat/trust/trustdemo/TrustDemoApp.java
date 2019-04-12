@@ -5,6 +5,7 @@ import android.app.Application;
 import com.orhanobut.hawk.Hawk;
 
 import lat.trust.trusttrifles.TrustClient;
+import lat.trust.trusttrifles.TrustConfig;
 import lat.trust.trusttrifles.utilities.TrustPreferences;
 
 public class TrustDemoApp extends Application {
@@ -14,5 +15,6 @@ public class TrustDemoApp extends Application {
         Hawk.init(this).build();
         TrustClient.init(this);
         TrustPreferences.init(this);
+        TrustConfig.init();
     }
 }

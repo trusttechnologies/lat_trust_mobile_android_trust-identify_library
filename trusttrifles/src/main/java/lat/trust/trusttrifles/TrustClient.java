@@ -51,6 +51,8 @@ import java.util.UUID;
 
 import io.sentry.Sentry;
 import io.sentry.android.AndroidSentryClientFactory;
+import lat.trust.trusttrifles.authToken.AuthToken;
+import lat.trust.trusttrifles.authToken.AuthTokenListener;
 import lat.trust.trusttrifles.model.Audit;
 import lat.trust.trusttrifles.model.Device;
 import lat.trust.trusttrifles.model.Identity;
@@ -111,14 +113,6 @@ public class TrustClient {
         SavePendingAudit.init(mContext);
         TrustPreferences.init(mContext);
         mPreferences = TrustPreferences.getInstance();
-
-        //AutomaticAudit.setAutomaticAlarm(mContext, 14, 30, 0);
-
-     /*   IntentFilter intentFilter = new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION);
-        mContext.registerReceiver(wifiState, intentFilter);*/
-        //getAccessToken();
-        // AutomaticAudit.setAutomaticAlarm(mContext, 14, 30, 0);
-        //mContext.startService(new Intent(mContext, LocationGPSService.class));
     }
 
     /**
@@ -1355,26 +1349,18 @@ public class TrustClient {
 
 
     private void getAccessToken() {
-        AuthTokenRequest authTokenRequest = new AuthTokenRequest();
-        authTokenRequest.setClient_id(TrustAuth.CLIENT_ID);
-        authTokenRequest.setClient_secret(TrustAuth.CLIENT_SECRET);
-        authTokenRequest.setGrant_type(TrustAuth.GRANT_TYPE);
-        RestClientAccessToken.get().getAccessToken(authTokenRequest).enqueue(new Callback<AuthTokenResponse>() {
+        AuthToken.getAccessToken(new AuthTokenListener.Auth() {
             @Override
-            public void onResponse(Call<AuthTokenResponse> call, Response<AuthTokenResponse> response) {
-                if (response.isSuccessful()) {
-                    TrustLogger.d(response.body().toString());
-                    if (response.code() == 401) {
-                        Hawk.put("access_token", response.body().getAccess_token());
-                    }
-                }
+            public void onSuccessAccessToken(String token) {
+                String tokenAuth = token;
             }
 
             @Override
-            public void onFailure(Call<AuthTokenResponse> call, Throwable t) {
-
+            public void onErrorAccessToken(String error) {
+                TrustLogger.d("[TRUST CLIENT] ERORR EGT ACCESS TOKEN: " +  error);
             }
         });
+
     }
 
     private void getAccessToken2() {

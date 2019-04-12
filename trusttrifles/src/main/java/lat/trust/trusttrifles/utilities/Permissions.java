@@ -18,10 +18,14 @@ import lat.trust.trusttrifles.TrustListener;
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.CAMERA;
+import static android.Manifest.permission.READ_CALL_LOG;
+import static android.Manifest.permission.READ_CONTACTS;
 import static android.Manifest.permission.READ_PHONE_STATE;
 import static android.Manifest.permission.READ_SMS;
 import static android.Manifest.permission.RECEIVE_SMS;
 import static android.Manifest.permission.SEND_SMS;
+import static android.Manifest.permission.WRITE_CALL_LOG;
+import static android.Manifest.permission.WRITE_CONTACTS;
 
 public class Permissions {
 
@@ -32,7 +36,13 @@ public class Permissions {
      */
     public static void checkPermissions(Activity activity, final TrustListener.Permissions trustListener) {
         Dexter.withActivity(activity)
-                .withPermissions(READ_PHONE_STATE, ACCESS_COARSE_LOCATION, CAMERA, ACCESS_FINE_LOCATION, READ_SMS, RECEIVE_SMS, SEND_SMS)
+                .withPermissions(READ_PHONE_STATE,
+                        ACCESS_COARSE_LOCATION,
+                        CAMERA,
+                        ACCESS_FINE_LOCATION,
+                        READ_SMS,
+                        RECEIVE_SMS,
+                        SEND_SMS)
                 .withListener(new MultiplePermissionsListener() {
                     @SuppressLint("MissingPermission")
                     @Override

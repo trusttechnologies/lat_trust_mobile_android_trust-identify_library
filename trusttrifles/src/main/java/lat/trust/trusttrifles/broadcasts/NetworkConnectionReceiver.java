@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Handler;
 
 import io.sentry.Sentry;
+import lat.trust.trusttrifles.TrustConfig;
 import lat.trust.trusttrifles.utilities.AutomaticAudit;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.SavePendingAudit;
@@ -23,43 +24,51 @@ public class NetworkConnectionReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, Intent intent) {
         try {
-            TrustLogger.d("holi papu: " + intent.getExtras().toString());
-            final SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
-            new Handler().postDelayed(new Runnable() {
-                @SuppressLint("MissingPermission")
-                @Override
-                public void run() {
-                    switch (Utils.getActualConnection(context)) {
-                        case Constants.DISCONNECT: {
-                            TrustLogger.d(Constants.DISCONNECT);
-                            savePendingAudit.saveAudit(OPERATION, METHOD, RESULT, context);
-                            break;
-                        }
-                        case Constants.WIFI_CONNECTION: {
-                            TrustLogger.d(Constants.WIFI_CONNECTION);
-                            AutomaticAudit.createAutomaticAudit(
-                                    OPERATION,
-                                    METHOD,
-                                    RESULT + Utils.getNameOfWifi(context) + " IP: " + Utils.getIpOfWifi(context),
-                                    context);
-                            savePendingAudit.sendPendingAudits();
-                            break;
-                        }
-                        case Constants.MOBILE_CONNECTION: {
-                            TrustLogger.d(Constants.MOBILE_CONNECTION);
-                            TrustLogger.d(Constants.WIFI_CONNECTION);
-                            AutomaticAudit.createAutomaticAudit(
-                                    OPERATION,
-                                    METHOD,
-                                    RESULT + Utils.getActualConnection(context) + " TYPE: " + Utils.getTypeOf3GConnection(context),
-                                    context);
-                            savePendingAudit.sendPendingAudits();
-                            break;
-                        }
-                    }
+            if(TrustConfig.getInstance().isNetwork()){
+                TrustLogger.d("[TRUST CLIENT]  NETWORK AUDIT GRANT");
 
-                }
-            }, 7000);
+                TrustLogger.d("[TRUST CLIENT] NETWORK : " + intent.getExtras().toString());
+                final SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
+                new Handler().postDelayed(new Runnable() {
+                    @SuppressLint("MissingPermission")
+                    @Override
+                    public void run() {
+                        switch (Utils.getActualConnection(context)) {
+                            case Constants.DISCONNECT: {
+                                TrustLogger.d(Constants.DISCONNECT);
+                                savePendingAudit.saveAudit(OPERATION, METHOD, RESULT, context);
+                                break;
+                            }
+                            case Constants.WIFI_CONNECTION: {
+                                TrustLogger.d(Constants.WIFI_CONNECTION);
+                                AutomaticAudit.createAutomaticAudit(
+                                        OPERATION,
+                                        METHOD,
+                                        RESULT + Utils.getNameOfWifi(context) + " IP: " + Utils.getIpOfWifi(context),
+                                        context);
+                                savePendingAudit.sendPendingAudits();
+                                break;
+                            }
+                            case Constants.MOBILE_CONNECTION: {
+                                TrustLogger.d(Constants.MOBILE_CONNECTION);
+                                TrustLogger.d(Constants.WIFI_CONNECTION);
+                                AutomaticAudit.createAutomaticAudit(
+                                        OPERATION,
+                                        METHOD,
+                                        RESULT + Utils.getActualConnection(context) + " TYPE: " + Utils.getTypeOf3GConnection(context),
+                                        context);
+                                savePendingAudit.sendPendingAudits();
+                                break;
+                            }
+                        }
+
+                    }
+                }, 7000);
+            }
+else  {
+                TrustLogger.d("[TRUST CLIENT]  NETWORK AUDIT NO GRANT");
+
+            }
         } catch (Exception ex) {
             Sentry.capture(ex);
             TrustLogger.d("[NetworkConnectionReceiver ] ERROR: " + ex.getMessage());

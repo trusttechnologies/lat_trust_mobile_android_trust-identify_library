@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import io.sentry.Sentry;
+import lat.trust.trusttrifles.TrustConfig;
 import lat.trust.trusttrifles.utilities.AutomaticAudit;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.SavePendingAudit;
@@ -20,21 +21,28 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         try {
-            SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
-            TrustLogger.d("[ALARM RECEIVER] INIT ALARM: ");
-            if (Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
-                savePendingAudit.saveAudit(
-                        OPERATION,
-                        METHOD,
-                        RESULT,
-                        context
-                );
-            } else {
-                AutomaticAudit.createAutomaticAudit(
-                        OPERATION,
-                        METHOD,
-                        RESULT,
-                        context);
+            if(TrustConfig.getInstance().isAlarm()){
+                TrustLogger.d("[TRUST CLIENT]  ALARM AUDIT GRANT");
+
+                SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
+                TrustLogger.d("[ALARM RECEIVER] INIT ALARM: ");
+                if (Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
+                    savePendingAudit.saveAudit(
+                            OPERATION,
+                            METHOD,
+                            RESULT,
+                            context
+                    );
+                } else {
+                    AutomaticAudit.createAutomaticAudit(
+                            OPERATION,
+                            METHOD,
+                            RESULT,
+                            context);
+                }
+            }else{
+                TrustLogger.d("[TRUST CLIENT]  ALARM AUDIT NO GRANT");
+
             }
         } catch (Exception ex) {
             Sentry.capture(ex);
