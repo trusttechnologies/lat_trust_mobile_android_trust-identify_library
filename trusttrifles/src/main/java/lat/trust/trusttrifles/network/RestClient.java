@@ -14,7 +14,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class RestClient {
-    public static final String BASE_URL2 = "HTTP://api.trust.lat/identification/";
+    public static final String BASE_URL2 = "https://api.trust.lat/identification/";
     private static final int CONNECT_TIMEOUT = 30 * 4;
     private static final int WRITE_TIMEOUT = 30 * 4;
     private static final int READ_TIMEOUT = 30 * 4;

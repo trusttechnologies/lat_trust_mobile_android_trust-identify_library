@@ -25,10 +25,7 @@ public class AuthToken   {
             public void onResponse(Call<AuthTokenResponse> call, Response<AuthTokenResponse> response) {
                 if (response.isSuccessful()) {
                     TrustLogger.d(response.body().toString());
-                    if (response.code() == 401) {
-                        Hawk.put("access_token", response.body().getAccess_token());
-                        authListener.onSuccessAccessToken(response.body().getAccess_token());
-                    }
+                    authListener.onSuccessAccessToken(response.body().getAccess_token());
                 }
             }
 
@@ -37,6 +34,10 @@ public class AuthToken   {
                     authListener.onErrorAccessToken(t.getMessage());
             }
         });
+    }
+
+    public static void refreshToken(){
+
     }
 
     public static String getToken() {

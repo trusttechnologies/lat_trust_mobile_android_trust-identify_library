@@ -4,6 +4,7 @@ public class AuditTest {
     private String type_audit;
     private String application;
     private AuditSource source;
+    private String platform;
     private AuditTransaction transaction;
     private AuditExtraData extra_data;
 
@@ -18,10 +19,19 @@ public class AuditTest {
     public AuditTest() {
     }
 
-    public AuditTest(String type_audit, String application, AuditSource source, AuditTransaction transaction, AuditExtraData extra_data) {
+    public String getPlatform() {
+        return platform;
+    }
+
+    public void setPlatform(String platform) {
+        this.platform = platform;
+    }
+
+    public AuditTest(String type_audit, String application, AuditSource source, String platform, AuditTransaction transaction, AuditExtraData extra_data) {
         this.type_audit = type_audit;
         this.application = application;
         this.source = source;
+        this.platform = platform;
         this.transaction = transaction;
         this.extra_data = extra_data;
     }

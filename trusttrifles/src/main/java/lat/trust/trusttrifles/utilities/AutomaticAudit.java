@@ -63,12 +63,7 @@ public class AutomaticAudit {
         TrustClient mClient = TrustClient.getInstance();
         if (isTrustId()) {
             AuditTransaction auditTransaction = new AuditTransaction(result, method, operation, timestamp);
-            mClient.createAuditTest(trustid, auditTransaction, lat, lng, null, new TrustListener.OnResultSimple() {
-                @Override
-                public void onResult(int code, String message) {
-                    TrustLogger.d("[AUTOMATIC AUDIT] : success automatic audit: " + message + " code: " + String.valueOf(code));
-                }
-            });
+            mClient.createAuditTest(trustid, auditTransaction, lat, lng, null);
         } else {
             generateTrustId(operation, method, result, timestamp, lat, lng);
         }
@@ -84,13 +79,7 @@ public class AutomaticAudit {
             String lat = String.valueOf(location != null ? location.getLatitude() : "no latitude avaliable");
             String lng = String.valueOf(location != null ? location.getLongitude() : "no longitude avaliable");
             TrustClient mClient = TrustClient.getInstance();
-            mClient.createAuditTest(getSavedTrustId(), auditTransaction, lat, lng, auditExtraData, new TrustListener.OnResultSimple() {
-                @Override
-                public void onResult(int code, String message) {
-                    TrustLogger.d("[AUTOMATIC TEST AUDIT] : success automatic audit: " + message + " code: " + String.valueOf(code));
-
-                }
-            });
+            mClient.createAuditTest(getSavedTrustId(), auditTransaction, lat, lng, auditExtraData);
         } catch (Exception ex) {
             TrustLogger.d("[AUTOMATIC TEST AUDIT] : ERROR: " + ex.getMessage());
 
@@ -146,12 +135,7 @@ public class AutomaticAudit {
                         }
                         TrustClient mClient = TrustClient.getInstance();
 
-                        mClient.createAuditTest(getSavedTrustId(), auditTransaction, lat, lng, auditExtraData, new TrustListener.OnResultSimple() {
-                            @Override
-                            public void onResult(int code, String message) {
-                                TrustLogger.d("[AUTOMATIC TEST AUDIT] : success automatic audit: " + message + " code: " + String.valueOf(code));
-                            }
-                        });
+                        mClient.createAuditTest(getSavedTrustId(), auditTransaction, lat, lng, auditExtraData);
                     }
                 }
             }, 5000);

@@ -58,17 +58,14 @@ import lat.trust.trusttrifles.model.Device;
 import lat.trust.trusttrifles.model.Identity;
 import lat.trust.trusttrifles.model.SIM;
 import lat.trust.trusttrifles.model.SensorData;
-import lat.trust.trusttrifles.model.TrustAuth;
 import lat.trust.trusttrifles.model.audit.AuditExtraData;
 import lat.trust.trusttrifles.model.audit.AuditSource;
 import lat.trust.trusttrifles.model.audit.AuditTest;
+import lat.trust.trusttrifles.model.audit.AuditTransaction;
 import lat.trust.trusttrifles.network.RestClient;
-import lat.trust.trusttrifles.network.RestClientAccessToken;
 import lat.trust.trusttrifles.network.RestClientAudit;
 import lat.trust.trusttrifles.network.TrifleResponse;
-import lat.trust.trusttrifles.network.req.AuthTokenRequest;
 import lat.trust.trusttrifles.network.req.TrifleBody;
-import lat.trust.trusttrifles.network.res.AuthTokenResponse;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.SaveDeviceInfo;
 import lat.trust.trusttrifles.utilities.SavePendingAudit;
@@ -321,7 +318,6 @@ public class TrustClient {
                     } else {
                         TrustLogger.d("[TRUST CLIENT] TOKEN NO EXIST ");
                     }
-
 
 
                     sendTrifles(mBody, listener);
@@ -1044,51 +1040,130 @@ public class TrustClient {
      * @param mBody
      * @param listener envialo si quieres recuperar la respuesta desde tu aplicacion
      */
-    private void sendTrifles(@NonNull TrifleBody mBody, @Nullable final TrustListener.OnResult<Audit> listener) {
-        Call<TrifleResponse> createTrifle = RestClient.get().trifle2(mBody);
-        createTrifle.enqueue(new Callback<TrifleResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<TrifleResponse> call, @NonNull Response<TrifleResponse> response) {
-                if (listener != null) {
+    private void sendTrifles(@NonNull final TrifleBody mBody, @Nullable final TrustListener.OnResult<Audit> listener) {
+        if (Hawk.contains(Constants.TOKEN_SERVICE)) {
+            Call<TrifleResponse> createTrifle = RestClient.get().trifle2(mBody, Hawk.get(Constants.TOKEN_SERVICE).toString());
+            createTrifle.enqueue(new Callback<TrifleResponse>() {
+                @Override
+                public void onResponse(@NonNull Call<TrifleResponse> call, @NonNull Response<TrifleResponse> response) {
+                    if (response.code() == 401) {
+                        refreshSendTrifles(mBody,listener);
+                        return;
+                    }
                     if (response.isSuccessful()) {
-                        TrifleResponse body = response.body();
-                        Audit audit = new Audit();
-                        audit.setMessage(body.getMessage());
-                        audit.setStatus(body.getStatus());
-                        audit.setTrustid(body.getTrustid());
-                        body.setAudit(audit);
-                        if (body != null) {
-                            mPreferences.put(TRUST_ID, body.getAudit().getTrustid());
-                            Hawk.put(Constants.TRUST_ID_AUTOMATIC, body.getTrustid());
-                            TrustLogger.d("[TRUST CLIENT] TRUST ID WAS CREATED: " + body.getTrustid());
+                        TrustLogger.d("[TRUST CLIENT]  VALID TOKEN: " + Hawk.get(Constants.TOKEN_SERVICE));
+                        if (listener != null) {
+                            if (response.isSuccessful()) {
+                                TrifleResponse body = response.body();
+                                Audit audit = new Audit();
+                                audit.setMessage(body.getMessage());
+                                audit.setStatus(body.getStatus());
+                                audit.setTrustid(body.getTrustid());
+                                body.setAudit(audit);
+                                if (body != null) {
+                                    mPreferences.put(TRUST_ID, body.getAudit().getTrustid());
+                                    Hawk.put(Constants.TRUST_ID_AUTOMATIC, body.getTrustid());
+                                    TrustLogger.d("[TRUST CLIENT] TRUST ID WAS CREATED: " + body.getTrustid());
+                                    restoreWIFIandBluetooth(true, true);
+                                    listener.onSuccess(response.code(), body.getAudit());
+                                    if (Hawk.contains(Constants.DNI_USER)) {
+                                        TrustLogger.d("[TRUST CLIENT] Save Device Info Company: first time");
+                                        SaveDeviceInfo.saveDeviceInfo(Hawk.get(Constants.DNI_USER).toString(), mContext.getPackageName(), audit.getTrustid());
+                                    }
+
+                                } else {
+                                    Throwable cause = new Throwable("Body null");
+                                    listener.onFailure(new Throwable("Cannot get the response body", cause));
+                                }
+                            } else {
+                                listener.onError(response.code());
+                            }
+                        }
+                    }
+
+                }
+
+                @Override
+                public void onFailure(Call<TrifleResponse> call, Throwable t) {
+                    if (listener != null)
+                        listener.onFailure(t);
+                }
+            });
+        } else {
+            AuthToken.getAccessToken(new AuthTokenListener.Auth() {
+                @Override
+                public void onSuccessAccessToken(String token) {
+                    Hawk.put(Constants.TOKEN_SERVICE,token);
+                    sendTrifles(mBody,listener);
+                }
+
+                @Override
+                public void onErrorAccessToken(String error) {
+                    TrustLogger.d("[TRUST CLIENT] ERROR TOKEN GET " +  error);
+
+                }
+            });
+        }
+
+    }
+
+
+
+    private void refreshSendTrifles(final TrifleBody mBody,@Nullable final TrustListener.OnResult<Audit> listener) {
+        AuthToken.getAccessToken(new AuthTokenListener.Auth() {
+            @Override
+            public void onSuccessAccessToken(String token) {
+                TrustLogger.d("[TRUST CLIENT] SUCCESS REFRESH TOKEN");
+                Hawk.put(Constants.TOKEN_SERVICE, token);
+                sendTrifles(mBody, new TrustListener.OnResult<Audit>() {
+                    @Override
+                    public void onSuccess(int code, Audit data) {
+                        if(data != null){
+                            mPreferences.put(TRUST_ID, data.getTrustid());
+                            Hawk.put(Constants.TRUST_ID_AUTOMATIC, data.getTrustid());
+                            TrustLogger.d("[TRUST CLIENT] TRUST ID WAS CREATED: " + data.getTrustid());
                             restoreWIFIandBluetooth(true, true);
-                            listener.onSuccess(response.code(), body.getAudit());
-                            if(Hawk.contains(Constants.DNI_USER)){
+                            listener.onSuccess(200, data);
+                            if (Hawk.contains(Constants.DNI_USER)) {
                                 TrustLogger.d("[TRUST CLIENT] Save Device Info Company: first time");
-                                SaveDeviceInfo.saveDeviceInfo(Hawk.get(Constants.DNI_USER).toString(),mContext.getPackageName(),audit.getTrustid());
+                                SaveDeviceInfo.saveDeviceInfo(Hawk.get(Constants.DNI_USER).toString(), mContext.getPackageName(), data.getTrustid());
                             }
 
                         } else {
                             Throwable cause = new Throwable("Body null");
                             listener.onFailure(new Throwable("Cannot get the response body", cause));
                         }
-                    } else {
-                        listener.onError(response.code());
                     }
-                }
+
+                    @Override
+                    public void onError(int code) {
+
+                    }
+
+                    @Override
+                    public void onFailure(Throwable t) {
+
+                    }
+
+                    @Override
+                    public void onPermissionRequired(ArrayList<String> permisos) {
+
+                    }
+                });
             }
 
             @Override
-            public void onFailure(Call<TrifleResponse> call, Throwable t) {
-                if (listener != null)
-                    listener.onFailure(t);
+            public void onErrorAccessToken(String error) {
+                TrustLogger.d("[TRUST CLIENT] ERROR SEND TRIFLES TOKEN:  " + error);
+
             }
         });
+
     }
 
-    public void createAuditTest(String trustid, lat.trust.trusttrifles.model.audit.AuditTransaction auditTransaction, String lat, String lng, AuditExtraData auditExtraData, @NonNull final TrustListener.OnResultSimple listener) {
+    public void createAuditTest(String trustid, AuditTransaction auditTransaction, String lat, String lng, AuditExtraData auditExtraData) {
         String wifiName = "no wifi avaliable";
-        TelephonyManager telephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+        final TelephonyManager telephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
         if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
             wifiName = "no wifi avaliable for permission";
         }
@@ -1098,7 +1173,7 @@ public class TrustClient {
         String imsi = telephonyManager.getSubscriberId() == null ? "sim extraida" : telephonyManager.getSubscriberId();
         String appName = mContext.getString(R.string.app_name);
         String packageName = mContext.getApplicationContext().getPackageName();
-        Hawk.put(Constants.BUNDLE_ID,packageName);
+        Hawk.put(Constants.BUNDLE_ID, packageName);
         ConnectivityManager connManager = (ConnectivityManager) mContext.getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         NetworkInfo mMobile = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
@@ -1131,27 +1206,91 @@ public class TrustClient {
                 version
         );
 
-        AuditTest auditTest = new AuditTest();
+        final AuditTest auditTest = new AuditTest();
         auditTest.setType_audit("trust identify");
         auditTest.setApplication(appName);
         auditTest.setSource(source);
         auditTest.setTransaction(auditTransaction);
+        auditTest.setPlatform("Android");
         auditTest.setExtra_data(auditExtraData);
-        RestClientAudit.get().createAuditTest(auditTest).enqueue(new Callback<Void>() {
+
+        if (Hawk.contains(Constants.TOKEN_SERVICE)) {
+            sendAudit(auditTest);
+        } else {
+            AuthToken.getAccessToken(new AuthTokenListener.Auth() {
+                @Override
+                public void onSuccessAccessToken(String token) {
+                    Hawk.put(Constants.TOKEN_SERVICE,token);
+                    sendAudit(auditTest);
+                }
+
+                @Override
+                public void onErrorAccessToken(String error) {
+                    TrustLogger.d("[TRUST CLIENT] ERROR TOKEN " +  error);
+                }
+            });
+        }
+
+    }
+
+    private void sendAudit(final AuditTest auditTest) {
+        RestClientAudit.get().createAuditTest(auditTest, Hawk.get(Constants.TOKEN_SERVICE ).toString()).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 TrustLogger.d("audit test code: " + String.valueOf(response.code()));
                 TrustLogger.d("audit test body: " + String.valueOf(response.body()));
-                listener.onResult(response.code(), response.message());
+                if (response.code() == 401) {
+                    TrustLogger.d("[TRUST CLIENT] ACCESS TOKEN AUDIT EXPIRED: " + response.code() + " MESSAGE: " + response.message());
+                    refreshTokenAudit(auditTest);
+                }
+                if (response.isSuccessful()) {
+                    TrustLogger.d("[TRUST CLIENT]  VALID TOKEN: " + Hawk.get(Constants.TOKEN_SERVICE));
+                    TrustLogger.d("[TRUST CLIENT] Audit code: " + response.code() + " Audit message: " + response.message());
+                }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                listener.onResult(-1, t.getMessage());
-
+                TrustLogger.d("[TRUST CLIENT] Audit code: -1 Audit message: " + t.getMessage());
             }
         });
     }
+
+    private void refreshTokenAudit(final AuditTest auditTest) {
+        AuthToken.getAccessToken(new AuthTokenListener.Auth() {
+            @Override
+            public void onSuccessAccessToken(String token) {
+                TrustLogger.d("[TRUST CLIENT] SUCCESS REFRESH TOKEN");
+                Hawk.put(Constants.TOKEN_SERVICE, token);
+                RestClient.get().createAuditTest(auditTest,token).enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        if(response.code() == 401){
+                            TrustLogger.d("[TRSUT CLIENT] ERROR AUDIT REFRESH TOKEN" + response.code() + " MESSAGE: "  + response.message());
+                            return;
+                        }
+                        if(response.isSuccessful()){
+                            TrustLogger.d("[TRUST CLIENT]  VALID TOKEN: " + Hawk.get(Constants.TOKEN_SERVICE));
+                            TrustLogger.d("[TRUST CLIENT] Audit code: " + response.code() + " Audit message: " + response.message());
+                        }
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+
+                    }
+                });
+
+            }
+
+            @Override
+            public void onErrorAccessToken(String error) {
+                TrustLogger.d("[TRUST CLIENT] ERROR ACCESS TOKEN: " + error);
+            }
+        });
+    }
+
 
     /**
      * This method get state of Wifi (true, false)
@@ -1367,7 +1506,7 @@ public class TrustClient {
 
             @Override
             public void onErrorAccessToken(String error) {
-                TrustLogger.d("[TRUST CLIENT] ERORR EGT ACCESS TOKEN: " +  error);
+                TrustLogger.d("[TRUST CLIENT] ERROR GET ACCESS TOKEN: " + error);
             }
         });
 

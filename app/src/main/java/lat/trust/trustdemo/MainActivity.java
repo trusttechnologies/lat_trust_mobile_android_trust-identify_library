@@ -21,6 +21,7 @@ import com.orhanobut.hawk.Hawk;
 import io.fabric.sdk.android.Fabric;
 import lat.trust.trusttrifles.TrustConfig;
 import lat.trust.trusttrifles.services.TestLocationService;
+import lat.trust.trusttrifles.utilities.AutomaticAudit;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.SaveDeviceInfo;
 import lat.trust.trusttrifles.utilities.TrustLogger;
@@ -49,34 +50,19 @@ public class MainActivity extends AppCompatActivity {
         materialButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //turnGPSOn();
-
                 TrustLogger.d(Utils.getActualConnection(MainActivity.this));
                 Hawk.put(Constants.DNI_USER, "18236924-1");
                 Hawk.put(Constants.EMAIL_USER, "fcaro@trust.lat");
                 Hawk.put(Constants.LASTNAME_USER, "Caro");
                 Hawk.put(Constants.NAME_USER, "FELIPE");
                 Hawk.put(Constants.PHONE_USER, "+56982110950");
-               /* Intent gps = new Intent(MainActivity.this, TestLocationService.class);
-                gps.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startService(gps);*/
                 SaveDeviceInfo.saveDeviceInfo(Hawk.get(Constants.DNI_USER).toString(),MainActivity.this);
-                // startActivity(new Intent(MainActivity.this,TestLocationActivity.class));
+                AutomaticAudit.createAutomaticAudit("test1","test2","result test",MainActivity.this);
             }
         });
     }
 
-    private void turnGPSOn() {
-        String provider = Settings.Secure.getString(getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
 
-        if (!provider.contains("gps")) { //if gps is disabled
-            final Intent poke = new Intent();
-            poke.setClassName("com.android.settings", "com.android.settings.widget.SettingsAppWidgetProvider");
-            poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
-            poke.setData(Uri.parse("3"));
-            sendBroadcast(poke);
-        }
-    }
 
     private class Trust {
         private String email;
