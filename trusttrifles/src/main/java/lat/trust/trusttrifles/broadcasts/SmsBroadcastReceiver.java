@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
 
+import com.orhanobut.hawk.Hawk;
+
 import io.sentry.Sentry;
 import lat.trust.trusttrifles.TrustConfig;
 import lat.trust.trusttrifles.utilities.AutomaticAudit;

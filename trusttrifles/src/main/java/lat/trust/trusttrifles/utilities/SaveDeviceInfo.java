@@ -6,7 +6,6 @@ import com.orhanobut.hawk.Hawk;
 
 import lat.trust.trusttrifles.authToken.AuthToken;
 import lat.trust.trusttrifles.authToken.AuthTokenListener;
-import lat.trust.trusttrifles.network.RestClient;
 import lat.trust.trusttrifles.network.RestClientCompany;
 import lat.trust.trusttrifles.network.req.SaveDeviceInfoRequest;
 import retrofit2.Call;
@@ -23,8 +22,13 @@ public class SaveDeviceInfo {
         saveDeviceInfo.setTrust_id(trustId);
         saveDevice(saveDeviceInfo);
     }
-
-
+    public static void saveDeviceInfo( final String bundleId, final String trustId) {
+        TrustLogger.d("[TRUST CLIENT] SAVING DEVICE...");
+        final SaveDeviceInfoRequest saveDeviceInfo = new SaveDeviceInfoRequest();
+        saveDeviceInfo.setBundle_id(bundleId);
+        saveDeviceInfo.setTrust_id(trustId);
+        saveDevice(saveDeviceInfo);
+    }
     private static void saveDevice(final SaveDeviceInfoRequest saveDeviceInfo) {
         RestClientCompany.setup().saveDeviceData(saveDeviceInfo, Hawk.get(Constants.TOKEN_SERVICE).toString()).enqueue(new Callback<Void>() {
             @Override
@@ -55,7 +59,8 @@ public class SaveDeviceInfo {
         AuthToken.getAccessToken(new AuthTokenListener.Auth() {
             @Override
             public void onSuccessAccessToken(String token) {
-                RestClient.get().saveDeviceData(saveDeviceInfo, token).enqueue(new Callback<Void>() {
+                Hawk.put(Constants.TOKEN_SERVICE,"Bearer " + token);
+                RestClientCompany.setup().saveDeviceData(saveDeviceInfo, Hawk.get(Constants.TOKEN_SERVICE).toString()).enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
                         if (response.code() == 401) {
@@ -70,7 +75,6 @@ public class SaveDeviceInfo {
                                     + saveDeviceInfo.getTrust_id());
                         }
                     }
-
                     @Override
                     public void onFailure(Call<Void> call, Throwable t) {
 

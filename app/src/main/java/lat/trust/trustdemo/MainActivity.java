@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
                 Hawk.put(Constants.LASTNAME_USER, "Caro");
                 Hawk.put(Constants.NAME_USER, "FELIPE");
                 Hawk.put(Constants.PHONE_USER, "+56982110950");
-                SaveDeviceInfo.saveDeviceInfo(Hawk.get(Constants.DNI_USER).toString(),MainActivity.this);
                 AutomaticAudit.createAutomaticAudit("test1","test2","result test",MainActivity.this);
             }
         });

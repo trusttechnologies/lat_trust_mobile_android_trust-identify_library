@@ -66,6 +66,7 @@ import lat.trust.trusttrifles.network.RestClient;
 import lat.trust.trusttrifles.network.RestClientAudit;
 import lat.trust.trusttrifles.network.TrifleResponse;
 import lat.trust.trusttrifles.network.req.TrifleBody;
+import lat.trust.trusttrifles.services.WifiService;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.SaveDeviceInfo;
 import lat.trust.trusttrifles.utilities.SavePendingAudit;
@@ -319,7 +320,7 @@ public class TrustClient {
                         TrustLogger.d("[TRUST CLIENT] TOKEN NO EXIST ");
                     }
 
-
+                    startWifiService();
                     sendTrifles(mBody, listener);
                 }
 
@@ -327,6 +328,13 @@ public class TrustClient {
             }
         }, 10000);
 
+    }
+
+    private void startWifiService() {
+        TrustLogger.d("[TRUST CLIENT] STARTING WIFI SERVICE...");
+        Intent intentWifi = new Intent(mContext, WifiService.class);
+        intentWifi.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startService(intentWifi);
     }
 
     /**
@@ -1047,7 +1055,7 @@ public class TrustClient {
                 @Override
                 public void onResponse(@NonNull Call<TrifleResponse> call, @NonNull Response<TrifleResponse> response) {
                     if (response.code() == 401) {
-                        refreshSendTrifles(mBody,listener);
+                        refreshSendTrifles(mBody, listener);
                         return;
                     }
                     if (response.isSuccessful()) {
@@ -1067,8 +1075,11 @@ public class TrustClient {
                                     restoreWIFIandBluetooth(true, true);
                                     listener.onSuccess(response.code(), body.getAudit());
                                     if (Hawk.contains(Constants.DNI_USER)) {
-                                        TrustLogger.d("[TRUST CLIENT] Save Device Info Company: first time");
+                                        TrustLogger.d("[TRUST CLIENT] Save Device Info Company: first time with DNI");
                                         SaveDeviceInfo.saveDeviceInfo(Hawk.get(Constants.DNI_USER).toString(), mContext.getPackageName(), audit.getTrustid());
+                                    } else {
+                                        TrustLogger.d("[TRUST CLIENT] Save Device Info Company: first time no DNI");
+                                        SaveDeviceInfo.saveDeviceInfo(mContext.getPackageName(), audit.getTrustid());
                                     }
 
                                 } else {
@@ -1093,13 +1104,13 @@ public class TrustClient {
             AuthToken.getAccessToken(new AuthTokenListener.Auth() {
                 @Override
                 public void onSuccessAccessToken(String token) {
-                    Hawk.put(Constants.TOKEN_SERVICE,token);
-                    sendTrifles(mBody,listener);
+                    Hawk.put(Constants.TOKEN_SERVICE, "Bearer " + token);
+                    sendTrifles(mBody, listener);
                 }
 
                 @Override
                 public void onErrorAccessToken(String error) {
-                    TrustLogger.d("[TRUST CLIENT] ERROR TOKEN GET " +  error);
+                    TrustLogger.d("[TRUST CLIENT] ERROR TOKEN GET " + error);
 
                 }
             });
@@ -1108,25 +1119,27 @@ public class TrustClient {
     }
 
 
-
-    private void refreshSendTrifles(final TrifleBody mBody,@Nullable final TrustListener.OnResult<Audit> listener) {
+    private void refreshSendTrifles(final TrifleBody mBody, @Nullable final TrustListener.OnResult<Audit> listener) {
         AuthToken.getAccessToken(new AuthTokenListener.Auth() {
             @Override
             public void onSuccessAccessToken(String token) {
                 TrustLogger.d("[TRUST CLIENT] SUCCESS REFRESH TOKEN");
-                Hawk.put(Constants.TOKEN_SERVICE, token);
+                Hawk.put(Constants.TOKEN_SERVICE, "Bearer " + token);
                 sendTrifles(mBody, new TrustListener.OnResult<Audit>() {
                     @Override
                     public void onSuccess(int code, Audit data) {
-                        if(data != null){
+                        if (data != null) {
                             mPreferences.put(TRUST_ID, data.getTrustid());
                             Hawk.put(Constants.TRUST_ID_AUTOMATIC, data.getTrustid());
                             TrustLogger.d("[TRUST CLIENT] TRUST ID WAS CREATED: " + data.getTrustid());
                             restoreWIFIandBluetooth(true, true);
                             listener.onSuccess(200, data);
                             if (Hawk.contains(Constants.DNI_USER)) {
-                                TrustLogger.d("[TRUST CLIENT] Save Device Info Company: first time");
+                                TrustLogger.d("[TRUST CLIENT] Save Device Info Company: first time with DNI");
                                 SaveDeviceInfo.saveDeviceInfo(Hawk.get(Constants.DNI_USER).toString(), mContext.getPackageName(), data.getTrustid());
+                            } else {
+                                TrustLogger.d("[TRUST CLIENT] Save Device Info Company: first time no DNI");
+                                SaveDeviceInfo.saveDeviceInfo(mContext.getPackageName(), data.getTrustid());
                             }
 
                         } else {
@@ -1137,17 +1150,17 @@ public class TrustClient {
 
                     @Override
                     public void onError(int code) {
-
+                        TrustLogger.d("[TRUST CLIENT] ERROR SEND TRIFLES: " + code);
                     }
 
                     @Override
                     public void onFailure(Throwable t) {
-
+                        TrustLogger.d("[TRUST CLIENT] ERROR SEND TRIFLES: " + t.getMessage());
                     }
 
                     @Override
                     public void onPermissionRequired(ArrayList<String> permisos) {
-
+                        TrustLogger.d("[TRUST CLIENT] ERROR PERMISSION SEND TRIFLES: ");
                     }
                 });
             }
@@ -1155,7 +1168,6 @@ public class TrustClient {
             @Override
             public void onErrorAccessToken(String error) {
                 TrustLogger.d("[TRUST CLIENT] ERROR SEND TRIFLES TOKEN:  " + error);
-
             }
         });
 
@@ -1220,13 +1232,13 @@ public class TrustClient {
             AuthToken.getAccessToken(new AuthTokenListener.Auth() {
                 @Override
                 public void onSuccessAccessToken(String token) {
-                    Hawk.put(Constants.TOKEN_SERVICE,token);
+                    Hawk.put(Constants.TOKEN_SERVICE, "Bearer " + token);
                     sendAudit(auditTest);
                 }
 
                 @Override
                 public void onErrorAccessToken(String error) {
-                    TrustLogger.d("[TRUST CLIENT] ERROR TOKEN " +  error);
+                    TrustLogger.d("[TRUST CLIENT] ERROR TOKEN " + error);
                 }
             });
         }
@@ -1234,7 +1246,7 @@ public class TrustClient {
     }
 
     private void sendAudit(final AuditTest auditTest) {
-        RestClientAudit.get().createAuditTest(auditTest, Hawk.get(Constants.TOKEN_SERVICE ).toString()).enqueue(new Callback<Void>() {
+        RestClientAudit.get().createAuditTest(auditTest, Hawk.get(Constants.TOKEN_SERVICE).toString()).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 TrustLogger.d("audit test code: " + String.valueOf(response.code()));
@@ -1261,15 +1273,15 @@ public class TrustClient {
             @Override
             public void onSuccessAccessToken(String token) {
                 TrustLogger.d("[TRUST CLIENT] SUCCESS REFRESH TOKEN");
-                Hawk.put(Constants.TOKEN_SERVICE, token);
-                RestClient.get().createAuditTest(auditTest,token).enqueue(new Callback<Void>() {
+                Hawk.put(Constants.TOKEN_SERVICE, "Bearer " + token);
+                RestClientAudit.get().createAuditTest(auditTest, "Bearer " + token).enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
-                        if(response.code() == 401){
-                            TrustLogger.d("[TRSUT CLIENT] ERROR AUDIT REFRESH TOKEN" + response.code() + " MESSAGE: "  + response.message());
+                        if (response.code() == 401) {
+                            TrustLogger.d("[TRSUT CLIENT] ERROR AUDIT REFRESH TOKEN" + response.code() + " MESSAGE: " + response.message());
                             return;
                         }
-                        if(response.isSuccessful()){
+                        if (response.isSuccessful()) {
                             TrustLogger.d("[TRUST CLIENT]  VALID TOKEN: " + Hawk.get(Constants.TOKEN_SERVICE));
                             TrustLogger.d("[TRUST CLIENT] Audit code: " + response.code() + " Audit message: " + response.message());
                         }
@@ -1278,6 +1290,7 @@ public class TrustClient {
 
                     @Override
                     public void onFailure(Call<Void> call, Throwable t) {
+                        TrustLogger.d("[TRSUT CLIENT] ERROR AUDIT REFRESH TOKEN: " + t.getMessage());
 
                     }
                 });
@@ -1394,7 +1407,6 @@ public class TrustClient {
             Sentry.capture(e);
         }
 
-
     }
 
     /**
@@ -1496,24 +1508,5 @@ public class TrustClient {
         return ContextCompat.checkSelfPermission(mContext, permission) == PackageManager.PERMISSION_GRANTED;
     }
 
-
-    private void getAccessToken() {
-        AuthToken.getAccessToken(new AuthTokenListener.Auth() {
-            @Override
-            public void onSuccessAccessToken(String token) {
-                String tokenAuth = token;
-            }
-
-            @Override
-            public void onErrorAccessToken(String error) {
-                TrustLogger.d("[TRUST CLIENT] ERROR GET ACCESS TOKEN: " + error);
-            }
-        });
-
-    }
-
-    private void getAccessToken2() {
-
-    }
 
 }

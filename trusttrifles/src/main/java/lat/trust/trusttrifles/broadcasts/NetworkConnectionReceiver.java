@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 
+import com.orhanobut.hawk.Hawk;
+
 import io.sentry.Sentry;
 import lat.trust.trusttrifles.TrustConfig;
 import lat.trust.trusttrifles.utilities.AutomaticAudit;
@@ -26,7 +28,6 @@ public class NetworkConnectionReceiver extends BroadcastReceiver {
         try {
             if(TrustConfig.getInstance().isNetwork()){
                 TrustLogger.d("[TRUST CLIENT]  NETWORK AUDIT GRANT");
-
                 TrustLogger.d("[TRUST CLIENT] NETWORK : " + intent.getExtras().toString());
                 final SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
                 new Handler().postDelayed(new Runnable() {
@@ -65,9 +66,8 @@ public class NetworkConnectionReceiver extends BroadcastReceiver {
                     }
                 }, 7000);
             }
-else  {
+            else  {
                 TrustLogger.d("[TRUST CLIENT]  NETWORK AUDIT NO GRANT");
-
             }
         } catch (Exception ex) {
             Sentry.capture(ex);

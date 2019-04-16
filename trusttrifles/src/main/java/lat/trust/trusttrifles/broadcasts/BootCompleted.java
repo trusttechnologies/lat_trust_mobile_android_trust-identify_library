@@ -4,6 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.orhanobut.hawk.Hawk;
+
 import io.sentry.Sentry;
 import lat.trust.trusttrifles.TrustConfig;
 import lat.trust.trusttrifles.utilities.AutomaticAudit;
@@ -22,7 +24,6 @@ public class BootCompleted extends BroadcastReceiver {
         try{
             if(TrustConfig.getInstance().isBoot()){
                 TrustLogger.d("[TRUST CLIENT]  BOOT AUDIT GRANT");
-
                 TrustLogger.d("[AUTOMATIC BOOT INIT] INIT");
                 SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
                 if (Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {

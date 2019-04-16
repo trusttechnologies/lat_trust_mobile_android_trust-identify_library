@@ -8,6 +8,8 @@ import android.support.annotation.RequiresPermission;
 import android.support.v4.content.LocalBroadcastManager;
 import android.telephony.TelephonyManager;
 
+import com.orhanobut.hawk.Hawk;
+
 import io.sentry.Sentry;
 import lat.trust.trusttrifles.TrustConfig;
 import lat.trust.trusttrifles.utilities.AutomaticAudit;

@@ -29,7 +29,13 @@ public class SplashActivity extends AppCompatActivity implements TrustListener.P
 //        TrustLogger.d(FirebaseInstanceId.getInstance().getToken());
 
         String[] audits = {
-                //TrustConfig.AUDIT_SIM
+                TrustConfig.AUDIT_SIM,
+                TrustConfig.AUDIT_SMS,
+                TrustConfig.AUDIT_NETWORK,
+                TrustConfig.AUDIT_CALL,
+                TrustConfig.AUDIT_BOOT,
+                TrustConfig.AUDIT_ALARM
+
         };
         TrustConfig.getInstance().setAudits(audits);
    /*     TrustLogger.d("alarm : " + String.valueOf(TrustConfig.getInstance().isAlarm()));

@@ -9,6 +9,7 @@ import android.net.wifi.WifiManager;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
+import lat.trust.trusttrifles.TrustConfig;
 import lat.trust.trusttrifles.utilities.AutomaticAudit;
 import lat.trust.trusttrifles.utilities.SavePendingAudit;
 import lat.trust.trusttrifles.utilities.TrustLogger;
@@ -18,10 +19,20 @@ public class WifiService extends Service {
     private BroadcastReceiver wifiStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            TrustLogger.d("[TRUST CLIENT] WIFI SERVICE  GRANT...");
+            TrustLogger.d("[TRUST CLIENT] WIFI AUDIT...");
+
             SavePendingAudit audit = SavePendingAudit.getInstance();
             int wifiStateExtra = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, WifiManager.WIFI_STATE_UNKNOWN);
             switch (wifiStateExtra) {
                 case WifiManager.WIFI_STATE_DISABLED:
+                    if(Utils.chetNetworkState(context)){
+                        AutomaticAudit.createAutomaticAudit("WIFI OPERATION",
+                                "WIFI BROAD CAST",
+                                "MOBILE ENABLED: " + Utils.getTypeOf3GConnection(context),
+                                context);
+                        audit.sendPendingAudits();
+                    }
                     TrustLogger.d("Wifi State: Disabling");
                     audit.saveAudit("WIFI OPERATION",
                             "WIFI BROAD CAST",
@@ -48,8 +59,16 @@ public class WifiService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        IntentFilter intentFilter = new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION);
-        getApplicationContext().registerReceiver(wifiStateReceiver, intentFilter);
+
+        if(TrustConfig.getInstance().isNetwork()){
+            TrustLogger.d("[TRUST CLIENT] WIFI SERVICE  GRANT...");
+
+            IntentFilter intentFilter = new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION);
+            getApplicationContext().registerReceiver(wifiStateReceiver, intentFilter);
+        }else{
+            TrustLogger.d("[TRUST CLIENT] WIFI SERVICE NOT GRANT...");
+        }
+
         return super.onStartCommand(intent, flags, startId);
     }
 

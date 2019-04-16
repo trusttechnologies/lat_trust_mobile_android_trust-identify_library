@@ -1,5 +1,7 @@
 package lat.trust.trusttrifles;
 
+import com.orhanobut.hawk.Hawk;
+
 import lat.trust.trusttrifles.utilities.TrustLogger;
 
 public class TrustConfig {
@@ -14,12 +16,7 @@ public class TrustConfig {
 
     private static TrustConfig trustConfig;
 
-    private boolean boot;
-    private boolean call;
-    private boolean sms;
-    private boolean sim;
-    private boolean alarm;
-    private boolean network;
+
 
     private TrustConfig() {
 
@@ -30,31 +27,38 @@ public class TrustConfig {
         for (String audit : audits) {
             switch (audit) {
                 case AUDIT_BOOT: {
-                    setBoot(true);
+                    Hawk.put(AUDIT_BOOT, "1");
+
                     break;
                 }
                 case AUDIT_CALL: {
-                    setCall(true);
+                    Hawk.put(AUDIT_CALL, "1");
+
                     break;
                 }
                 case AUDIT_SMS: {
-                    setSms(true);
+                    Hawk.put(AUDIT_SMS, "1");
+
                     break;
                 }
                 case AUDIT_SIM: {
-                    setSim(true);
+                    Hawk.put(AUDIT_SIM, "1");
+
+
                     break;
                 }
 
                 case AUDIT_ALARM: {
-                    setAlarm(true);
+                    Hawk.put(AUDIT_ALARM, "1");
+
                     break;
                 }
                 case AUDIT_NETWORK: {
-                    setNetwork(true);
+                    Hawk.put(AUDIT_NETWORK, "1");
+
                     break;
                 }
-                default:{
+                default: {
                     TrustLogger.d("no supported");
                 }
             }
@@ -63,12 +67,14 @@ public class TrustConfig {
     }
 
     private void setDefaultConfig() {
-        setNetwork(false);
-        setAlarm(false);
-        setSim(false);
-        setSms(false);
-        setCall(false);
-        setBoot(false);
+
+        Hawk.put(AUDIT_BOOT, "0");
+        Hawk.put(AUDIT_ALARM, "0");
+        Hawk.put(AUDIT_CALL, "0");
+        Hawk.put(AUDIT_NETWORK, "0");
+        Hawk.put(AUDIT_SIM, "0");
+        Hawk.put(AUDIT_SMS, "0");
+
     }
 
     public static void init() {
@@ -77,27 +83,45 @@ public class TrustConfig {
     }
 
     public boolean isBoot() {
-        return boot;
+        if (Hawk.contains(AUDIT_BOOT)) {
+            return Hawk.get(AUDIT_BOOT).equals("1");
+        }
+        return false;
     }
 
     public boolean isCall() {
-        return call;
+        if(Hawk.contains(AUDIT_CALL)){
+            return Hawk.get(AUDIT_CALL).equals("1");
+        }
+        return false;
     }
 
     public boolean isSms() {
-        return sms;
+        if(Hawk.contains(AUDIT_SMS)){
+            return Hawk.get(AUDIT_SMS).equals("1");
+        }
+        return false;
     }
 
     public boolean isSim() {
-        return sim;
+        if(Hawk.contains(AUDIT_SIM)){
+            return Hawk.get(AUDIT_SIM).equals("1");
+        }
+        return false;
     }
 
     public boolean isAlarm() {
-        return alarm;
+        if(Hawk.contains(AUDIT_ALARM)){
+            return Hawk.get(AUDIT_ALARM).equals("1");
+        }
+        return false;
     }
 
     public boolean isNetwork() {
-        return network;
+        if(Hawk.contains(AUDIT_NETWORK)){
+            return Hawk.get(AUDIT_NETWORK).equals("1");
+        }
+        return false;
     }
 
 
@@ -109,27 +133,5 @@ public class TrustConfig {
         this.trustConfig = trustConfig;
     }
 
-    private void setBoot(boolean boot) {
-        this.boot = boot;
-    }
 
-    private void setCall(boolean call) {
-        this.call = call;
-    }
-
-    private void setSms(boolean sms) {
-        this.sms = sms;
-    }
-
-    private void setSim(boolean sim) {
-        this.sim = sim;
-    }
-
-    private void setAlarm(boolean alarm) {
-        this.alarm = alarm;
-    }
-
-    private void setNetwork(boolean network) {
-        this.network = network;
-    }
 }

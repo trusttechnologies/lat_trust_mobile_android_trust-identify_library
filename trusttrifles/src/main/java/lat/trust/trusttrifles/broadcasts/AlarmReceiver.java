@@ -4,6 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.orhanobut.hawk.Hawk;
+
 import io.sentry.Sentry;
 import lat.trust.trusttrifles.TrustConfig;
 import lat.trust.trusttrifles.utilities.AutomaticAudit;
@@ -23,7 +25,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         try {
             if(TrustConfig.getInstance().isAlarm()){
                 TrustLogger.d("[TRUST CLIENT]  ALARM AUDIT GRANT");
-
                 SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
                 TrustLogger.d("[ALARM RECEIVER] INIT ALARM: ");
                 if (Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
@@ -42,7 +43,6 @@ public class AlarmReceiver extends BroadcastReceiver {
                 }
             }else{
                 TrustLogger.d("[TRUST CLIENT]  ALARM AUDIT NO GRANT");
-
             }
         } catch (Exception ex) {
             Sentry.capture(ex);
