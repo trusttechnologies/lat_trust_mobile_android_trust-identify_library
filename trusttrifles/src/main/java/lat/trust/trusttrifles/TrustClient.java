@@ -93,10 +93,10 @@ import static lat.trust.trusttrifles.utilities.Utils.getValue;
  * The type Trust client.
  */
 
+
 @SuppressLint("StaticFieldLeak")
 public class TrustClient {
-
-
+    //region Declaracion de variables y constantes
     private static volatile TrustClient trustInstance;
     private static Context mContext;
     private TrustPreferences mPreferences;
@@ -106,7 +106,9 @@ public class TrustClient {
     private static final String METHOD = "RECEIVER WIFI AUDIT";
     private static final String RESULT = "WIFI_STATE_ENABLED: NAME: ";
 
+    //endregion
 
+    //region Configuracion e instancia de Clase
     private TrustClient() {
         TrustLogger.d("[TRUST CLIENT] : CREATE A INSTANCE");
         SavePendingAudit.init(mContext);
@@ -123,6 +125,12 @@ public class TrustClient {
         TrustLogger.d("[TRUST CLIENT] : INIT ");
         mContext = context;
         trustInstance = new TrustClient();
+        if (!Hawk.isBuilt()) {
+            TrustLogger.d("[TRUST CLIENT] : Hawk was not build... now building... ");
+            Hawk.init(mContext).build();
+            TrustLogger.d("[TRUST CLIENT] : Hawk was build.. ");
+        }
+
         sentryInit(context);
     }
 
@@ -139,215 +147,10 @@ public class TrustClient {
         return trustInstance;
     }
 
-    /**
-     * Obtiene el serial ID de la tarjeta SIM.
-     *
-     * @return Retorna el serial ID de la tarjeta SIM como String, si no lo encuentra retorna "UNKNOWN".
-     */
-    @SuppressLint("MissingPermission")
-    @RequiresPermission(allOf = {READ_PHONE_STATE})
-    public String getSIMSerialID() {
-        try {
-            TelephonyManager tm = (TelephonyManager) mContext.getSystemService(TELEPHONY_SERVICE);
-            if (tm != null) {
-                return tm.getSimSerialNumber();
-            } else return "UNKNOWN";
-        } catch (Exception ex) {
-            TrustLogger.d("[getSIMSerialID ] error " + ex.getMessage());
-            Sentry.capture(ex);
-            return "";
-        }
 
-    }
+    //endregion
 
-    /**
-     * Obtiene el Carrier de la tarjeta SIM.
-     *
-     * @return Retorna el SIM Carrier como String, si no lo encuentra retorna "UNKNOWN".
-     */
-    @SuppressLint("MissingPermission")
-
-    @RequiresPermission(allOf = {READ_PHONE_STATE})
-    public String getSIMCarrier() {
-        try {
-            TelephonyManager tm = (TelephonyManager) mContext.getSystemService(TELEPHONY_SERVICE);
-            if (tm != null) {
-                return tm.getSimOperatorName();
-            } else return "UNKNOWN";
-        } catch (Exception e) {
-            Sentry.capture(e);
-            return "UNKNOWN";
-        }
-
-    }
-
-    /**
-     * Obtiene el estado de la tarjeta SIM.
-     *
-     * @return Retorna el estado de la SIM como String, posibles valores: "ABSENT", "LOADED" y "UNKNOWN". si no lo encuentra retorna "UNKNOWN".
-     */
-    @SuppressLint("MissingPermission")
-
-    @RequiresPermission(allOf = {READ_PHONE_STATE})
-    public String getSIMState() {
-        try {
-            TelephonyManager tm = (TelephonyManager) mContext.getSystemService(TELEPHONY_SERVICE);
-            if (tm != null) {
-                int simState = tm.getSimState();
-                switch (simState) {
-                    case TelephonyManager.SIM_STATE_ABSENT:
-                        return "ABSENT";
-                    case TelephonyManager.SIM_STATE_READY:
-                        return "LOADED";
-                    default:
-                        return "UNKNOWN";
-                }
-            } else return "UNKNOWN";
-        } catch (Exception e) {
-            Sentry.capture(e);
-            return "UNKNOWN";
-        }
-
-    }
-
-    /**
-     * Obtiene las minucias del Dispositivo. SI requestTrustId es True se enviaran al servicio
-     * para obtener el Trust ID. Si el listener no es null se notificara el resultado de la
-     * request.
-     *
-     * @param requestTrustId   si se requiere enviar las minucias al servicio
-     * @param listener         para comunicar el resultado de la request
-     * @param required_permits boolean que indica si se deben solicitar permisos
-     * @param forceWifi        boolean que indica si se debe forzar el encendido de Wifi para obtener informacion
-     * @param forceBluetooth   boolean que indica si se debe forzar el encendido de bluetooth para obtener informacion
-     */
-
-    @SuppressLint("MissingPermission")
-    public void getTrifles(final boolean requestTrustId, final boolean required_permits, final boolean forceWifi, final boolean forceBluetooth, @NonNull final TrustListener.OnResult<Audit> listener) {
-        saveBluetoothWifiStatus(forceWifi, forceBluetooth);
-
-        final TrifleBody mBody = new TrifleBody();
-        turnOnBluetoothWifi(forceWifi, forceBluetooth);
-        final ArrayList<Boolean> permits_found_collection = new ArrayList<>();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                ArrayList<String> permits = new ArrayList<>();
-                boolean permits_found = true;
-                if (required_permits) {
-                    if (!permissionGranted(READ_PHONE_STATE)) {
-                        permits.add(READ_PHONE_STATE);
-                        permits_found = false;
-                    }
-                    if (!permissionGranted(CAMERA)) {
-                        permits.add(CAMERA);
-                        permits_found = false;
-                    }
-                    if (!permissionGranted(ACCESS_COARSE_LOCATION)) {
-                        permits.add(ACCESS_COARSE_LOCATION);
-                        permits_found = false;
-                    }
-                    permits_found_collection.add(permits_found);
-                    if (!required_permits || permits_found) {
-                        Device device = new Device();
-                        //@RequiresPermission(READ_PHONE_STATE)
-                        if (permissionGranted(READ_PHONE_STATE))
-                            getDeviceData(device);
-                        getBatteryData(device);
-                        getSensorsData(device);
-                        //@RequiresPermission(CAMERA)
-                        if (permissionGranted(CAMERA))
-                            getCameraData(device);
-                        getNFCData(device);
-                        getMemDataCat(device);
-                        getCPUDataCat(device);
-                        //@RequiresPermission(READ_PHONE_STATE)
-                        if (permissionGranted(READ_PHONE_STATE))
-                            getImei(device);
-
-                        getWifiState(device);
-                        getBluetoothState(device);
-                        //@RequiresPermission(READ_PHONE_STATE)
-                        if (permissionGranted(READ_PHONE_STATE))
-                            getRedGState(device);
-                        device.setWlan0Mac(getMacAddress());
-                        device.setGoogle_service_framework_gsf(getGoogleServiceFramework());
-                        device.setAndroid_device_id(getAndroidDeviceID());
-                        device.setRoot(getRooted());
-                        String uuid = UUID.randomUUID().toString();
-                        device.setUUID(uuid);
-
-                        List<SIM> simList = null;
-                        //@RequiresPermission(allOf = {READ_PHONE_STATE, ACCESS_COARSE_LOCATION})
-                        if (permissionGranted(READ_PHONE_STATE) && permissionGranted(ACCESS_COARSE_LOCATION))
-                            simList = getTelInfo();
-
-                        mBody.setDevice(device);
-                        if (simList != null)
-                            mBody.setSim(simList);
-                        else
-                            mBody.setSim(new ArrayList<SIM>());
-
-                        String trustId = mPreferences.getString(TRUST_ID);
-                        mBody.setTrustId(trustId);
-
-                        Set<String> stringSet = mPreferences.getStringSet(TRUST_TRIFLES);
-                        if (stringSet == null) stringSet = new HashSet<>();
-                        stringSet.add(mBody.toJSON());
-                        mPreferences.put(TRUST_TRIFLES, stringSet);
-
-                    } else
-                        listener.onPermissionRequired(permits);
-                }
-            }
-        }, 5000);
-        new Handler().postDelayed(new Runnable() {
-            @SuppressLint("MissingPermission")
-            @Override
-            public void run() {
-                if (requestTrustId && permits_found_collection.size() > 0
-                        && permits_found_collection.get(0)) {
-                    if (Hawk.contains(Constants.DNI_USER)) {
-                        Identity identity = new Identity();
-                        TrustLogger.d("[TRUST CLIENT] TOKEN IS EXIST : " + Hawk.get("DNI"));
-                        identity.setDni(Hawk.get(Constants.DNI_USER).toString());
-                        identity.setEmail(Hawk.get(Constants.EMAIL_USER).toString());
-                        identity.setLastname(Hawk.get(Constants.LASTNAME_USER).toString());
-                        identity.setName(Hawk.get(Constants.NAME_USER).toString());
-                        identity.setPhone(Hawk.get(Constants.PHONE_USER).toString());
-                        mBody.setIdentity(identity);
-                    } else {
-                        TrustLogger.d("[TRUST CLIENT] TOKEN NO EXIST ");
-                    }
-
-                    startWifiService();
-                    sendTrifles(mBody, listener);
-                }
-
-
-            }
-        }, 10000);
-
-    }
-
-    private void startWifiService() {
-        TrustLogger.d("[TRUST CLIENT] STARTING WIFI SERVICE...");
-        Intent intentWifi = new Intent(mContext, WifiService.class);
-        intentWifi.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        mContext.startService(intentWifi);
-    }
-
-    /**
-     * Obtiene las minucias del Dispositivo. SI requestTrustId es True se enviaran al servicio
-     * para obtener el Trust ID. Si el listener no es null se notificara el resultado de la
-     * request.
-     *
-     * @param requestTrustId si se requiere enviar las minucias al servicio
-     * @param listener       para comunicar el resultado de la request
-     */
-    public void getTrifles(final boolean requestTrustId, @NonNull final TrustListener.OnResult<Audit> listener) {
-        getTrifles(requestTrustId, true, true, true, listener);
-    }
+    //region Obtencion de minucias
 
     /**
      * Agrega cierta informacion de las camaras del dispositivo
@@ -1043,6 +846,226 @@ public class TrustClient {
     }
 
     /**
+     * Obtiene el serial ID de la tarjeta SIM.
+     *
+     * @return Retorna el serial ID de la tarjeta SIM como String, si no lo encuentra retorna "UNKNOWN".
+     */
+    @SuppressLint("MissingPermission")
+    @RequiresPermission(allOf = {READ_PHONE_STATE})
+    public String getSIMSerialID() {
+        try {
+            TelephonyManager tm = (TelephonyManager) mContext.getSystemService(TELEPHONY_SERVICE);
+            if (tm != null) {
+                return tm.getSimSerialNumber();
+            } else return "UNKNOWN";
+        } catch (Exception ex) {
+            TrustLogger.d("[getSIMSerialID ] error " + ex.getMessage());
+            Sentry.capture(ex);
+            return "";
+        }
+
+    }
+
+    /**
+     * Obtiene el Carrier de la tarjeta SIM.
+     *
+     * @return Retorna el SIM Carrier como String, si no lo encuentra retorna "UNKNOWN".
+     */
+    @SuppressLint("MissingPermission")
+
+    @RequiresPermission(allOf = {READ_PHONE_STATE})
+    public String getSIMCarrier() {
+        try {
+            TelephonyManager tm = (TelephonyManager) mContext.getSystemService(TELEPHONY_SERVICE);
+            if (tm != null) {
+                return tm.getSimOperatorName();
+            } else return "UNKNOWN";
+        } catch (Exception e) {
+            Sentry.capture(e);
+            return "UNKNOWN";
+        }
+
+    }
+
+    /**
+     * Obtiene el estado de la tarjeta SIM.
+     *
+     * @return Retorna el estado de la SIM como String, posibles valores: "ABSENT", "LOADED" y "UNKNOWN". si no lo encuentra retorna "UNKNOWN".
+     */
+    @SuppressLint("MissingPermission")
+
+    @RequiresPermission(allOf = {READ_PHONE_STATE})
+    public String getSIMState() {
+        try {
+            TelephonyManager tm = (TelephonyManager) mContext.getSystemService(TELEPHONY_SERVICE);
+            if (tm != null) {
+                int simState = tm.getSimState();
+                switch (simState) {
+                    case TelephonyManager.SIM_STATE_ABSENT:
+                        return "ABSENT";
+                    case TelephonyManager.SIM_STATE_READY:
+                        return "LOADED";
+                    default:
+                        return "UNKNOWN";
+                }
+            } else return "UNKNOWN";
+        } catch (Exception e) {
+            Sentry.capture(e);
+            return "UNKNOWN";
+        }
+
+    }
+
+    private void startWifiService() {
+        TrustLogger.d("[TRUST CLIENT] STARTING WIFI SERVICE...");
+        Intent intentWifi = new Intent(mContext, WifiService.class);
+        intentWifi.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startService(intentWifi);
+    }
+    //endregion
+
+    //region Envio de minucias
+
+    /**
+     * Obtiene las minucias del Dispositivo. SI requestTrustId es True se enviaran al servicio
+     * para obtener el Trust ID. Si el listener no es null se notificara el resultado de la
+     * request.
+     *
+     * @param requestTrustId   si se requiere enviar las minucias al servicio
+     * @param listener         para comunicar el resultado de la request
+     * @param required_permits boolean que indica si se deben solicitar permisos
+     * @param forceWifi        boolean que indica si se debe forzar el encendido de Wifi para obtener informacion
+     * @param forceBluetooth   boolean que indica si se debe forzar el encendido de bluetooth para obtener informacion
+     */
+
+    @SuppressLint("MissingPermission")
+    public void getTrifles(final boolean requestTrustId, final boolean required_permits, final boolean forceWifi, final boolean forceBluetooth, @NonNull final TrustListener.OnResult<Audit> listener) {
+        saveBluetoothWifiStatus(forceWifi, forceBluetooth);
+        if (Hawk.contains(Constants.TRUST_ID_AUTOMATIC)) {
+            Audit data = new Audit();
+            data.setTrustid(Hawk.get(Constants.TRUST_ID_AUTOMATIC).toString());
+            data.setStatus(true);
+            data.setMessage("{'status':true,'message':'The device was identified, it already exists in our records.','trustid':'20b27a1a-b1d8-4e6b-b91f-39fbbaf1fee3'}");
+            TrustLogger.d("[TRUST CLIENT] ");
+            listener.onSuccess(201, data);
+
+        }
+        final TrifleBody mBody = new TrifleBody();
+        turnOnBluetoothWifi(forceWifi, forceBluetooth);
+        final ArrayList<Boolean> permits_found_collection = new ArrayList<>();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ArrayList<String> permits = new ArrayList<>();
+                boolean permits_found = true;
+                if (required_permits) {
+                    if (!permissionGranted(READ_PHONE_STATE)) {
+                        permits.add(READ_PHONE_STATE);
+                        permits_found = false;
+                    }
+                    if (!permissionGranted(CAMERA)) {
+                        permits.add(CAMERA);
+                        permits_found = false;
+                    }
+                    if (!permissionGranted(ACCESS_COARSE_LOCATION)) {
+                        permits.add(ACCESS_COARSE_LOCATION);
+                        permits_found = false;
+                    }
+                    permits_found_collection.add(permits_found);
+                    if (!required_permits || permits_found) {
+                        Device device = new Device();
+                        //@RequiresPermission(READ_PHONE_STATE)
+                        if (permissionGranted(READ_PHONE_STATE))
+                            getDeviceData(device);
+                        getBatteryData(device);
+                        getSensorsData(device);
+                        //@RequiresPermission(CAMERA)
+                        if (permissionGranted(CAMERA))
+                            getCameraData(device);
+                        getNFCData(device);
+                        getMemDataCat(device);
+                        getCPUDataCat(device);
+                        //@RequiresPermission(READ_PHONE_STATE)
+                        if (permissionGranted(READ_PHONE_STATE))
+                            getImei(device);
+
+                        getWifiState(device);
+                        getBluetoothState(device);
+                        //@RequiresPermission(READ_PHONE_STATE)
+                        if (permissionGranted(READ_PHONE_STATE))
+                            getRedGState(device);
+                        device.setWlan0Mac(getMacAddress());
+                        device.setGoogle_service_framework_gsf(getGoogleServiceFramework());
+                        device.setAndroid_device_id(getAndroidDeviceID());
+                        device.setRoot(getRooted());
+                        String uuid = UUID.randomUUID().toString();
+                        device.setUUID(uuid);
+
+                        List<SIM> simList = null;
+                        //@RequiresPermission(allOf = {READ_PHONE_STATE, ACCESS_COARSE_LOCATION})
+                        if (permissionGranted(READ_PHONE_STATE) && permissionGranted(ACCESS_COARSE_LOCATION))
+                            simList = getTelInfo();
+
+                        mBody.setDevice(device);
+                        if (simList != null)
+                            mBody.setSim(simList);
+                        else
+                            mBody.setSim(new ArrayList<SIM>());
+
+                        String trustId = mPreferences.getString(TRUST_ID);
+                        mBody.setTrustId(trustId);
+
+                        Set<String> stringSet = mPreferences.getStringSet(TRUST_TRIFLES);
+                        if (stringSet == null) stringSet = new HashSet<>();
+                        stringSet.add(mBody.toJSON());
+                        mPreferences.put(TRUST_TRIFLES, stringSet);
+
+                    } else
+                        listener.onPermissionRequired(permits);
+                }
+            }
+        }, 5000);
+        new Handler().postDelayed(new Runnable() {
+            @SuppressLint("MissingPermission")
+            @Override
+            public void run() {
+                if (requestTrustId && permits_found_collection.size() > 0
+                        && permits_found_collection.get(0)) {
+                    if (Hawk.contains(Constants.DNI_USER)) {
+                        Identity identity = new Identity();
+                        TrustLogger.d("[TRUST CLIENT] TOKEN IS EXIST : " + Hawk.get("DNI"));
+                        identity.setDni(Hawk.get(Constants.DNI_USER).toString());
+                        identity.setEmail(Hawk.get(Constants.EMAIL_USER).toString());
+                        identity.setLastname(Hawk.get(Constants.LASTNAME_USER).toString());
+                        identity.setName(Hawk.get(Constants.NAME_USER).toString());
+                        identity.setPhone(Hawk.get(Constants.PHONE_USER).toString());
+                        mBody.setIdentity(identity);
+                    } else {
+                        TrustLogger.d("[TRUST CLIENT] TOKEN NO EXIST ");
+                    }
+
+                    startWifiService();
+                    sendTrifles(mBody, listener);
+                }
+            }
+        }, 10000);
+    }
+
+
+    /**
+     * Obtiene las minucias del Dispositivo. SI requestTrustId es True se enviaran al servicio
+     * para obtener el Trust ID. Si el listener no es null se notificara el resultado de la
+     * request.
+     *
+     * @param requestTrustId si se requiere enviar las minucias al servicio
+     * @param listener       para comunicar el resultado de la request
+     */
+    public void getTrifles(final boolean requestTrustId, @NonNull final TrustListener.OnResult<Audit> listener) {
+        getTrifles(requestTrustId, true, true, true, listener);
+    }
+
+
+    /**
      * Envia las minucias recogidas al servidos para obtener un identificador
      *
      * @param mBody
@@ -1051,6 +1074,7 @@ public class TrustClient {
     private void sendTrifles(@NonNull final TrifleBody mBody, @Nullable final TrustListener.OnResult<Audit> listener) {
         if (Hawk.contains(Constants.TOKEN_SERVICE)) {
             Call<TrifleResponse> createTrifle = RestClient.get().trifle2(mBody, Hawk.get(Constants.TOKEN_SERVICE).toString());
+
             createTrifle.enqueue(new Callback<TrifleResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<TrifleResponse> call, @NonNull Response<TrifleResponse> response) {
@@ -1069,17 +1093,19 @@ public class TrustClient {
                                 audit.setTrustid(body.getTrustid());
                                 body.setAudit(audit);
                                 if (body != null) {
-                                    mPreferences.put(TRUST_ID, body.getAudit().getTrustid());
+                                    if (!Hawk.contains(Constants.TRUST_ID_AUTOMATIC)) {
+                                        listener.onSuccess(response.code(), body.getAudit());
+                                    }
                                     Hawk.put(Constants.TRUST_ID_AUTOMATIC, body.getTrustid());
+                                    mPreferences.put(TRUST_ID, body.getAudit().getTrustid());
                                     TrustLogger.d("[TRUST CLIENT] TRUST ID WAS CREATED: " + body.getTrustid());
                                     restoreWIFIandBluetooth(true, true);
-                                    listener.onSuccess(response.code(), body.getAudit());
                                     if (Hawk.contains(Constants.DNI_USER)) {
                                         TrustLogger.d("[TRUST CLIENT] Save Device Info Company: first time with DNI");
                                         SaveDeviceInfo.saveDeviceInfo(Hawk.get(Constants.DNI_USER).toString(), mContext.getPackageName(), audit.getTrustid());
                                     } else {
                                         TrustLogger.d("[TRUST CLIENT] Save Device Info Company: first time no DNI");
-                                        SaveDeviceInfo.saveDeviceInfo(mContext.getPackageName(), audit.getTrustid());
+                                         SaveDeviceInfo.saveDeviceInfo(mContext.getPackageName(), audit.getTrustid());
                                     }
 
                                 } else {
@@ -1100,6 +1126,8 @@ public class TrustClient {
                         listener.onFailure(t);
                 }
             });
+
+
         } else {
             AuthToken.getAccessToken(new AuthTokenListener.Auth() {
                 @Override
@@ -1304,6 +1332,9 @@ public class TrustClient {
         });
     }
 
+    //endregion
+
+    //region Estados de Wifi y Bluetooth
 
     /**
      * This method get state of Wifi (true, false)
@@ -1497,6 +1528,9 @@ public class TrustClient {
         return false;
     }
 
+    //endregion
+
+    //region Permiso
     /**
      * This method check if a permission is granted.
      * Used to check dangerous permission i.e. permission that user grant
@@ -1507,6 +1541,7 @@ public class TrustClient {
     private boolean permissionGranted(String permission) {
         return ContextCompat.checkSelfPermission(mContext, permission) == PackageManager.PERMISSION_GRANTED;
     }
+    //endregion
 
 
 }

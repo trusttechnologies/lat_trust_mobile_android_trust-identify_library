@@ -38,46 +38,12 @@ public class SplashActivity extends AppCompatActivity implements TrustListener.P
 
         };
         TrustConfig.getInstance().setAudits(audits);
-   /*     TrustLogger.d("alarm : " + String.valueOf(TrustConfig.getInstance().isAlarm()));
-        TrustLogger.d("boot: " + String.valueOf(TrustConfig.getInstance().isBoot()));
-        TrustLogger.d("call: " + String.valueOf(TrustConfig.getInstance().isCall()));
-        TrustLogger.d("network: " + String.valueOf(TrustConfig.getInstance().isNetwork()));
-        TrustLogger.d("sim: " + String.valueOf(TrustConfig.getInstance().isSim()));
-        TrustLogger.d("sms: " + String.valueOf(TrustConfig.getInstance().isSms()));*/
+
     }
 
     @Override
     public void onPermissionSuccess() {
         TrustClient mclient = TrustClient.getInstance();
-        if(Hawk.contains(Constants.TRUST_ID_AUTOMATIC)){
-            mclient.getTrifles(true, new TrustListener.OnResult<Audit>() {
-                @Override
-                public void onSuccess(int code, Audit data) {
-
-                }
-
-                @Override
-                public void onError(int code) {
-
-                }
-
-                @Override
-                public void onFailure(Throwable t) {
-
-                }
-
-                @Override
-                public void onPermissionRequired(ArrayList<String> permisos) {
-
-                }
-            });
-            startActivity(new Intent(this, MainActivity.class));
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                finishAffinity();
-            } else {
-                finish();
-            }
-        }else{
             mclient.getTrifles(true, new TrustListener.OnResult<Audit>() {
                 @Override
                 public void onSuccess(int code, Audit data) {
@@ -91,11 +57,12 @@ public class SplashActivity extends AppCompatActivity implements TrustListener.P
 
                 @Override
                 public void onError(int code) {
-
+                    TrustLogger.d("[TRUST CLIENT] error code: " + code);
                 }
 
                 @Override
                 public void onFailure(Throwable t) {
+                    TrustLogger.d("[TRUST CLIENT] onFailure code: " + t.getMessage());
 
                 }
 
@@ -104,7 +71,9 @@ public class SplashActivity extends AppCompatActivity implements TrustListener.P
 
                 }
             });
-        }
+
+
+
 
 
 

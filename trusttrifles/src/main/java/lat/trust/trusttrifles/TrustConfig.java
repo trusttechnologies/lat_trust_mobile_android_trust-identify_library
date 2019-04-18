@@ -4,7 +4,7 @@ import com.orhanobut.hawk.Hawk;
 
 import lat.trust.trusttrifles.utilities.TrustLogger;
 
-public class TrustConfig {
+public class                                                                                                                TrustConfig {
 
 
     public static final String AUDIT_BOOT = "audit.boot";
@@ -22,6 +22,22 @@ public class TrustConfig {
 
     }
 
+    public void setAllAudits(){
+        Hawk.put(AUDIT_NETWORK,"1");
+        Hawk.put(AUDIT_ALARM,"1");
+        Hawk.put(AUDIT_SIM,"1");
+        Hawk.put(AUDIT_SMS,"1");
+        Hawk.put(AUDIT_CALL,"1");
+        Hawk.put(AUDIT_BOOT,"1");
+    }
+    public void setNoneAudits(){
+        Hawk.put(AUDIT_NETWORK,"0");
+        Hawk.put(AUDIT_ALARM,"0");
+        Hawk.put(AUDIT_SIM,"0");
+        Hawk.put(AUDIT_SMS,"0");
+        Hawk.put(AUDIT_CALL,"0");
+        Hawk.put(AUDIT_BOOT,"0");
+    }
     public void setAudits(String[] audits) {
         setDefaultConfig();
         for (String audit : audits) {
