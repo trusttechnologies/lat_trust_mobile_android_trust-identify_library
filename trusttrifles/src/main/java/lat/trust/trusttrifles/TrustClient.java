@@ -115,7 +115,6 @@ public class TrustClient {
         SavePendingAudit.init(mContext);
         TrustPreferences.init(mContext);
         mPreferences = TrustPreferences.getInstance();
-        TrustAuth.setSecretAndId(mContext);
     }
 
     /**
@@ -132,7 +131,7 @@ public class TrustClient {
             Hawk.init(mContext).build();
             TrustLogger.d("[TRUST CLIENT] : Hawk was build.. ");
         }
-
+        TrustAuth.setSecretAndId(mContext);
         sentryInit(context);
     }
 

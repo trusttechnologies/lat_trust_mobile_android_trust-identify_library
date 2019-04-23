@@ -17,16 +17,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8852bae7-b91c-4456-85cb-252ae64fc2f4" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/app/src/main/assets/trust-service.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/trust-service.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.6/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.6/fileHashes/fileHashes.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.6/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.6/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/4.6/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.6/fileHashes/resourceHashesCache.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/4.6/javaCompile/classAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.6/javaCompile/classAnalysis.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/4.6/javaCompile/jarAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.6/javaCompile/jarAnalysis.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/4.6/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.6/javaCompile/javaCompile.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/4.6/javaCompile/taskHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.6/javaCompile/taskHistory.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/4.6/javaCompile/taskJars.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.6/javaCompile/taskJars.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.6/taskHistory/taskHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.6/taskHistory/taskHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.6/taskHistory/taskHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.6/taskHistory/taskHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/5.2.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.2.1/executionHistory/executionHistory.bin" afterDir="false" />
@@ -39,16 +31,7 @@
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/lat/trust/trustdemo/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/lat/trust/trustdemo/MainActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/lat/trust/trustdemo/SplashActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/lat/trust/trustdemo/SplashActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/local.properties" beforeDir="false" afterPath="$PROJECT_DIR$/local.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/trusttrifles/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/trusttrifles/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/TrustClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/TrustClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/authToken/AuthToken.java" beforeDir="false" afterPath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/authToken/AuthToken.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/TrustAuth.java" beforeDir="false" afterPath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/TrustAuth.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/Constants.java" beforeDir="false" afterPath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/Constants.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/Permissions.java" beforeDir="false" afterPath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/Permissions.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -83,7 +66,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AutomaticAudit.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="AutomaticAudit.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/AutomaticAudit.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="60">
@@ -92,11 +75,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="build.gradle" pinned="false" current-in-tab="false">
+      <file leaf-file-name="build.gradle" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/trusttrifles/build.gradle">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="183">
-              <caret line="57" column="28" selection-start-line="57" selection-start-column="28" selection-end-line="57" selection-end-column="28" />
+            <state relative-caret-position="408">
+              <caret line="72" selection-start-line="72" selection-end-line="72" />
             </state>
           </provider>
         </entry>
@@ -3882,7 +3865,6 @@
         <option value="$PROJECT_DIR$/app/src/main/java/lat/trust/trustdemo/TrustDemoApp.java" />
         <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/TrustConfig.java" />
         <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/SaveDeviceInfo.java" />
-        <option value="$PROJECT_DIR$/trusttrifles/build.gradle" />
         <option value="$PROJECT_DIR$/local.properties" />
         <option value="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/Permissions.java" />
@@ -3892,6 +3874,7 @@
         <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/authToken/AuthToken.java" />
         <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/TrustAuth.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/lat/trust/trustdemo/MainActivity.java" />
+        <option value="$PROJECT_DIR$/trusttrifles/build.gradle" />
       </list>
     </option>
   </component>
@@ -3931,49 +3914,11 @@
             <path>
               <item name="TrustID" type="1abcf292:AndroidViewProjectNode" />
               <item name="app" type="feadf853:AndroidModuleNode" />
-              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
-            </path>
-            <path>
-              <item name="TrustID" type="1abcf292:AndroidViewProjectNode" />
-              <item name="app" type="feadf853:AndroidModuleNode" />
-              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
-              <item name="trustdemo" type="cbb59c9e:AndroidPsiDirectoryNode" />
+              <item name="generatedJava" type="edd41e36:AndroidSourceTypeNode" />
             </path>
             <path>
               <item name="TrustID" type="1abcf292:AndroidViewProjectNode" />
               <item name="trusttrifles" type="feadf853:AndroidModuleNode" />
-            </path>
-            <path>
-              <item name="TrustID" type="1abcf292:AndroidViewProjectNode" />
-              <item name="trusttrifles" type="feadf853:AndroidModuleNode" />
-              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
-            </path>
-            <path>
-              <item name="TrustID" type="1abcf292:AndroidViewProjectNode" />
-              <item name="trusttrifles" type="feadf853:AndroidModuleNode" />
-              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
-              <item name="trusttrifles" type="cbb59c9e:AndroidPsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TrustID" type="1abcf292:AndroidViewProjectNode" />
-              <item name="trusttrifles" type="feadf853:AndroidModuleNode" />
-              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
-              <item name="trusttrifles" type="cbb59c9e:AndroidPsiDirectoryNode" />
-              <item name="authToken" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TrustID" type="1abcf292:AndroidViewProjectNode" />
-              <item name="trusttrifles" type="feadf853:AndroidModuleNode" />
-              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
-              <item name="trusttrifles" type="cbb59c9e:AndroidPsiDirectoryNode" />
-              <item name="model" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TrustID" type="1abcf292:AndroidViewProjectNode" />
-              <item name="trusttrifles" type="feadf853:AndroidModuleNode" />
-              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
-              <item name="trusttrifles" type="cbb59c9e:AndroidPsiDirectoryNode" />
-              <item name="utilities" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="TrustID" type="1abcf292:AndroidViewProjectNode" />
@@ -4144,7 +4089,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
-    <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="Android Profiler" order="7" weight="0.32969698" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32969698" />
@@ -4156,8 +4100,8 @@
       <window_info anchor="right" id="Preview" order="3" weight="0.3297568" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.32969698" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.32969698" />
-      <window_info anchor="bottom" id="Terminal" order="7" weight="0.32969698" />
-      <window_info active="true" anchor="bottom" id="Logcat" order="7" visible="true" weight="0.28" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="7" visible="true" weight="0.32969698" />
+      <window_info anchor="bottom" id="Logcat" order="7" weight="0.28" />
       <window_info id="Captures" order="2" weight="0.25" />
       <window_info id="Capture Tool" order="2" />
       <window_info id="Designer" order="2" />
@@ -4513,13 +4457,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/trusttrifles/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="183">
-          <caret line="57" column="28" selection-start-line="57" selection-start-column="28" selection-end-line="57" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="330">
@@ -4587,6 +4524,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
           <caret line="26" column="18" selection-start-line="26" selection-start-column="18" selection-end-line="26" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trusttrifles/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="408">
+          <caret line="72" selection-start-line="72" selection-end-line="72" />
         </state>
       </provider>
     </entry>
