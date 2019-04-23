@@ -6,14 +6,18 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.orhanobut.hawk.Hawk;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import lat.trust.trusttrifles.TrustClient;
 import lat.trust.trusttrifles.TrustConfig;
 import lat.trust.trusttrifles.TrustListener;
 import lat.trust.trusttrifles.model.Audit;
+import lat.trust.trusttrifles.model.TrustAuth;
 import lat.trust.trusttrifles.utilities.AutomaticAudit;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.Permissions;
@@ -30,19 +34,21 @@ public class SplashActivity extends AppCompatActivity implements TrustListener.P
 
         String[] audits = {
                 TrustConfig.AUDIT_SIM,
-                TrustConfig.AUDIT_SMS,
                 TrustConfig.AUDIT_NETWORK,
                 TrustConfig.AUDIT_CALL,
                 TrustConfig.AUDIT_BOOT,
                 TrustConfig.AUDIT_ALARM
-
         };
+        TrustConfig.getInstance().setNoneAudits();
         TrustConfig.getInstance().setAudits(audits);
+
 
     }
 
     @Override
     public void onPermissionSuccess() {
+
+        AutomaticAudit.createAutomaticAudit("inicio sesion","en el splashy","permisos concedidos",SplashActivity.this);
         TrustClient mclient = TrustClient.getInstance();
             mclient.getTrifles(true, new TrustListener.OnResult<Audit>() {
                 @Override

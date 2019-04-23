@@ -48,4 +48,9 @@ public class Constants {
 
     public static final String TOKEN_SERVICE = "token_service";
 
+
+    public static final String CLIENT_ID = "client_id";
+    public static final String CLIENT_SECRET = "client_secret";
+
+
 }

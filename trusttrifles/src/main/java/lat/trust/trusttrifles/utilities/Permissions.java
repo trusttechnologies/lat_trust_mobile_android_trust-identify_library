@@ -39,10 +39,7 @@ public class Permissions {
                 .withPermissions(READ_PHONE_STATE,
                         ACCESS_COARSE_LOCATION,
                         CAMERA,
-                        ACCESS_FINE_LOCATION,
-                        READ_SMS,
-                        RECEIVE_SMS,
-                        SEND_SMS)
+                        ACCESS_FINE_LOCATION)
                 .withListener(new MultiplePermissionsListener() {
                     @SuppressLint("MissingPermission")
                     @Override

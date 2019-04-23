@@ -58,6 +58,7 @@ import lat.trust.trusttrifles.model.Device;
 import lat.trust.trusttrifles.model.Identity;
 import lat.trust.trusttrifles.model.SIM;
 import lat.trust.trusttrifles.model.SensorData;
+import lat.trust.trusttrifles.model.TrustAuth;
 import lat.trust.trusttrifles.model.audit.AuditExtraData;
 import lat.trust.trusttrifles.model.audit.AuditSource;
 import lat.trust.trusttrifles.model.audit.AuditTest;
@@ -114,6 +115,7 @@ public class TrustClient {
         SavePendingAudit.init(mContext);
         TrustPreferences.init(mContext);
         mPreferences = TrustPreferences.getInstance();
+        TrustAuth.setSecretAndId(mContext);
     }
 
     /**
@@ -1105,7 +1107,7 @@ public class TrustClient {
                                         SaveDeviceInfo.saveDeviceInfo(Hawk.get(Constants.DNI_USER).toString(), mContext.getPackageName(), audit.getTrustid());
                                     } else {
                                         TrustLogger.d("[TRUST CLIENT] Save Device Info Company: first time no DNI");
-                                         SaveDeviceInfo.saveDeviceInfo(mContext.getPackageName(), audit.getTrustid());
+                                        SaveDeviceInfo.saveDeviceInfo(mContext.getPackageName(), audit.getTrustid());
                                     }
 
                                 } else {
@@ -1531,6 +1533,7 @@ public class TrustClient {
     //endregion
 
     //region Permiso
+
     /**
      * This method check if a permission is granted.
      * Used to check dangerous permission i.e. permission that user grant

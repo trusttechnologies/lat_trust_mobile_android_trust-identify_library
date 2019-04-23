@@ -16,10 +16,15 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.crashlytics.android.Crashlytics;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.orhanobut.hawk.Hawk;
+
+import java.lang.reflect.Type;
 
 import io.fabric.sdk.android.Fabric;
 import lat.trust.trusttrifles.TrustConfig;
+import lat.trust.trusttrifles.model.TrustAuth;
 import lat.trust.trusttrifles.services.TestLocationService;
 import lat.trust.trusttrifles.utilities.AutomaticAudit;
 import lat.trust.trusttrifles.utilities.Constants;
@@ -57,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
                 Hawk.put(Constants.NAME_USER, "FELIPE");
                 Hawk.put(Constants.PHONE_USER, "+56982110950");
                 AutomaticAudit.createAutomaticAudit("test1","test2","result test",MainActivity.this);
+
             }
         });
     }
