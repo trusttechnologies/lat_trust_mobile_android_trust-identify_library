@@ -26,6 +26,7 @@ public class AuthToken {
             public void onResponse(Call<AuthTokenResponse> call, Response<AuthTokenResponse> response) {
                 if (response.isSuccessful()) {
                     TrustLogger.d(response.body().toString());
+                    Hawk.put(Constants.TOKEN_SERVICE,response.body().getAccess_token());
                     authListener.onSuccessAccessToken(response.body().getAccess_token());
                 }
             }
