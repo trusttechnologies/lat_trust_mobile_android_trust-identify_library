@@ -1,6 +1,7 @@
 
 
 
+
 # Trust Technologies 
 ![image](https://avatars2.githubusercontent.com/u/42399326?s=200&v=4)
 
@@ -16,12 +17,12 @@ Trust is a platform that allows building trust and security between people and t
 
 ```java
 dependencies {
-	implementation 'lat.trust.trustdemo:trusttrifles:1.0.33'
+	implementation 'lat.trust.trustdemo:trusttrifles:1.0.38'
 }
 
 ```
-> https://bintray.com/fcarotrust/trust/trustidentify 
-
+>  
+See the actual version[here](https://bintray.com/fcarotrust/trust/trustidentify).
 
 # Initialize
 ```java
@@ -70,11 +71,14 @@ See more information [here](https://android-developers.googleblog.com/2016/11/go
 # Methods
 ## SendTrifles
 
-```java
+With this method you get a trust id
 
+```java
 TrustClient.getInstance().getTrifles(true, new TrustListener.OnResult<Audit>() {  
   @Override  
-  public void onSuccess(int code, Audit data) { }  
+  public void onSuccess(int code, Audit data) { 
+		String trustId = data.getTrustid();
+  }  
   @Override  
   public void onError(int code) { }  
   @Override  
@@ -82,12 +86,24 @@ TrustClient.getInstance().getTrifles(true, new TrustListener.OnResult<Audit>() {
   @Override  
   public void onPermissionRequired(ArrayList<String> permisos) {  }  
 });
+```
+## Notifications
 
+In trust you use your own notification service, to send push notifications, in order to make use of this service you need to use the following method, sending as parameter the firebase token and the context.
+
+```java
+Notifications.registerDevice(FirebaseInstanceId.getInstance().getToken(),context);
 ```
 ## Audits
-
-StackEdit stores your files in your browser, which means all your files are automatically saved locally and are accessible **offline!**
-
+  
+Audits are events that are to be reported to be stored and subsequently consulted as a record
+```java
+AutomaticAudit.createAutomaticAudit("operation test","method test","result test",context);
+```
+Where
+**Operation**: It is the context that you want to register, example: Daily audit of login.
+**Method**: It is the process that executed the audit, example: DailyAudit.
+**Result**: It is the result of that audit, example: start of successful session!
 
 |     Audit    |Operation                       |Result                      |
 |--------------|-------------------------------|-----------------------------|
