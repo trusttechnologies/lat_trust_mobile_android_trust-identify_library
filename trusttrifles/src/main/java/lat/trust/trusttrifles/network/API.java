@@ -4,6 +4,7 @@ import lat.trust.trusttrifles.authToken.AuthToken;
 import lat.trust.trusttrifles.model.audit.AuditTest;
 import lat.trust.trusttrifles.network.req.AuthTokenRequest;
 import lat.trust.trusttrifles.network.req.SaveDeviceInfoRequest;
+import lat.trust.trusttrifles.network.req.SaveDeviceNotificationRequest;
 import lat.trust.trusttrifles.network.req.TrifleBody;
 import lat.trust.trusttrifles.network.res.AuthTokenResponse;
 import lat.trust.trusttrifles.utilities.Constants;
@@ -33,11 +34,8 @@ public interface API {
     Call<TrifleResponse> trifle2(@Body TrifleBody body,@Header("Authorization") String token);
 
 
-  /*  @Headers("Authorization: Bearer" + Constants.TOKEN_SERVICE)
-    @POST("api/v1/audit")
-    Call<Void> createAuditTest(@Body AuditTest body);
-*/
-
+    @POST("device/register")
+    Call<String> registerDeviceNofitication(@Body SaveDeviceNotificationRequest saveDevice,@Header("Authorization") String token);
 
     @POST("api/v1/audit")
     Call<Void> createAuditTest(@Body AuditTest body, @Header("Authorization") String token);
