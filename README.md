@@ -20,7 +20,7 @@ dependencies {
 }
 
 ```
-> LINK PARA OBTENER EL MAS ACTUALIZADO **Synchronize** sub-menu.
+> https://bintray.com/fcarotrust/trust/trustidentify 
 
 
 # Initialize
@@ -45,7 +45,7 @@ In order for the library to work without problems, the following permissions mus
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 <uses-permission android:name="android.permission.CAMERA"/>
 ```
-> Mencionar permiso de SMS **Synchronize** sub-menu.
+> Permiso de SMS Opcional
 ## Permissions that the library owns
 
 These are the permissions that the library currently uses:
