@@ -25,6 +25,9 @@ dependencies {
 See the actual version[here](https://bintray.com/fcarotrust/trust/trustidentify).
 
 # Initialize
+  
+
+>This initiation establishes by default that automatic audits are not initiated
 ```java
 import ...
 public class TestApp extends Application {  
@@ -32,12 +35,35 @@ public class TestApp extends Application {
   public void onCreate() {  
         super.onCreate();  
 		TrustClient.init(this);  
-		TrustPreferences.init(this);
-		TrustConfig.init();
   }
 }
 
 ```
+You can establish what type of automatic audits are what you need in your application in the following way:
+```java
+import ...
+public class TestApp extends Application {  
+  @Override  
+  public void onCreate() {  
+        super.onCreate();  
+		TrustClient.init(this);  
+		TrustClient.init(this);  
+		String[] audits = {  
+	        TrustConfig.AUDIT_BOOT,  
+			TrustConfig.AUDIT_NETWORK,  
+			TrustConfig.AUDIT_ALARM,  
+			TrustConfig.AUDIT_CALL,  
+			TrustConfig.AUDIT_SIM,  
+			TrustConfig.AUDIT_SMS  
+		};  
+		TrustClient.getInstance().setAudits(audits);  //Enable only the listed Audits
+		TrustClient.getInstance().setAllAudit(); //Enables all audits
+  }
+}
+```
+>  In the audits section, the types of audits that exist are reported.
+
+
 # Permissions
 In order for the library to work without problems, the following permissions must be added to the application. **Remember: This permissions are granted from user directly, additionally to write at manifest**:
 
@@ -47,6 +73,12 @@ In order for the library to work without problems, the following permissions mus
 <uses-permission android:name="android.permission.CAMERA"/>
 ```
 > Permiso de SMS Opcional
+> If in your application you need automatic SMS audits, it is necessary to add the following permissions
+> ```java
+><uses-permission android:name="android.permission.RECEIVE_SMS"/>  
+> <uses-permission android:name="android.permission.READ_SMS"/>  
+> <uses-permission android:name="android.permission.SEND_SMS"/>
+> ``` 
 ## Permissions that the library owns
 
 These are the permissions that the library currently uses:
@@ -65,8 +97,10 @@ These are the permissions that the library currently uses:
 # Minimum Api Lvl 15
 The trust library works from API LEVEL 15 because Google Play services and Firebase for Android will support API level 15 at minimum.
    
-See more information [here](https://android-developers.googleblog.com/2016/11/google-play-services-and-firebase-for-android-will-support-api-level-14-at-minimum.html).
+See more information  [here](https://android-developers.googleblog.com/2016/11/google-play-services-and-firebase-for-android-will-support-api-level-14-at-minimum.html).
 # Firebase
+Sometimes it is necessary to create remote audits using firebase, for this it is necessary to register your application in Firebase, following the following steps:
+
 
 # Methods
 ## SendTrifles
@@ -109,16 +143,3 @@ Where
 |--------------|-------------------------------|-----------------------------|
 |SMS           |`Tester`                       |`Tester`                     |
 |CALL          |`Tester`                       |`Tester`                     |
-
-
-
-
-
-
-
-
-
-
-
-
-
