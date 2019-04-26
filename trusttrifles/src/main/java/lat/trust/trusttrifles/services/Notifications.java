@@ -28,25 +28,43 @@ public class Notifications {
     }
 
     private static void sendDevice(final SaveDeviceNotificationRequest device) {
-        RestClientNotification.setup().registerDeviceNofitication(device, Hawk.get(Constants.TOKEN_SERVICE).toString()).enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(Call<String> call, Response<String> response) {
-                if (response.code() == 401) {
-                    TrustLogger.d("[TRUST CLIENT] TOKEN EXPIRED FOR SAVE DEVICE NOTIFICATION...");
-                    refreshTokenSaveDevice(device);
-                    return;
+        if (Hawk.contains(Constants.TOKEN_SERVICE)) {
+            RestClientNotification.setup().registerDeviceNofitication(device, Hawk.get(Constants.TOKEN_SERVICE).toString()).enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    if (response.code() == 401) {
+                        TrustLogger.d("[TRUST CLIENT] TOKEN EXPIRED FOR SAVE DEVICE NOTIFICATION...");
+                        refreshTokenSaveDevice(device);
+                        return;
+                    }
+                    if (response.isSuccessful()) {
+                        TrustLogger.d("[TRUST CLIENT] DEVICE WAS SAVED");
+                    }
                 }
-                if (response.isSuccessful()) {
-                    TrustLogger.d("[TRUST CLIENT] DEVICE WAS SAVED");
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+                    TrustLogger.d("[TRUST CLIENT] FAIL FOR SAVE DEVICE NOTIFICATION: " + t.getMessage());
+
                 }
-            }
+            });
+        } else {
+            TrustLogger.d("[TRUST CLIENT] NO TOKEN FOR SAVE DEVICE NOTIFICATION...NOW GETTING...");
+            AuthToken.getAccessToken(new AuthTokenListener.Auth() {
+                @Override
+                public void onSuccessAccessToken(String token) {
+                    TrustLogger.d("[TRUST CLIENT] TOKEN GET: " + token);
+                    Hawk.put(Constants.TOKEN_SERVICE, token);
+                    sendDevice(device);
+                }
 
-            @Override
-            public void onFailure(Call<String> call, Throwable t) {
-                TrustLogger.d("[TRUST CLIENT] FAIL FOR SAVE DEVICE NOTIFICATION: " + t.getMessage());
+                @Override
+                public void onErrorAccessToken(String error) {
+                    TrustLogger.d("[TRUST CLIENT] ERROR GETTING TOKEN : " + error);
+                }
+            });
+        }
 
-            }
-        });
     }
 
     private static void refreshTokenSaveDevice(final SaveDeviceNotificationRequest device) {
