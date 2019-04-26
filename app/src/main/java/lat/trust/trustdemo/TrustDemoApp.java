@@ -14,5 +14,15 @@ public class TrustDemoApp extends Application {
         super.onCreate();
         Hawk.init(this).build();
         TrustClient.init(this);
+        String[] audits = {
+                TrustConfig.AUDIT_BOOT,
+                TrustConfig.AUDIT_NETWORK,
+                TrustConfig.AUDIT_ALARM,
+                TrustConfig.AUDIT_CALL,
+                TrustConfig.AUDIT_SIM,
+                TrustConfig.AUDIT_SMS
+        };
+        TrustClient.getInstance().setAudits(audits);
+        TrustClient.getInstance().setAllAudit();
     }
 }
