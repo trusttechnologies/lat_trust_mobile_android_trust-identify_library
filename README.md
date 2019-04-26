@@ -143,3 +143,4 @@ Where
 |--------------|-------------------------------|-----------------------------|
 |SMS           |`Tester`                       |`Tester`                     |
 |CALL          |`Tester`                       |`Tester`                     |
+|CALL          |`Tester`                       |`Tester`                     |
