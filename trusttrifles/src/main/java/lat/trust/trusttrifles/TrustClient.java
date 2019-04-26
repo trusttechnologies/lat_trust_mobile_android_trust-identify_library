@@ -103,9 +103,6 @@ public class TrustClient {
     private TrustPreferences mPreferences;
     private boolean currentWifiStatus;
     private boolean currentBluetoothStatus;
-    private static final String OPERATION = "AUTOMATIC WIFI AUDIT";
-    private static final String METHOD = "RECEIVER WIFI AUDIT";
-    private static final String RESULT = "WIFI_STATE_ENABLED: NAME: ";
 
     //endregion
 
@@ -117,12 +114,25 @@ public class TrustClient {
         mPreferences = TrustPreferences.getInstance();
     }
 
+    public  void setNoneAudit() {
+        TrustConfig.getInstance().setNoneAudits();
+    }
+
+    public  void setAllAudit() {
+        TrustConfig.getInstance().setAllAudits();
+    }
+
+    public  void setAudits(String[] audits) {
+        TrustConfig.getInstance().setAudits(audits);
+    }
+
     /**
      * Init.
      *
      * @param context the context
      */
     public static void init(Context context) {
+
         TrustLogger.d("[TRUST CLIENT] : INIT ");
         mContext = context;
         trustInstance = new TrustClient();
@@ -131,6 +141,8 @@ public class TrustClient {
             Hawk.init(mContext).build();
             TrustLogger.d("[TRUST CLIENT] : Hawk was build.. ");
         }
+        TrustConfig.init();
+        TrustConfig.getInstance().setNoneAudits();
         TrustAuth.setSecretAndId(mContext);
         sentryInit(context);
     }

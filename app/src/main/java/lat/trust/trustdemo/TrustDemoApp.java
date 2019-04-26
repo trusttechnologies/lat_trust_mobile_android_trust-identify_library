@@ -14,7 +14,5 @@ public class TrustDemoApp extends Application {
         super.onCreate();
         Hawk.init(this).build();
         TrustClient.init(this);
-        TrustPreferences.init(this);
-        TrustConfig.init();
     }
 }
