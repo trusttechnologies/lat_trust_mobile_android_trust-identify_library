@@ -18,24 +18,24 @@ Trust is a platform that allows building trust and security between people and t
   
 ```java  
 dependencies {  
- implementation 'lat.trust.trustdemo:trusttrifles:1.0.38'}  
+ implementation 'lat.trust.trustdemo:trusttrifles:1.0.38'
+ }  
   
 ```  
 > See the actual version [here](https://bintray.com/fcarotrust/trust/trustidentify).  
   
 # Initialize  
     
->This initiation establishes by default that automatic audits are not initiated  
+This initiation establishes by default that automatic audits are not initiated  
 ```java  
 import ...  
 public class TestApp extends Application {    
   @Override    
   public void onCreate() {    
         super.onCreate();    
-      TrustClient.init(this);    
+        TrustClient.init(this);    
   }  
 }  
-  
 ```  
 You can establish what type of automatic audits are what you need in your application in the following way:  
 ```java  
@@ -101,8 +101,18 @@ See more information  [here](https://android-developers.googleblog.com/2016/11/g
 # Firebase  
 Sometimes it is necessary to create remote audits using firebase, for this it is necessary to register your application in Firebase, following the following steps:  
   
-  
+  STEP 1
+  ![image](https://github.com/trusttechnologies/lat_trust_mobile_android_trust-identify_library/blob/master/fb1.png?raw=true)
+STEP 2
+![image](https://github.com/trusttechnologies/lat_trust_mobile_android_trust-identify_library/blob/master/fb2.png?raw=true)
+
+STEP 3
+![image](https://github.com/trusttechnologies/lat_trust_mobile_android_trust-identify_library/blob/master/fb3.png?raw=true)
+
+>  For more information visit the documentation in Firebase console [here](https://firebase.google.com/docs/?hl=es)
 # Methods  
+  
+This section describes the methods that the library has
 ## SendTrifles  
   
 With this method you get a trust id  
