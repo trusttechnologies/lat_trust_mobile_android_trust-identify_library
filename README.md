@@ -153,3 +153,4 @@ Automatic audits are performed with device events, these are:
 >  *If you need to use automatic SMS audits, you need to add the necessary permissions in the application's manifest.
 
 >  *Network audit may not be available on some devices
+
