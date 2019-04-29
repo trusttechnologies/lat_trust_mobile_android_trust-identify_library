@@ -16,8 +16,8 @@ import lat.trust.trusttrifles.utilities.Utils;
 
 public class AlarmReceiver extends BroadcastReceiver {
 
-    public static final String OPERATION = "AUTOMATIC AUDIT ALARM";
-    public static final String METHOD = "DIARY ALARM";
+    public static final String OPERATION = "AUTOMATIC DAILY AUDIT";
+    public static final String METHOD = "DIARY RECEIVER";
     public static final String RESULT = "OK";
 
     @Override

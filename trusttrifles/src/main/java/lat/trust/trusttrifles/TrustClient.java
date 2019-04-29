@@ -958,7 +958,7 @@ public class TrustClient {
             Audit data = new Audit();
             data.setTrustid(Hawk.get(Constants.TRUST_ID_AUTOMATIC).toString());
             data.setStatus(true);
-            data.setMessage("{'status':true,'message':'The device was identified, it already exists in our records.','trustid':'20b27a1a-b1d8-4e6b-b91f-39fbbaf1fee3'}");
+            data.setMessage("{'status':true,'message':'The device was identified, it already exists in our records.'");
             TrustLogger.d("[TRUST CLIENT] ");
             listener.onSuccess(201, data);
 
