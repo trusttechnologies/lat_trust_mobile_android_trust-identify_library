@@ -42,7 +42,7 @@ public class SIMChangeReceiver extends BroadcastReceiver {
     @SuppressLint("MissingPermission")
     @Override
     public void onReceive(Context context, Intent intent) {
-        try {
+        try {fgfsdfsdsf
             if(TrustConfig.getInstance().isSim()){
                 TrustLogger.d("[TRUST CLIENT]  SIM AUDIT GRANT");
 

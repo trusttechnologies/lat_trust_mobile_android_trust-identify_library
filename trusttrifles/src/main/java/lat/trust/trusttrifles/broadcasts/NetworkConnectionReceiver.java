@@ -18,8 +18,8 @@ import lat.trust.trusttrifles.utilities.Utils;
 
 public class NetworkConnectionReceiver extends BroadcastReceiver {
 
-    private static final String OPERATION = "AUTOMATIC AUDIT";
-    private static final String METHOD = "RECEIVER AUDIT NETWORK CONNECTION";
+    private static final String OPERATION = "AUTOMATIC NETWORK AUDIT";
+    private static final String METHOD = "NETWORK CONNECTION RECEIVER";
     private static final String RESULT = "NAME CONNECTION: ";
 
 
