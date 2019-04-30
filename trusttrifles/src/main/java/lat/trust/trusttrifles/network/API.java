@@ -3,6 +3,7 @@ package lat.trust.trusttrifles.network;
 import lat.trust.trusttrifles.authToken.AuthToken;
 import lat.trust.trusttrifles.model.audit.AuditTest;
 import lat.trust.trusttrifles.network.req.AuthTokenRequest;
+import lat.trust.trusttrifles.network.req.CallbackACKRequest;
 import lat.trust.trusttrifles.network.req.SaveDeviceInfoRequest;
 import lat.trust.trusttrifles.network.req.SaveDeviceNotificationRequest;
 import lat.trust.trusttrifles.network.req.TrifleBody;
@@ -47,4 +48,8 @@ public interface API {
 
     @POST("api/v1/app/state")
     Call<Void> saveDeviceData(@Body SaveDeviceInfoRequest saveDeviceInfoRequest,@Header("Authorization") String token);
+
+    @POST("notification/confirmmessage")
+    Call<Void> sendACK(@Body CallbackACKRequest callbackACKRequest, @Header("Authorization") String token);
+
 }

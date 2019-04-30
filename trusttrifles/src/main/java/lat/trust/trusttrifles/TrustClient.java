@@ -1214,7 +1214,7 @@ public class TrustClient {
 
     }
 
-    public void createAuditTest(String trustid, AuditTransaction auditTransaction, String lat, String lng, AuditExtraData auditExtraData) {
+    public void createAudit(String trustid, AuditTransaction auditTransaction, String lat, String lng, AuditExtraData auditExtraData) {
         String wifiName = "no wifi avaliable";
         final TelephonyManager telephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
         if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
@@ -1239,6 +1239,7 @@ public class TrustClient {
 
         PackageInfo pInfo = null;
         try {
+
             pInfo = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0);
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();

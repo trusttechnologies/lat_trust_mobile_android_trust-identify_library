@@ -63,7 +63,8 @@ public class MainActivity extends AppCompatActivity {
                 Hawk.put(Constants.NAME_USER, "FELIPE");
                 Hawk.put(Constants.PHONE_USER, "+56982110950");
                 AutomaticAudit.createAutomaticAudit("test1","test2","result test",MainActivity.this);
-                Notifications.registerDevice(FirebaseInstanceId.getInstance().getToken(),MainActivity.this);
+                TrustLogger.d(FirebaseInstanceId.getInstance().getToken());
+                //Notifications.registerDevice(FirebaseInstanceId.getInstance().getToken(),MainActivity.this);
             }
         });
     }

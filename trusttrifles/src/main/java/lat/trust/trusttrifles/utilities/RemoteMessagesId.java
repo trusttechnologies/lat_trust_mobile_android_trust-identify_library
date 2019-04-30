@@ -6,6 +6,7 @@ import android.content.Intent;
 import java.util.Map;
 
 import io.sentry.Sentry;
+import lat.trust.trusttrifles.model.CallbackACK;
 import lat.trust.trusttrifles.services.RemoteAuditService;
 
 public class RemoteMessagesId {
@@ -35,6 +36,27 @@ public class RemoteMessagesId {
         } catch (Exception e) {
             Sentry.capture(e);
             TrustLogger.d("[RemoteMessages id] error : " + e.getMessage());
+        }
+    }
+
+    /**
+     * get the message from firebase for automatic audit or change the time of the diary audomatic audit and send a callback to service for ack.
+     * type: change_automatic_audit for change the time of the automatic audit
+     * type: remote_automatic_audit for start a automatic audit.
+     * @param context
+     * @param data
+     * @param callbackACK
+     */
+    public static void remoteMessageId(Context context, Map<String, String> data, CallbackACK callbackACK){
+        try{
+            NotificationAck.sendACK(callbackACK);
+        }
+        catch (Exception ex){
+            TrustLogger.d("[TRUST CLIENT] ERROR SEND NOTIFICATION ACK: " + ex.getMessage());
+            Sentry.capture(ex);
+        }
+        finally {
+            remoteMessageId(context,data);
         }
     }
 }
