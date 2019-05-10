@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient"
+    tools:context=".ui.trustid.TrustIdActivity"
+    >
+    <ImageView
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        app:srcCompat="@drawable/ic_arrow_back_white_24dp"
+        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/gradient"
+        android:layout_gravity="center_vertical"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textSize="24dp"
+            android:textColor="@color/white"
+            android:text="Su trust id es :"
+            />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:text=""
+            tools:text="c7e4d242-3f28-4569-b1bb-bcc71d68c425"
+            android:textColor="@color/white"
+
+            android:textSize="24dp"
+            />
+    </LinearLayout>
+
+
+</RelativeLayout>

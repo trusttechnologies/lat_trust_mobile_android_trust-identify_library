@@ -51,6 +51,9 @@ public class Constants {
 
     public static final String CLIENT_ID = "client_id";
     public static final String CLIENT_SECRET = "client_secret";
+    public static final String MESSAGE_ID = "message_id";
 
+    public static final String TRUST_NOTIFICATION_SUCCESS_CODE = "2";
+    public static final String TRUST_NOTIFICATION_CANCEL_CODE = "3";
 
 }

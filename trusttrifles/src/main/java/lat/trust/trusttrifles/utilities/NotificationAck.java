@@ -15,7 +15,7 @@ import retrofit2.Response;
 public class NotificationAck {
 
     public static void sendACK(CallbackACK callbackACK){
-        ack(new CallbackACKRequest(callbackACK.getMessageId(),callbackACK.getAction(),callbackACK.getStatus()));
+        ack(new CallbackACKRequest(callbackACK.getMessageId(),callbackACK.getAction(),callbackACK.getStatus(),callbackACK.getTrustId()));
     }
     private static void ack(final CallbackACKRequest callbackACKRequest){
         if(Hawk.contains(Constants.TOKEN_SERVICE)){

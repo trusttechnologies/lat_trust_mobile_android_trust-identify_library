@@ -16,10 +16,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import io.sentry.Sentry;
 import lat.trust.trusttrifles.TrustClient;
 import lat.trust.trusttrifles.TrustListener;
 import lat.trust.trusttrifles.broadcasts.AlarmReceiver;
 import lat.trust.trusttrifles.model.Audit;
+import lat.trust.trusttrifles.model.CallbackACK;
 import lat.trust.trusttrifles.model.Identity;
 import lat.trust.trusttrifles.model.audit.AuditExtraData;
 import lat.trust.trusttrifles.model.audit.AuditTransaction;
@@ -194,22 +196,46 @@ public class AutomaticAudit {
      * @param second
      */
     public static void setAutomaticAlarm(Context mContext, int hour, int minute, int second) {
-        TrustLogger.d("[AUTOMATIC AUDIT] STARTING... ");
-        AlarmManager manager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
-        Date dat = new Date();
-        Calendar cal_alarm = Calendar.getInstance();
-        Calendar cal_now = Calendar.getInstance();
-        cal_now.setTime(dat);
-        cal_alarm.setTime(dat);
-        cal_alarm.set(Calendar.HOUR_OF_DAY, hour);
-        cal_alarm.set(Calendar.MINUTE, minute);
-        cal_alarm.set(Calendar.SECOND, second);
-        if (cal_alarm.before(cal_now)) {
-            cal_alarm.add(Calendar.DATE, 1);
+        try{
+            TrustLogger.d("[AUTOMATIC AUDIT] STARTING... ");
+            AlarmManager manager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
+            Date dat = new Date();
+            Calendar cal_alarm = Calendar.getInstance();
+            Calendar cal_now = Calendar.getInstance();
+            cal_now.setTime(dat);
+            cal_alarm.setTime(dat);
+            cal_alarm.set(Calendar.HOUR_OF_DAY, hour);
+            cal_alarm.set(Calendar.MINUTE, minute);
+            cal_alarm.set(Calendar.SECOND, second);
+            if (cal_alarm.before(cal_now)) {
+                cal_alarm.add(Calendar.DATE, 1);
+            }
+
+
+            Intent myIntent = new Intent(mContext, AlarmReceiver.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, 0, myIntent, 0);
+            manager.setRepeating(AlarmManager.RTC_WAKEUP, cal_alarm.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+            TrustLogger.d("[AUTOMATIC AUDIT] STARTED AT: " + String.valueOf(hour) + ":" + String.valueOf(minute));
+            NotificationAck.sendACK(new CallbackACK(
+                    Hawk.get(Constants.MESSAGE_ID).toString(),
+                    "remote_audit_alarm_success",
+                    Constants.TRUST_NOTIFICATION_SUCCESS_CODE,
+                    Hawk.get(Constants.TRUST_ID_AUTOMATIC).toString(),
+                    "",
+                    "remote_audit_alarm"));
         }
-        Intent myIntent = new Intent(mContext, AlarmReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, 0, myIntent, 0);
-        manager.setRepeating(AlarmManager.RTC_WAKEUP, cal_alarm.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
-        TrustLogger.d("[AUTOMATIC AUDIT] STARTED AT: " + String.valueOf(hour) + ":" + String.valueOf(minute));
+        catch (Exception ex){
+            Sentry.capture(ex);
+            TrustLogger.d("[AUTOMATIC AUDIT] ERROR ALARM AUDIT:" +ex);
+            NotificationAck.sendACK(new CallbackACK(
+                    Hawk.get(Constants.MESSAGE_ID).toString(),
+                    "remote_audit_alarm_error",
+                    Constants.TRUST_NOTIFICATION_CANCEL_CODE,
+                    Hawk.get(Constants.TRUST_ID_AUTOMATIC).toString(),
+                    ex.getMessage(),
+                    "remote_audit_alarm"));
+        }
+
     }
 }
+//971a1f40-bdd1-0136-9fee-0692a4373896

@@ -5,7 +5,7 @@
     android:sharedUserId="trust.trifles"
     android:sharedUserLabel="@string/shared_user_label">
 
-   <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.SEND_SMS" />
 
@@ -19,17 +19,17 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".ui.audit.AuditActivity"></activity>
+        <activity android:name=".ui.trustid.TrustIdActivity" />
         <activity
-            android:name=".SplashActivity"
+            android:name=".ui.splash.SplashActivity"
             android:screenOrientation="sensorPortrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!-- FIREBASE SERVICE -->
+        </activity> <!-- FIREBASE SERVICE -->
         <service
             android:name=".TrustFirebaseMessagingService"
             android:stopWithTask="false">
@@ -38,12 +38,12 @@
             </intent-filter>
         </service>
         <service android:name="lat.trust.trusttrifles.services.TestLocationService" />
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="c2f2723ade81917cf6b8cac00d194cd208df72ad" />
 
-        <activity android:name=".MainActivity" />
-        <activity android:name=".TestLocationActivity" />
+        <activity android:name=".ui.home.MainActivity" />
     </application>
 
 </manifest>
