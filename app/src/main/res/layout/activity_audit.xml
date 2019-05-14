@@ -7,6 +7,13 @@
     android:background="@drawable/gradient"
     tools:context=".ui.audit.AuditActivity">
 
+    <ImageView
+        android:id="@+id/iv_backAudit"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="25dp"
+        app:srcCompat="@drawable/ic_arrow_back_white_24dp" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -29,31 +36,42 @@
                 android:padding="8dp">
 
                 <EditText
+                    android:id="@+id/et_operacion"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Operacion"
                     android:textColor="@color/white"
                     android:textColorHint="#AAFFFF" />
+
                 <EditText
+                    android:id="@+id/et_metodo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Metodo"
-                    android:textColorHint="#AAFFFF"
                     android:textColor="@color/white"
-                    />
+                    android:textColorHint="#AAFFFF" />
+
                 <EditText
+                    android:id="@+id/et_resultado"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Resultado"
-                    android:textColorHint="#AAFFFF"
                     android:textColor="@color/white"
-                    />
+                    android:textColorHint="#AAFFFF" />
 
+                <Button
+                    android:id="@+id/btn_audit_test"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/gradient"
+                    android:text="valores de prueba"
+                    android:textColor="@color/white" />
 
                 <Button
                     android:id="@+id/btn_audit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:background="@drawable/gradient"
                     android:text="Enviar Auditoria"
                     android:textColor="@color/white" />

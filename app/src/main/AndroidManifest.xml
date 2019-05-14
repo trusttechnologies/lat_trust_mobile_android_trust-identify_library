@@ -19,7 +19,8 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".ui.audit.AuditActivity"></activity>
+        <activity android:name=".ui.session.SessionActivity"></activity>
+        <activity android:name=".ui.audit.AuditActivity" />
         <activity android:name=".ui.trustid.TrustIdActivity" />
         <activity
             android:name=".ui.splash.SplashActivity"
