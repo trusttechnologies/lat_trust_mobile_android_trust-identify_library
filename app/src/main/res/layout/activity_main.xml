@@ -42,7 +42,7 @@
                         android:textColor="@color/white" />
 
                     <Button
-                        android:id="@+id/btn_audit"
+                        android:id="@+id/btn_audit_home"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@drawable/gradient"
@@ -77,7 +77,7 @@
                         android:textColor="@color/white" />
 
                     <Button
-                        android:id="@+id/btn_company"
+                        android:id="@+id/btn_trust_id_home"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@drawable/gradient"
@@ -174,7 +174,11 @@
                         android:padding="16dp"
                         android:text="Obtiene firebase token"
                         android:textColor="@color/white" />
-
+<EditText
+    android:layout_width="match_parent"
+    android:id="@+id/et"
+    android:layout_height="wrap_content"
+    android:hint="123123123"/>
                     <Button
                         android:id="@+id/btn_session"
                         android:layout_width="match_parent"

@@ -2,12 +2,17 @@ package lat.trust.trustdemo.ui.home;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.button.MaterialButton;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
@@ -17,6 +22,8 @@ import com.orhanobut.hawk.Hawk;
 
 import io.fabric.sdk.android.Fabric;
 import lat.trust.trustdemo.R;
+import lat.trust.trustdemo.ui.audit.AuditActivity;
+import lat.trust.trustdemo.ui.trustid.TrustIdActivity;
 import lat.trust.trusttrifles.services.Notifications;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.TrustLogger;
@@ -32,7 +39,11 @@ public class MainActivity extends AppCompatActivity {
     private BroadcastReceiver broadcastReceiver;
     private MaterialButton materialButton;
     private Context mContext;
-
+    private EditText et
+            ;
+    private Button btn_audit;
+    private Button btn_trust_id;
+    private Button btn_session;
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,9 +68,54 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });*/
+        bind();
+        btn_audit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goAudit();
+            }
+        });
+        btn_trust_id.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goTrustId();
+            }
+        });
+
+        btn_session.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(mContext, et.getText().toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
+    private void goTrustId() {
+        startActivity(new Intent(MainActivity.this, TrustIdActivity.class));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            finishAffinity();
+        } else {
+            finish();
+        }
+    }
 
+    private void goAudit() {
+        startActivity(new Intent(MainActivity.this, AuditActivity.class));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            finishAffinity();
+        } else {
+            finish();
+        }
+
+    }
+
+    private void bind() {
+        btn_audit = findViewById(R.id.btn_audit_home);
+        btn_trust_id = findViewById(R.id.btn_trust_id_home);
+
+        et = findViewById(R.id.et);
+        btn_session = findViewById(R.id.btn_session);
+    }
 
     private void showLoading() {
         loadingDialog = new MaterialDialog.Builder(this)
