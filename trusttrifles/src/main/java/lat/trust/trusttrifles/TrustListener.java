@@ -24,6 +24,15 @@ public interface TrustListener {
 
 
     interface OnResultSimple {
+
         void onResult(int code, String message);
+
+    }
+
+    interface OnResultAudit {
+
+        void onSuccess(String idAudit);
+
+        void onError(String error);
     }
 }

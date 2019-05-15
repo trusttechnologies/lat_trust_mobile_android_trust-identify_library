@@ -39,8 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private BroadcastReceiver broadcastReceiver;
     private MaterialButton materialButton;
     private Context mContext;
-    private EditText et
-            ;
+    private EditText et;
     private Button btn_audit;
     private Button btn_trust_id;
     private Button btn_session;

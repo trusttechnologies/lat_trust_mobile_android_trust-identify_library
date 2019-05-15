@@ -55,7 +55,7 @@ ext {
     siteUrl = 'https://github.com/trusttechnologies/lat_trust_mobile_android_trust-identify_library'
     gitUrl = 'https://github.com/trusttechnologies/lat_trust_mobile_android_trust-identify_library.git'
 
-    libraryVersion = '1.0.42'
+    libraryVersion = '1.0.43'
 
     developerId = 'fcaro'
     developerName = 'Felipe Caro'
@@ -110,8 +110,6 @@ dependencies {
     // -- ROOTBEER
     implementation 'com.scottyab:rootbeer-lib:0.0.7'
 
-    //-------SDK Google Services-----------
-    //implementation 'com.google.android.gms:play-services:12.0.1'
 
 }
 
