@@ -1,5 +1,7 @@
 package lat.trust.trusttrifles.network;
 
+import com.google.gson.JsonObject;
+
 import lat.trust.trusttrifles.authToken.AuthToken;
 import lat.trust.trusttrifles.model.audit.AuditTest;
 import lat.trust.trusttrifles.network.req.AuthTokenRequest;
@@ -39,7 +41,7 @@ public interface API {
     Call<String> registerDeviceNofitication(@Body SaveDeviceNotificationRequest saveDevice,@Header("Authorization") String token);
 
     @POST("api/v1/audit")
-    Call<Void> createAuditTest(@Body AuditTest body, @Header("Authorization") String token);
+    Call<JsonObject> createAuditTest(@Body AuditTest body, @Header("Authorization") String token);
 
 
 

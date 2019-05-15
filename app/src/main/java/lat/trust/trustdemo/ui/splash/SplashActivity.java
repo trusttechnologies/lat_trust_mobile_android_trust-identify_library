@@ -29,8 +29,17 @@ public class SplashActivity extends AppCompatActivity implements TrustListener.P
     @Override
     public void onPermissionSuccess() {
 
-        AutomaticAudit.createAutomaticAudit("inicio sesion","en el splashy","permisos concedidos",SplashActivity.this);
-        TrustClient mclient = TrustClient.getInstance();
+        AutomaticAudit.createAutomaticAudit("inicio sesion", "en el splashy", "permisos concedidos", SplashActivity.this, new TrustListener.OnResultAudit() {
+            @Override
+            public void onSuccess(String idAudit) {
+                TrustLogger.d("=============>" + idAudit);
+            }
+            @Override
+            public void onError(String error) {
+
+            }
+        });
+        /*TrustClient mclient = TrustClient.getInstance();
             mclient.getTrifles(true, new TrustListener.OnResult<Audit>() {
                 @Override
                 public void onSuccess(int code, Audit data) {
@@ -59,8 +68,7 @@ public class SplashActivity extends AppCompatActivity implements TrustListener.P
                 }
             });
 
-
-
+*/
 
 
     }

@@ -10,9 +10,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.google.gson.JsonObject;
+
 import lat.trust.trustdemo.R;
 import lat.trust.trustdemo.ui.home.MainActivity;
+import lat.trust.trusttrifles.TrustListener;
 import lat.trust.trusttrifles.utilities.AutomaticAudit;
+import lat.trust.trusttrifles.utilities.TrustLogger;
 
 public class AuditActivity extends AppCompatActivity {
 
@@ -75,11 +79,24 @@ public class AuditActivity extends AppCompatActivity {
     }
 
     private void sendAudit() {
-        AutomaticAudit.createAutomaticAudit(
+        /*AutomaticAudit.createAutomaticAudit(
                 et_operacion.getText().toString(),
                 et_metodo.getText().toString(),
                 et_resultado.getText().toString(),
-                AuditActivity.this);
+                AuditActivity.this);*/
+        AutomaticAudit.createAutomaticAudit(et_operacion.getText().toString(), et_metodo.getText().toString(), et_resultado.getText().toString()       , this, new TrustListener.OnResultAudit() {
+            @Override
+            public void onSuccess(String idAudit) {
+                TrustLogger.d("--------------------> " + idAudit);
+            }
+
+            @Override
+            public void onError(String error) {
+                TrustLogger.d("--------------------> " + error);
+
+            }
+        });
+
     }
 
     private void setBtnAuditTest() {

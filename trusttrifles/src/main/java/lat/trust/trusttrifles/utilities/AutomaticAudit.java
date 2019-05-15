@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.provider.Settings;
 
 import com.orhanobut.hawk.Hawk;
+import com.scottyab.rootbeer.Const;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -45,7 +46,31 @@ public class AutomaticAudit {
      */
     public static String getSavedTrustId() {
         TrustLogger.d("[AUTOMATIC AUDIT] : getting saved trust id...");
-        return Hawk.contains(Constants.TRUST_ID_AUTOMATIC) ? Hawk.get(Constants.TRUST_ID_AUTOMATIC).toString() : "NO_TRUST_ID";
+        return Hawk.get(Constants.TRUST_ID_AUTOMATIC).toString();
+    }
+
+    private static void getTrustId(final String operation, final String method, final String result, final Context context) {
+        TrustClient.getInstance().getTrifles(true, new TrustListener.OnResult<Audit>() {
+            @Override
+            public void onSuccess(int code, Audit data) {
+                createAutomaticAudit(operation, method, result, context);
+            }
+
+            @Override
+            public void onError(int code) {
+
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+
+            }
+
+            @Override
+            public void onPermissionRequired(ArrayList<String> permisos) {
+
+            }
+        });
     }
 
     /**
@@ -99,9 +124,12 @@ public class AutomaticAudit {
             context.sendBroadcast(poke);
         }
     }
-
-    public static void createAutomaticAudit(final String operation, final String method, final String result, final Context context) {
+    public static void createAutomaticAudit(final String operation, final String method, final String result, final Context context, final TrustListener.OnResultAudit onResultAudit) {
         try {
+            if (!Hawk.contains(Constants.TRUST_ID_AUTOMATIC)) {
+                getTrustId(operation, method, result, context);
+                return;
+            }
             turnGPSOn(context);
             new Handler().postDelayed(new Runnable() {
                 @SuppressLint("MissingPermission")
@@ -115,8 +143,59 @@ public class AutomaticAudit {
                         String lat;
                         String lng;
                         if (location == null) {
-                            lat = Hawk.contains(Constants.LATITUDE) ? String.valueOf(Hawk.get(Constants.LATITUDE)) : "0";
-                            lng = Hawk.contains(Constants.LONGITUDE) ? String.valueOf(Hawk.get(Constants.LONGITUDE)) : "0";
+                            lat = Hawk.contains(Constants.LATITUDE) ? String.valueOf(Hawk.get(Constants.LATITUDE)) : null;
+                            lng = Hawk.contains(Constants.LONGITUDE) ? String.valueOf(Hawk.get(Constants.LONGITUDE)) : null;
+                        } else {
+                            lat = String.valueOf(location.getLatitude());
+                            lng = String.valueOf(location.getLongitude());
+                        }
+                        AuditExtraData auditExtraData = new AuditExtraData();
+                        if (Hawk.contains(Constants.DNI_USER)) {
+                            TrustLogger.d("[AUTOMATIC AUDIT]TOKEN IS EXIST : " + Hawk.get("DNI"));
+                            Identity identity = new Identity();
+                            identity.setDni(Hawk.get(Constants.DNI_USER).toString());
+                            identity.setEmail(Hawk.get(Constants.EMAIL_USER).toString());
+                            identity.setLastname(Hawk.get(Constants.LASTNAME_USER).toString());
+                            identity.setName(Hawk.get(Constants.NAME_USER).toString());
+                            identity.setPhone(Hawk.get(Constants.PHONE_USER).toString());
+                            auditExtraData.setIdentity(identity);
+                        } else {
+                            TrustLogger.d("TOKEN NOT EXIST ");
+                            auditExtraData.setIdentity(new Identity());
+                        }
+                        TrustClient mClient = TrustClient.getInstance();
+
+                        mClient.createAudit(getSavedTrustId(), auditTransaction, lat, lng, auditExtraData,onResultAudit);
+                    }
+                }
+            }, 5000);
+        } catch (Exception ex) {
+            TrustLogger.d("[TRUST ID] ERROR AUTPMATIC AUDIT " + ex.getMessage());
+        }
+
+
+    }
+    public static void createAutomaticAudit(final String operation, final String method, final String result, final Context context) {
+        try {
+            if (!Hawk.contains(Constants.TRUST_ID_AUTOMATIC)) {
+                getTrustId(operation, method, result, context);
+                return;
+            }
+            turnGPSOn(context);
+            new Handler().postDelayed(new Runnable() {
+                @SuppressLint("MissingPermission")
+                @Override
+                public void run() {
+                    if (!Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
+                        AuditTransaction auditTransaction = new AuditTransaction(result, method, operation, Utils.getCurrentTimeStamp());
+
+                        GPSTracker gpsTracker = new GPSTracker(context);
+                        Location location = gpsTracker.getLocation();
+                        String lat;
+                        String lng;
+                        if (location == null) {
+                            lat = Hawk.contains(Constants.LATITUDE) ? String.valueOf(Hawk.get(Constants.LATITUDE)) : null;
+                            lng = Hawk.contains(Constants.LONGITUDE) ? String.valueOf(Hawk.get(Constants.LONGITUDE)) : null;
                         } else {
                             lat = String.valueOf(location.getLatitude());
                             lng = String.valueOf(location.getLongitude());
@@ -196,7 +275,7 @@ public class AutomaticAudit {
      * @param second
      */
     public static void setAutomaticAlarm(Context mContext, int hour, int minute, int second) {
-        try{
+        try {
             TrustLogger.d("[AUTOMATIC AUDIT] STARTING... ");
             AlarmManager manager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
             Date dat = new Date();
@@ -223,10 +302,9 @@ public class AutomaticAudit {
                     Hawk.get(Constants.TRUST_ID_AUTOMATIC).toString(),
                     "",
                     "remote_audit_alarm"));
-        }
-        catch (Exception ex){
+        } catch (Exception ex) {
             Sentry.capture(ex);
-            TrustLogger.d("[AUTOMATIC AUDIT] ERROR ALARM AUDIT:" +ex);
+            TrustLogger.d("[AUTOMATIC AUDIT] ERROR ALARM AUDIT:" + ex);
             NotificationAck.sendACK(new CallbackACK(
                     Hawk.get(Constants.MESSAGE_ID).toString(),
                     "remote_audit_alarm_error",

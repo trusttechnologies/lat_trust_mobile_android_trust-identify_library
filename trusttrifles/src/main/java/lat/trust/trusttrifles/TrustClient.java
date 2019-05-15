@@ -33,6 +33,7 @@ import android.telephony.gsm.GsmCellLocation;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.gson.JsonObject;
 import com.orhanobut.hawk.Hawk;
 import com.scottyab.rootbeer.RootBeer;
 
@@ -114,15 +115,15 @@ public class TrustClient {
         mPreferences = TrustPreferences.getInstance();
     }
 
-    public  void setNoneAudit() {
+    public void setNoneAudit() {
         TrustConfig.getInstance().setNoneAudits();
     }
 
-    public  void setAllAudit() {
+    public void setAllAudit() {
         TrustConfig.getInstance().setAllAudits();
     }
 
-    public  void setAudits(String[] audits) {
+    public void setAudits(String[] audits) {
         TrustConfig.getInstance().setAudits(audits);
     }
 
@@ -1214,6 +1215,79 @@ public class TrustClient {
 
     }
 
+    public void createAudit(String trustid, AuditTransaction auditTransaction, String lat, String lng, AuditExtraData auditExtraData, final TrustListener.OnResultAudit onResultAudit) {
+        String wifiName = "no wifi avaliable";
+        final TelephonyManager telephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            wifiName = "no wifi avaliable for permission";
+        }
+        WifiManager wifiMgr = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
+        WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
+        wifiName = wifiInfo.getSSID();
+        String imsi = telephonyManager.getSubscriberId() == null ? "sim extraida" : telephonyManager.getSubscriberId();
+        String appName = mContext.getString(R.string.app_name);
+        String packageName = mContext.getApplicationContext().getPackageName();
+        Hawk.put(Constants.BUNDLE_ID, packageName);
+        ConnectivityManager connManager = (ConnectivityManager) mContext.getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        NetworkInfo mMobile = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        String connection;
+        if (mWifi.isAvailable() == true) {
+            connection = Constants.WIFI_CONNECTION;
+        } else if (mMobile.isAvailable() == true) {
+            connection = Constants.MOBILE_CONNECTION;
+        } else connection = Constants.DISCONNECT;
+
+        PackageInfo pInfo = null;
+        try {
+
+            pInfo = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        String version = pInfo == null ? "0.0" : pInfo.versionName;
+        AuditSource source = new AuditSource(
+                trustid,
+                appName,
+                packageName,
+                "Android"
+                , String.valueOf(Build.VERSION.SDK_INT),
+                Build.MODEL,
+                imsi,
+                lat,
+                lng,
+                connection,
+                wifiName,
+                version
+        );
+
+        final AuditTest auditTest = new AuditTest();
+        auditTest.setType_audit("trust identify");
+        auditTest.setApplication(appName);
+        auditTest.setSource(source);
+        auditTest.setTransaction(auditTransaction);
+        auditTest.setPlatform("Android");
+        auditTest.setExtra_data(auditExtraData);
+
+        if (Hawk.contains(Constants.TOKEN_SERVICE)) {
+            sendAudit(auditTest, onResultAudit);
+        } else {
+            AuthToken.getAccessToken(new AuthTokenListener.Auth() {
+                @Override
+                public void onSuccessAccessToken(String token) {
+                    Hawk.put(Constants.TOKEN_SERVICE, "Bearer " + token);
+                    sendAudit(auditTest, onResultAudit);
+                }
+
+                @Override
+                public void onErrorAccessToken(String error) {
+                    TrustLogger.d("[TRUST CLIENT] ERROR TOKEN " + error);
+                }
+            });
+        }
+
+    }
+
     public void createAudit(String trustid, AuditTransaction auditTransaction, String lat, String lng, AuditExtraData auditExtraData) {
         String wifiName = "no wifi avaliable";
         final TelephonyManager telephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
@@ -1288,9 +1362,9 @@ public class TrustClient {
     }
 
     private void sendAudit(final AuditTest auditTest) {
-        RestClientAudit.get().createAuditTest(auditTest, Hawk.get(Constants.TOKEN_SERVICE).toString()).enqueue(new Callback<Void>() {
+        RestClientAudit.get().createAuditTest(auditTest, Hawk.get(Constants.TOKEN_SERVICE).toString()).enqueue(new Callback<JsonObject>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 TrustLogger.d("audit test code: " + String.valueOf(response.code()));
                 TrustLogger.d("audit test body: " + String.valueOf(response.body()));
                 if (response.code() == 401) {
@@ -1300,12 +1374,42 @@ public class TrustClient {
                 if (response.isSuccessful()) {
                     TrustLogger.d("[TRUST CLIENT]  VALID TOKEN: " + Hawk.get(Constants.TOKEN_SERVICE));
                     TrustLogger.d("[TRUST CLIENT] Audit code: " + response.code() + " Audit message: " + response.message());
+
                 }
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+            public void onFailure(Call<JsonObject> call, Throwable t) {
                 TrustLogger.d("[TRUST CLIENT] Audit code: -1 Audit message: " + t.getMessage());
+            }
+        });
+    }
+
+    private void sendAudit(final AuditTest auditTest, final TrustListener.OnResultAudit onResultAudit) {
+        RestClientAudit.get().createAuditTest(auditTest, Hawk.get(Constants.TOKEN_SERVICE).toString()).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                TrustLogger.d("audit test code: " + String.valueOf(response.code()));
+                TrustLogger.d("audit test body: " + String.valueOf(response.body()));
+                if (response.code() == 401) {
+                    TrustLogger.d("[TRUST CLIENT] ACCESS TOKEN AUDIT EXPIRED: " + response.code() + " MESSAGE: " + response.message());
+                    refreshTokenAudit(auditTest, onResultAudit);
+                    return;
+                }
+                if (response.isSuccessful()) {
+
+                    TrustLogger.d("[TRUST CLIENT]  VALID TOKEN: " + Hawk.get(Constants.TOKEN_SERVICE));
+                    TrustLogger.d("[TRUST CLIENT]  Audit code: " + response.code() + " Audit message: " + response.message());
+                    JsonObject object = response.body().get("audit").getAsJsonObject();
+                    String id = object.get("auditid").getAsString();
+                     onResultAudit.onSuccess(id);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                TrustLogger.d("[TRUST CLIENT] Audit code: -1 Audit message: " + t.getMessage());
+                onResultAudit.onError(t.getMessage());
             }
         });
     }
@@ -1316,9 +1420,9 @@ public class TrustClient {
             public void onSuccessAccessToken(String token) {
                 TrustLogger.d("[TRUST CLIENT] SUCCESS REFRESH TOKEN");
                 Hawk.put(Constants.TOKEN_SERVICE, "Bearer " + token);
-                RestClientAudit.get().createAuditTest(auditTest, "Bearer " + token).enqueue(new Callback<Void>() {
+                RestClientAudit.get().createAuditTest(auditTest, "Bearer " + token).enqueue(new Callback<JsonObject>() {
                     @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {
+                    public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                         if (response.code() == 401) {
                             TrustLogger.d("[TRSUT CLIENT] ERROR AUDIT REFRESH TOKEN" + response.code() + " MESSAGE: " + response.message());
                             return;
@@ -1327,11 +1431,10 @@ public class TrustClient {
                             TrustLogger.d("[TRUST CLIENT]  VALID TOKEN: " + Hawk.get(Constants.TOKEN_SERVICE));
                             TrustLogger.d("[TRUST CLIENT] Audit code: " + response.code() + " Audit message: " + response.message());
                         }
-
                     }
 
                     @Override
-                    public void onFailure(Call<Void> call, Throwable t) {
+                    public void onFailure(Call<JsonObject> call, Throwable t) {
                         TrustLogger.d("[TRSUT CLIENT] ERROR AUDIT REFRESH TOKEN: " + t.getMessage());
 
                     }
@@ -1342,6 +1445,47 @@ public class TrustClient {
             @Override
             public void onErrorAccessToken(String error) {
                 TrustLogger.d("[TRUST CLIENT] ERROR ACCESS TOKEN: " + error);
+            }
+        });
+    }
+
+    private void refreshTokenAudit(final AuditTest auditTest, final TrustListener.OnResultAudit onResultAudit) {
+        AuthToken.getAccessToken(new AuthTokenListener.Auth() {
+            @Override
+            public void onSuccessAccessToken(String token) {
+                TrustLogger.d("[TRUST CLIENT] SUCCESS REFRESH TOKEN");
+                Hawk.put(Constants.TOKEN_SERVICE, "Bearer " + token);
+                RestClientAudit.get().createAuditTest(auditTest, "Bearer " + token).enqueue(new Callback<JsonObject>() {
+                    @Override
+                    public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                        if (response.code() == 401) {
+                            TrustLogger.d("[TRSUT CLIENT] ERROR AUDIT REFRESH TOKEN" + response.code() + " MESSAGE: " + response.message());
+                            onResultAudit.onError(String.valueOf("Error token auth: " + response.code()));
+                            return;
+                        }
+                        if (response.isSuccessful()) {
+                            TrustLogger.d("[TRUST CLIENT]  VALID TOKEN: " + Hawk.get(Constants.TOKEN_SERVICE));
+                            TrustLogger.d("[TRUST CLIENT] Audit code: " + response.code() + " Audit message: " + response.message());
+                            JsonObject object = response.body().get("audit").getAsJsonObject();
+                            String id = object.get("auditid").getAsString();
+                            onResultAudit.onSuccess(id);
+                        }
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<JsonObject> call, Throwable t) {
+                        TrustLogger.d("[TRSUT CLIENT] ERROR AUDIT REFRESH TOKEN: " + t.getMessage());
+                        onResultAudit.onError(t.getMessage());
+                    }
+                });
+
+            }
+
+            @Override
+            public void onErrorAccessToken(String error) {
+                TrustLogger.d("[TRUST CLIENT] ERROR ACCESS TOKEN: " + error);
+                onResultAudit.onError(error);
             }
         });
     }
