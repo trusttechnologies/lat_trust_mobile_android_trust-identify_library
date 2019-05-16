@@ -31,6 +31,7 @@ public class Permissions {
 
     /**
      * ask for the necessary permission.
+     * READ_PHONE_STATE,ACCESS_COARSE_LOCATION,CAMERA,ACCESS_FINE_LOCATION,READ_SMS,RECEIVE_SMS
      * @param activity
      * @param trustListener
      */
@@ -60,6 +61,44 @@ public class Permissions {
                         }
                     }
 
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
+                        token.continuePermissionRequest();
+                        trustListener.onPermissionRevoke();
+
+                    }
+                }).check();
+    }
+
+    /**
+     * READ_PHONE_STATE,ACCESS_COARSE_LOCATION,CAMERA,ACCESS_FINE_LOCATION
+     * @param activity
+     * @param trustListener
+     */
+    public static void checkPermissionsDefault(Activity activity, final TrustListener.Permissions trustListener) {
+        Dexter.withActivity(activity)
+                .withPermissions(READ_PHONE_STATE,
+                        ACCESS_COARSE_LOCATION,
+                        CAMERA,
+                        ACCESS_FINE_LOCATION)
+                .withListener(new MultiplePermissionsListener() {
+                    @SuppressLint("MissingPermission")
+                    @Override
+                    public void onPermissionsChecked(MultiplePermissionsReport report) {
+                        List<PermissionGrantedResponse> lst_permissionGrantedResponse = report.getGrantedPermissionResponses();
+                        List<PermissionDeniedResponse> lst_permissionDeniedResponse = report.getDeniedPermissionResponses();
+                        if (lst_permissionDeniedResponse.size() == 0) {
+                            TrustLogger.d("[TRUST CLIENT] all permissions accepted");
+                            trustListener.onPermissionSuccess();
+                        } else {
+                            TrustLogger.d("not all accepted");
+                            for (PermissionGrantedResponse p : lst_permissionGrantedResponse) {
+                                TrustLogger.d("permission not acepted: " + p.getPermissionName());
+                            }
+                            trustListener.onPermissionRevoke();
+
+                        }
+                    }
                     @Override
                     public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
                         token.continuePermissionRequest();
