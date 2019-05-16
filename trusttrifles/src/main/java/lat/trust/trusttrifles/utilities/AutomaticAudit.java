@@ -73,6 +73,30 @@ public class AutomaticAudit {
         });
     }
 
+    private static void getTrustId(final String operation, final String method, final String result, final Context context, final TrustListener.OnResultAudit onResultAudit) {
+        TrustClient.getInstance().getTrifles(true, new TrustListener.OnResult<Audit>() {
+            @Override
+            public void onSuccess(int code, Audit data) {
+                createAutomaticAudit(operation, method, result, context, onResultAudit);
+            }
+
+            @Override
+            public void onError(int code) {
+
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+
+            }
+
+            @Override
+            public void onPermissionRequired(ArrayList<String> permisos) {
+
+            }
+        });
+    }
+
     /**
      * overload 1: create an automatic audit
      *
@@ -124,57 +148,74 @@ public class AutomaticAudit {
             context.sendBroadcast(poke);
         }
     }
+
     public static void createAutomaticAudit(final String operation, final String method, final String result, final Context context, final TrustListener.OnResultAudit onResultAudit) {
-        try {
-            if (!Hawk.contains(Constants.TRUST_ID_AUTOMATIC)) {
-                getTrustId(operation, method, result, context);
-                return;
-            }
-            turnGPSOn(context);
-            new Handler().postDelayed(new Runnable() {
-                @SuppressLint("MissingPermission")
+        if (!Utils.chetNetworkState(context)) {
+            SavePendingAudit.getInstance().saveAudit(operation, method, result, context);
+        } else {
+            TrustClient.getInstance().getTrifles(true, new TrustListener.OnResult<Audit>() {
                 @Override
-                public void run() {
-                    if (!Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
-                        AuditTransaction auditTransaction = new AuditTransaction(result, method, operation, Utils.getCurrentTimeStamp());
+                public void onSuccess(int code, Audit data) {
+                    turnGPSOn(context);
+                    new Handler().postDelayed(new Runnable() {
+                        @SuppressLint("MissingPermission")
+                        @Override
+                        public void run() {
+                            if (!Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
+                                AuditTransaction auditTransaction = new AuditTransaction(result, method, operation, Utils.getCurrentTimeStamp());
 
-                        GPSTracker gpsTracker = new GPSTracker(context);
-                        Location location = gpsTracker.getLocation();
-                        String lat;
-                        String lng;
-                        if (location == null) {
-                            lat = Hawk.contains(Constants.LATITUDE) ? String.valueOf(Hawk.get(Constants.LATITUDE)) : null;
-                            lng = Hawk.contains(Constants.LONGITUDE) ? String.valueOf(Hawk.get(Constants.LONGITUDE)) : null;
-                        } else {
-                            lat = String.valueOf(location.getLatitude());
-                            lng = String.valueOf(location.getLongitude());
-                        }
-                        AuditExtraData auditExtraData = new AuditExtraData();
-                        if (Hawk.contains(Constants.DNI_USER)) {
-                            TrustLogger.d("[AUTOMATIC AUDIT]TOKEN IS EXIST : " + Hawk.get("DNI"));
-                            Identity identity = new Identity();
-                            identity.setDni(Hawk.get(Constants.DNI_USER).toString());
-                            identity.setEmail(Hawk.get(Constants.EMAIL_USER).toString());
-                            identity.setLastname(Hawk.get(Constants.LASTNAME_USER).toString());
-                            identity.setName(Hawk.get(Constants.NAME_USER).toString());
-                            identity.setPhone(Hawk.get(Constants.PHONE_USER).toString());
-                            auditExtraData.setIdentity(identity);
-                        } else {
-                            TrustLogger.d("TOKEN NOT EXIST ");
-                            auditExtraData.setIdentity(new Identity());
-                        }
-                        TrustClient mClient = TrustClient.getInstance();
+                                GPSTracker gpsTracker = new GPSTracker(context);
+                                Location location = gpsTracker.getLocation();
+                                String lat;
+                                String lng;
+                                if (location == null) {
+                                    lat = Hawk.contains(Constants.LATITUDE) ? String.valueOf(Hawk.get(Constants.LATITUDE)) : null;
+                                    lng = Hawk.contains(Constants.LONGITUDE) ? String.valueOf(Hawk.get(Constants.LONGITUDE)) : null;
+                                } else {
+                                    lat = String.valueOf(location.getLatitude());
+                                    lng = String.valueOf(location.getLongitude());
+                                }
+                                AuditExtraData auditExtraData = new AuditExtraData();
+                                if (Hawk.contains(Constants.DNI_USER)) {
+                                    TrustLogger.d("[AUTOMATIC AUDIT]TOKEN IS EXIST : " + Hawk.get("DNI"));
+                                    Identity identity = new Identity();
+                                    identity.setDni(Hawk.get(Constants.DNI_USER).toString());
+                                    identity.setEmail(Hawk.get(Constants.EMAIL_USER).toString());
+                                    identity.setLastname(Hawk.get(Constants.LASTNAME_USER).toString());
+                                    identity.setName(Hawk.get(Constants.NAME_USER).toString());
+                                    identity.setPhone(Hawk.get(Constants.PHONE_USER).toString());
+                                    auditExtraData.setIdentity(identity);
+                                } else {
+                                    TrustLogger.d("TOKEN NOT EXIST ");
+                                    auditExtraData.setIdentity(new Identity());
+                                }
+                                TrustClient mClient = TrustClient.getInstance();
 
-                        mClient.createAudit(getSavedTrustId(), auditTransaction, lat, lng, auditExtraData,onResultAudit);
-                    }
+                                mClient.createAudit(getSavedTrustId(), auditTransaction, lat, lng, auditExtraData, onResultAudit);
+                            }
+                        }
+                    }, 5000);
                 }
-            }, 5000);
-        } catch (Exception ex) {
-            TrustLogger.d("[TRUST ID] ERROR AUTPMATIC AUDIT " + ex.getMessage());
+
+                @Override
+                public void onError(int code) {
+
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+
+                }
+
+                @Override
+                public void onPermissionRequired(ArrayList<String> permisos) {
+
+                }
+            });
+
         }
-
-
     }
+
     public static void createAutomaticAudit(final String operation, final String method, final String result, final Context context) {
         try {
             if (!Hawk.contains(Constants.TRUST_ID_AUTOMATIC)) {

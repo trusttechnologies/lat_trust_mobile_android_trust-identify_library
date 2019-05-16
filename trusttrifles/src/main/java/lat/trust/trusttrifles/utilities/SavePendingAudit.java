@@ -3,6 +3,8 @@ package lat.trust.trusttrifles.utilities;
 import android.content.Context;
 import android.location.Location;
 
+import com.orhanobut.hawk.Hawk;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +33,7 @@ public class SavePendingAudit {
      *
      * @return
      */
-    public static List<SavedAudit> getLstAudit() {
+    public List<SavedAudit> getLstAudit() {
         return lstAudit;
     }
 
@@ -42,9 +44,15 @@ public class SavePendingAudit {
 
 
     private void addAudit(SavedAudit audit) {
-        lstAudit.add(audit);
-        TrustLogger.d("[SAVED AUDIT] AUDIT WAS SAVED");
+        lstAudit = getInstance().getLstAudit();
 
+        lstAudit.add(audit);
+
+        TrustLogger.d("[SAVED AUDIT] AUDIT WAS SAVED: " + lstAudit.size());
+        List<SavedAudit> lstAudit2 = Hawk.get(Constants.LST_AUDIT);
+        TrustLogger.d("[SAVED AUDIT] AUDIT WAS SAVED: " + lstAudit2.size());
+
+        Hawk.put(Constants.LST_AUDIT, lstAudit);
     }
 
     /**
@@ -85,7 +93,9 @@ public class SavePendingAudit {
     public void sendPendingAudits() {
         TrustLogger.d("[SAVED AUDIT] CHECKING FOT PENDING AUDITS...");
         TrustLogger.d("[SAVED AUDIT] THERE ARE " + String.valueOf(getSizeAudit()));
-        if (getSizeAudit() > 0) {
+        List<SavedAudit> lstAudit = new ArrayList<SavedAudit>();
+        lstAudit = Hawk.get(Constants.LST_AUDIT);
+        if (lstAudit.size() > 0) {
             TrustLogger.d("[SAVED AUDIT] SENDING PENDINGS AUDITS...");
 
             for (SavedAudit saved : lstAudit) {
@@ -97,13 +107,14 @@ public class SavePendingAudit {
             }
             TrustLogger.d("[SAVED AUDIT] PENDINGS AUDITS WAS SAVED");
             lstAudit.clear();
+            Hawk.delete(Constants.LST_AUDIT);
             TrustLogger.d("[SAVED AUDIT] LIST OF PENDINGS AUDITS WAS CLEAR");
 
         }
 
     }
 
-    private class SavedAudit {
+    public class SavedAudit {
         private String operation;
         private String method;
         private String result;

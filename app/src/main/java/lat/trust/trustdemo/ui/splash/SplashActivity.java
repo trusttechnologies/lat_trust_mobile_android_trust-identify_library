@@ -33,6 +33,8 @@ public class SplashActivity extends AppCompatActivity implements TrustListener.P
             @Override
             public void onSuccess(String idAudit) {
                 TrustLogger.d("=============>" + idAudit);
+                startActivity(new Intent(SplashActivity.this, MainActivity.class));
+
             }
             @Override
             public void onError(String error) {

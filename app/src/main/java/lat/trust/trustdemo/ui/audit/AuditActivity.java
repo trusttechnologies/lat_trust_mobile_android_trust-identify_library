@@ -11,11 +11,18 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.google.gson.JsonObject;
+import com.orhanobut.hawk.Hawk;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.ConsoleHandler;
 
 import lat.trust.trustdemo.R;
 import lat.trust.trustdemo.ui.home.MainActivity;
 import lat.trust.trusttrifles.TrustListener;
 import lat.trust.trusttrifles.utilities.AutomaticAudit;
+import lat.trust.trusttrifles.utilities.Constants;
+import lat.trust.trusttrifles.utilities.SavePendingAudit;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 
 public class AuditActivity extends AppCompatActivity {
@@ -84,7 +91,9 @@ public class AuditActivity extends AppCompatActivity {
                 et_metodo.getText().toString(),
                 et_resultado.getText().toString(),
                 AuditActivity.this);*/
-        AutomaticAudit.createAutomaticAudit(et_operacion.getText().toString(), et_metodo.getText().toString(), et_resultado.getText().toString()       , this, new TrustListener.OnResultAudit() {
+
+
+        AutomaticAudit.createAutomaticAudit(et_operacion.getText().toString(), et_metodo.getText().toString(), et_resultado.getText().toString(), this, new TrustListener.OnResultAudit() {
             @Override
             public void onSuccess(String idAudit) {
                 TrustLogger.d("--------------------> " + idAudit);
@@ -97,6 +106,32 @@ public class AuditActivity extends AppCompatActivity {
             }
         });
 
+        AutomaticAudit.createAutomaticAudit(et_operacion.getText().toString(), et_metodo.getText().toString(), et_resultado.getText().toString(), this, new TrustListener.OnResultAudit() {
+            @Override
+            public void onSuccess(String idAudit) {
+                TrustLogger.d("--------------------> " + idAudit);
+            }
+
+            @Override
+            public void onError(String error) {
+                TrustLogger.d("--------------------> " + error);
+
+            }
+        });
+        AutomaticAudit.createAutomaticAudit(et_operacion.getText().toString(), et_metodo.getText().toString(), et_resultado.getText().toString(), this, new TrustListener.OnResultAudit() {
+            @Override
+            public void onSuccess(String idAudit) {
+                TrustLogger.d("--------------------> " + idAudit);
+            }
+
+            @Override
+            public void onError(String error) {
+                TrustLogger.d("--------------------> " + error);
+
+            }
+        });
+
+
     }
 
     private void setBtnAuditTest() {
@@ -105,7 +140,21 @@ public class AuditActivity extends AppCompatActivity {
             et_operacion.setText("Operacion de prueba");
             et_metodo.setText("Metodo de prueba");
             btn_audit_test.setText("Limpiar valores");
+            List<SavePendingAudit.SavedAudit> lstAudit2 = Hawk.get(Constants.LST_AUDIT);
+            for (SavePendingAudit.SavedAudit lista : lstAudit2
+            ) {
+                TrustLogger.d("lista : " + lista.getOperation());
+            }
+            TrustLogger.d("lista : " + lstAudit2.size());
+
         } else {
+            List<SavePendingAudit.SavedAudit> lstAudit3 = Hawk.get(Constants.LST_AUDIT);
+            for (SavePendingAudit.SavedAudit lista : lstAudit3
+            ) {
+                TrustLogger.d("lista : " + lista.getOperation());
+            }
+            TrustLogger.d("lista : " + lstAudit3.size());
+
             et_resultado.setText("");
             et_operacion.setText("");
             et_metodo.setText("");

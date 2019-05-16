@@ -56,4 +56,5 @@ public class Constants {
     public static final String TRUST_NOTIFICATION_SUCCESS_CODE = "2";
     public static final String TRUST_NOTIFICATION_CANCEL_CODE = "3";
 
+    public static final String LST_AUDIT = "lst_audit";
 }
