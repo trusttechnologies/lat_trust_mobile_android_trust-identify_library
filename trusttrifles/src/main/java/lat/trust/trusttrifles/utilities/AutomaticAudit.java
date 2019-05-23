@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.provider.Settings;
 
+import com.google.gson.Gson;
 import com.orhanobut.hawk.Hawk;
 import com.scottyab.rootbeer.Const;
 
@@ -216,6 +217,26 @@ public class AutomaticAudit {
         }
     }
 
+    /**
+     *
+     * @param operation
+     * @param method
+     * @param result
+     * @param jsonObject
+     * @param context
+     */
+    public static void createAutomaticAudit(final String operation, final String method, final String result, Object jsonObject, final Context context) {
+        Gson gson = new Gson();
+        String json = gson.toJson(jsonObject);
+        createAutomaticAudit(operation, method, result.concat(json), context);
+    }
+
+    /**
+     * @param operation
+     * @param method
+     * @param result
+     * @param context
+     */
     public static void createAutomaticAudit(final String operation, final String method, final String result, final Context context) {
         try {
             if (!Hawk.contains(Constants.TRUST_ID_AUTOMATIC)) {

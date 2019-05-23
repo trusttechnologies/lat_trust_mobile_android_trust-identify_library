@@ -24,7 +24,9 @@ import io.fabric.sdk.android.Fabric;
 import lat.trust.trustdemo.R;
 import lat.trust.trustdemo.ui.audit.AuditActivity;
 import lat.trust.trustdemo.ui.trustid.TrustIdActivity;
+import lat.trust.trusttrifles.model.Audit;
 import lat.trust.trusttrifles.services.Notifications;
+import lat.trust.trusttrifles.utilities.AutomaticAudit;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 import lat.trust.trusttrifles.utilities.TrustPreferences;
@@ -43,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btn_audit;
     private Button btn_trust_id;
     private Button btn_session;
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,6 +90,11 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(mContext, et.getText().toString(), Toast.LENGTH_SHORT).show();
             }
         });
+        Audit asd = new Audit();
+        asd.setMessage("el mensajito ");
+        asd.setStatus(true);
+        asd.setTrustid("el trust id");
+        AutomaticAudit.createAutomaticAudit("", "", "", asd, this);
     }
 
     private void goTrustId() {

@@ -24,6 +24,7 @@ public class SplashActivity extends AppCompatActivity implements TrustListener.P
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         Permissions.checkPermissions(SplashActivity.this, this);
+        TrustLogger.logo();
     }
 
     @Override
@@ -36,6 +37,7 @@ public class SplashActivity extends AppCompatActivity implements TrustListener.P
                 startActivity(new Intent(SplashActivity.this, MainActivity.class));
 
             }
+
             @Override
             public void onError(String error) {
 
