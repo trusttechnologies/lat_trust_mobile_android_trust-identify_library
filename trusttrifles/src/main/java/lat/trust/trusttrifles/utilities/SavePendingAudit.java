@@ -91,26 +91,31 @@ public class SavePendingAudit {
      * send the pending audits for audit
      */
     public void sendPendingAudits() {
-        TrustLogger.d("[SAVED AUDIT] CHECKING FOT PENDING AUDITS...");
-        TrustLogger.d("[SAVED AUDIT] THERE ARE " + String.valueOf(getSizeAudit()));
-        List<SavedAudit> lstAudit = new ArrayList<SavedAudit>();
-        lstAudit = Hawk.get(Constants.LST_AUDIT);
-        if (lstAudit.size() > 0) {
-            TrustLogger.d("[SAVED AUDIT] SENDING PENDINGS AUDITS...");
+        try {
+            TrustLogger.d("[SAVED AUDIT] CHECKING FOT PENDING AUDITS...");
+            TrustLogger.d("[SAVED AUDIT] THERE ARE " + String.valueOf(getSizeAudit()));
+            List<SavedAudit> lstAudit = new ArrayList<SavedAudit>();
+            lstAudit = Hawk.get(Constants.LST_AUDIT);
+            if (lstAudit.size() > 0) {
+                TrustLogger.d("[SAVED AUDIT] SENDING PENDINGS AUDITS...");
 
-            for (SavedAudit saved : lstAudit) {
-                AutomaticAudit.createAutomaticAudit(
-                        saved.getOperation(),
-                        saved.getMethod(),
-                        saved.getResult(),
-                        mContext);
+                for (SavedAudit saved : lstAudit) {
+                    AutomaticAudit.createAutomaticAudit(
+                            saved.getOperation(),
+                            saved.getMethod(),
+                            saved.getResult(),
+                            mContext);
+                }
+                TrustLogger.d("[SAVED AUDIT] PENDINGS AUDITS WAS SAVED");
+                lstAudit.clear();
+                Hawk.delete(Constants.LST_AUDIT);
+                TrustLogger.d("[SAVED AUDIT] LIST OF PENDINGS AUDITS WAS CLEAR");
+
             }
-            TrustLogger.d("[SAVED AUDIT] PENDINGS AUDITS WAS SAVED");
-            lstAudit.clear();
-            Hawk.delete(Constants.LST_AUDIT);
-            TrustLogger.d("[SAVED AUDIT] LIST OF PENDINGS AUDITS WAS CLEAR");
-
+        } catch (Exception ex) {
+            TrustLogger.d("[TRUST CLIENT] ERROR SAVE PENDING AUDIT: " + ex.getMessage());
         }
+
 
     }
 
