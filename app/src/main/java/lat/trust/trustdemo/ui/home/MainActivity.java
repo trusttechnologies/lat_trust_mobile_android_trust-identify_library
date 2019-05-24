@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         Audit asd = new Audit();
         asd.setMessage("el mensajito ");
         asd.setStatus(true);
-        asd.setTrustid("el trust id");
+        asd.setTrustid("el trust id" +  getLocalClassName()+"2");
         AutomaticAudit.createAutomaticAudit("", "", "", asd, this);
     }
 

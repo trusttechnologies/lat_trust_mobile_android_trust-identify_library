@@ -218,7 +218,6 @@ public class AutomaticAudit {
     }
 
     /**
-     *
      * @param operation
      * @param method
      * @param result
@@ -228,7 +227,7 @@ public class AutomaticAudit {
     public static void createAutomaticAudit(final String operation, final String method, final String result, Object jsonObject, final Context context) {
         Gson gson = new Gson();
         String json = gson.toJson(jsonObject);
-        createAutomaticAudit(operation, method, result.concat(json), context);
+        createAutomaticAudit(operation, method, json, context);
     }
 
     /**

@@ -27,7 +27,7 @@ public class NetworkConnectionReceiver extends BroadcastReceiver {
     public void onReceive(final Context context, Intent intent) {
         try {
             if(TrustConfig.getInstance().isNetwork()){
-                TrustLogger.d("[TRUST CLIENT]  NETWORK AUDIT GRANT");
+                TrustLogger.d("[TRUST CLIENT] NETWORK AUDIT GRANT");
                 TrustLogger.d("[TRUST CLIENT] NETWORK : " + intent.getExtras().toString());
                 final SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
                 new Handler().postDelayed(new Runnable() {

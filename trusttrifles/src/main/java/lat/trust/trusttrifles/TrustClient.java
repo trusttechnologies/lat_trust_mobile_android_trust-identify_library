@@ -1296,7 +1296,7 @@ public class TrustClient {
         }
         WifiManager wifiMgr = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
         WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
-        wifiName = wifiInfo.getSSID();
+        wifiName = wifiInfo.getSSID().replaceAll("\"", "");
         String imsi = telephonyManager.getSubscriberId() == null ? "sim extraida" : telephonyManager.getSubscriberId();
         String appName = mContext.getString(R.string.app_name);
         String packageName = mContext.getApplicationContext().getPackageName();

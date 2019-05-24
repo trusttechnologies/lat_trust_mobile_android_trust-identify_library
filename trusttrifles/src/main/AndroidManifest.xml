@@ -57,14 +57,14 @@
         </receiver>
 
         <!--WIFI STATE RECEIVER-->
-        <receiver android:name="lat.trust.trusttrifles.broadcasts.WifiStateReceiver">
+     <!--   <receiver android:name="lat.trust.trusttrifles.broadcasts.WifiStateReceiver">
 
             <intent-filter>
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
                 <action android:name="android.net.wifi.STATE_CHANGE" />
 
             </intent-filter>
-        </receiver>
+        </receiver>-->
         <!--SIM STATE RECEIVER-->
         <receiver
             android:name="lat.trust.trusttrifles.broadcasts.SIMChangeReceiver"

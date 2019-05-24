@@ -13,6 +13,8 @@ import android.net.wifi.WifiManager;
 import android.support.v4.app.ActivityCompat;
 import android.text.format.Formatter;
 
+import com.google.gson.JsonObject;
+
 import io.sentry.Sentry;
 
 import static android.content.Context.CONNECTIVITY_SERVICE;
@@ -187,6 +189,7 @@ public class Utils {
             WifiManager wifiMgr = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
             String name = wifiInfo.getSSID() == null ? "No wifi avaliable" : wifiInfo.getSSID();
+            name = name.replaceAll("\"", "");
             return name;
         } catch (Exception ex) {
             Sentry.capture(ex);

@@ -48,7 +48,7 @@ public class GPSTracker implements LocationListener {
                 return null;
             }
         } catch (Exception ex) {
-            Sentry.capture(ex);
+            //Sentry.capture(ex);
             TrustLogger.d(ex.getMessage());
             return null;
         }

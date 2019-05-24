@@ -96,7 +96,7 @@ public class SavePendingAudit {
             TrustLogger.d("[SAVED AUDIT] THERE ARE " + String.valueOf(getSizeAudit()));
             List<SavedAudit> lstAudit = new ArrayList<SavedAudit>();
             lstAudit = Hawk.get(Constants.LST_AUDIT);
-            if (lstAudit.size() > 0) {
+            if (null != lstAudit && lstAudit.size() > 0) {
                 TrustLogger.d("[SAVED AUDIT] SENDING PENDINGS AUDITS...");
 
                 for (SavedAudit saved : lstAudit) {
