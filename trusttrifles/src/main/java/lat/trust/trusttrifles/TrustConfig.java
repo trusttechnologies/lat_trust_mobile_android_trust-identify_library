@@ -4,7 +4,7 @@ import com.orhanobut.hawk.Hawk;
 
 import lat.trust.trusttrifles.utilities.TrustLogger;
 
-public class                                                                                                                TrustConfig {
+public class TrustConfig {
 
 
     public static final String AUDIT_BOOT = "audit.boot";
@@ -17,27 +17,28 @@ public class                                                                    
     private static TrustConfig trustConfig;
 
 
-
     private TrustConfig() {
 
     }
 
-    public void setAllAudits(){
-        Hawk.put(AUDIT_NETWORK,"1");
-        Hawk.put(AUDIT_ALARM,"1");
-        Hawk.put(AUDIT_SIM,"1");
-        Hawk.put(AUDIT_SMS,"1");
-        Hawk.put(AUDIT_CALL,"1");
-        Hawk.put(AUDIT_BOOT,"1");
+    public void setAllAudits() {
+        Hawk.put(AUDIT_NETWORK, "1");
+        Hawk.put(AUDIT_ALARM, "1");
+        Hawk.put(AUDIT_SIM, "1");
+        Hawk.put(AUDIT_SMS, "1");
+        Hawk.put(AUDIT_CALL, "1");
+        Hawk.put(AUDIT_BOOT, "1");
     }
-    public void setNoneAudits(){
-        Hawk.put(AUDIT_NETWORK,"0");
-        Hawk.put(AUDIT_ALARM,"0");
-        Hawk.put(AUDIT_SIM,"0");
-        Hawk.put(AUDIT_SMS,"0");
-        Hawk.put(AUDIT_CALL,"0");
-        Hawk.put(AUDIT_BOOT,"0");
+
+    public void setNoneAudits() {
+        Hawk.put(AUDIT_NETWORK, "0");
+        Hawk.put(AUDIT_ALARM, "0");
+        Hawk.put(AUDIT_SIM, "0");
+        Hawk.put(AUDIT_SMS, "0");
+        Hawk.put(AUDIT_CALL, "0");
+        Hawk.put(AUDIT_BOOT, "0");
     }
+
     public void setAudits(String[] audits) {
         setDefaultConfig();
         for (String audit : audits) {
@@ -106,35 +107,35 @@ public class                                                                    
     }
 
     public boolean isCall() {
-        if(Hawk.contains(AUDIT_CALL)){
+        if (Hawk.contains(AUDIT_CALL)) {
             return Hawk.get(AUDIT_CALL).equals("1");
         }
         return false;
     }
 
     public boolean isSms() {
-        if(Hawk.contains(AUDIT_SMS)){
+        if (Hawk.contains(AUDIT_SMS)) {
             return Hawk.get(AUDIT_SMS).equals("1");
         }
         return false;
     }
 
-    public boolean isSim() {
-        if(Hawk.contains(AUDIT_SIM)){
+    public static boolean isSim() {
+        if (Hawk.contains(AUDIT_SIM)) {
             return Hawk.get(AUDIT_SIM).equals("1");
         }
         return false;
     }
 
     public boolean isAlarm() {
-        if(Hawk.contains(AUDIT_ALARM)){
+        if (Hawk.contains(AUDIT_ALARM)) {
             return Hawk.get(AUDIT_ALARM).equals("1");
         }
         return false;
     }
 
     public boolean isNetwork() {
-        if(Hawk.contains(AUDIT_NETWORK)){
+        if (Hawk.contains(AUDIT_NETWORK)) {
             return Hawk.get(AUDIT_NETWORK).equals("1");
         }
         return false;

@@ -525,6 +525,7 @@ public class TrustClient {
                 if (getSIMStateBySlot(slot)) {
                     sim = new SIM();
                     sim.setIccid(getDeviceIdBySlot("getSimSerialNumber", slot));
+                    Hawk.put(Constants.SIM_IMSI, getDeviceIdBySlot("getSubscriberId", slot));
                     sim.setImsi(getDeviceIdBySlot("getSubscriberId", slot));
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         sim.setMeidEsn(telephonyManager.getMeid(slot));
@@ -1402,7 +1403,7 @@ public class TrustClient {
                     TrustLogger.d("[TRUST CLIENT]  Audit code: " + response.code() + " Audit message: " + response.message());
                     JsonObject object = response.body().get("audit").getAsJsonObject();
                     String id = object.get("auditid").getAsString();
-                     onResultAudit.onSuccess(id);
+                    onResultAudit.onSuccess(id);
                 }
             }
 
