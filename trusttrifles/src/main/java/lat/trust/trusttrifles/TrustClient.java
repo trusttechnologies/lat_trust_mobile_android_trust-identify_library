@@ -69,6 +69,7 @@ import lat.trust.trusttrifles.network.RestClientAudit;
 import lat.trust.trusttrifles.network.TrifleResponse;
 import lat.trust.trusttrifles.network.req.TrifleBody;
 import lat.trust.trusttrifles.services.WifiService;
+import lat.trust.trusttrifles.utilities.AutomaticAudit;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.SaveDeviceInfo;
 import lat.trust.trusttrifles.utilities.SavePendingAudit;
@@ -1217,54 +1218,10 @@ public class TrustClient {
     }
 
     public void createAudit(String trustid, AuditTransaction auditTransaction, String lat, String lng, AuditExtraData auditExtraData, final TrustListener.OnResultAudit onResultAudit) {
-        String wifiName = "no wifi avaliable";
-        final TelephonyManager telephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
-        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            wifiName = "no wifi avaliable for permission";
-        }
-        WifiManager wifiMgr = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
-        WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
-        wifiName = wifiInfo.getSSID();
-        String imsi = telephonyManager.getSubscriberId() == null ? "sim extraida" : telephonyManager.getSubscriberId();
-        String appName = mContext.getString(R.string.app_name);
-        String packageName = mContext.getApplicationContext().getPackageName();
-        Hawk.put(Constants.BUNDLE_ID, packageName);
-        ConnectivityManager connManager = (ConnectivityManager) mContext.getSystemService(CONNECTIVITY_SERVICE);
-        NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        NetworkInfo mMobile = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-        String connection;
-        if (mWifi.isAvailable() == true) {
-            connection = Constants.WIFI_CONNECTION;
-        } else if (mMobile.isAvailable() == true) {
-            connection = Constants.MOBILE_CONNECTION;
-        } else connection = Constants.DISCONNECT;
-
-        PackageInfo pInfo = null;
-        try {
-
-            pInfo = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        String version = pInfo == null ? "0.0" : pInfo.versionName;
-        AuditSource source = new AuditSource(
-                trustid,
-                appName,
-                packageName,
-                "Android"
-                , String.valueOf(Build.VERSION.SDK_INT),
-                Build.MODEL,
-                imsi,
-                lat,
-                lng,
-                connection,
-                wifiName,
-                version
-        );
-
+        AuditSource source = getAuditSource(trustid, lat, lng);
         final AuditTest auditTest = new AuditTest();
         auditTest.setType_audit("trust identify");
-        auditTest.setApplication(appName);
+        auditTest.setApplication(getAppName());
         auditTest.setSource(source);
         auditTest.setTransaction(auditTransaction);
         auditTest.setPlatform("Android");
@@ -1289,7 +1246,17 @@ public class TrustClient {
 
     }
 
-    public void createAudit(String trustid, AuditTransaction auditTransaction, String lat, String lng, AuditExtraData auditExtraData) {
+    public static String getAppName() {
+        return mContext.getString(R.string.app_name);
+    }
+
+    public static AuditSource getAuditSourceOffline(String trustid, String lat, String lng) {
+        AuditSource auditSource = getAuditSource(trustid, lat, lng);
+        //auditSource.setAudit_id(AutomaticAudit.getUUIDAuditOffline());
+        return auditSource;
+    }
+
+    public static AuditSource getAuditSource(String trustid, String lat, String lng) {
         String wifiName = "no wifi avaliable";
         final TelephonyManager telephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
         if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
@@ -1299,7 +1266,7 @@ public class TrustClient {
         WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
         wifiName = wifiInfo.getSSID().replaceAll("\"", "");
         String imsi = telephonyManager.getSubscriberId() == null ? "sim extraida" : telephonyManager.getSubscriberId();
-        String appName = mContext.getString(R.string.app_name);
+        String appName = getAppName();
         String packageName = mContext.getApplicationContext().getPackageName();
         Hawk.put(Constants.BUNDLE_ID, packageName);
         ConnectivityManager connManager = (ConnectivityManager) mContext.getSystemService(CONNECTIVITY_SERVICE);
@@ -1314,7 +1281,6 @@ public class TrustClient {
 
         PackageInfo pInfo = null;
         try {
-
             pInfo = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0);
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
@@ -1335,10 +1301,14 @@ public class TrustClient {
                 version
         );
 
+        return source;
+    }
+
+    public void createAudit(String trustid, AuditTransaction auditTransaction, String lat, String lng, AuditExtraData auditExtraData) {
         final AuditTest auditTest = new AuditTest();
         auditTest.setType_audit("trust identify");
-        auditTest.setApplication(appName);
-        auditTest.setSource(source);
+        auditTest.setApplication(getAppName());
+        auditTest.setSource(getAuditSource(trustid, lat, lng));
         auditTest.setTransaction(auditTransaction);
         auditTest.setPlatform("Android");
         auditTest.setExtra_data(auditExtraData);
@@ -1362,7 +1332,7 @@ public class TrustClient {
 
     }
 
-    private void sendAudit(final AuditTest auditTest) {
+    public void sendAudit(final AuditTest auditTest) {
         RestClientAudit.get().createAuditTest(auditTest, Hawk.get(Constants.TOKEN_SERVICE).toString()).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
@@ -1375,7 +1345,6 @@ public class TrustClient {
                 if (response.isSuccessful()) {
                     TrustLogger.d("[TRUST CLIENT]  VALID TOKEN: " + Hawk.get(Constants.TOKEN_SERVICE));
                     TrustLogger.d("[TRUST CLIENT] Audit code: " + response.code() + " Audit message: " + response.message());
-
                 }
             }
 

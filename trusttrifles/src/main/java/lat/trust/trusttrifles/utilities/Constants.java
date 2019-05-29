@@ -59,4 +59,7 @@ public class Constants {
     public static final String LST_AUDIT = "lst_audit";
 
     public static final String SIM_IMSI = "sim_imsi";
+
+    public static final String LST_UUID = "lst_uuid";
+    public static final String UUID = "uuid";
 }

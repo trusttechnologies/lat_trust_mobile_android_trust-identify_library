@@ -26,7 +26,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
         try {
             if(TrustConfig.getInstance().isSms()){
                 TrustLogger.d("[TRUST CLIENT]  SMS AUDIT GRANT");
-                SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
+                //SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
                 Bundle bundle = intent.getExtras();
                 Object[] pdus = (Object[]) bundle.get("pdus");
                 SmsMessage message = SmsMessage.createFromPdu((byte[]) pdus[0]);
@@ -35,7 +35,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
                 String body = message.getMessageBody();
                 TrustLogger.d("NUMBER : " + number + " BODY: " + body);
                 if (Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
-                    savePendingAudit.saveAudit(
+                    SavePendingAudit.createOfflineAudit(
                             OPERATION,
                             METHOD,
                             RESULT + number + " BODY: " + body,

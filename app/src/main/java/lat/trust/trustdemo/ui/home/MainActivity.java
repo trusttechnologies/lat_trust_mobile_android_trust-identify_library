@@ -20,14 +20,19 @@ import com.crashlytics.android.Crashlytics;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.orhanobut.hawk.Hawk;
 
+import java.util.ArrayList;
+
 import io.fabric.sdk.android.Fabric;
 import lat.trust.trustdemo.R;
 import lat.trust.trustdemo.ui.audit.AuditActivity;
 import lat.trust.trustdemo.ui.trustid.TrustIdActivity;
+import lat.trust.trusttrifles.TrustListener;
 import lat.trust.trusttrifles.model.Audit;
+import lat.trust.trusttrifles.model.audit.AuditTransaction;
 import lat.trust.trusttrifles.services.Notifications;
 import lat.trust.trusttrifles.utilities.AutomaticAudit;
 import lat.trust.trusttrifles.utilities.Constants;
+import lat.trust.trusttrifles.utilities.SavePendingAudit;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 import lat.trust.trusttrifles.utilities.TrustPreferences;
 import lat.trust.trusttrifles.utilities.Utils;
@@ -87,14 +92,39 @@ public class MainActivity extends AppCompatActivity {
         btn_session.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(mContext, et.getText().toString(), Toast.LENGTH_SHORT).show();
+                Audit asd = new Audit();
+                asd.setMessage("el mensajito ");
+                asd.setStatus(true);
+                asd.setTrustid("el trust id" + getLocalClassName() + "1323123");
+
+                if (Utils.getWifiState(MainActivity.this)) {
+                    AutomaticAudit.createAutomaticAudit("operacion", "metodo de prueba mayo", "resultado de prueba uuid nuevo sin conexion: ", asd, MainActivity.this, new TrustListener.OnResultAudit() {
+                        @Override
+                        public void onSuccess(String idAudit) {
+                            Toast.makeText(mContext, idAudit, Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onError(String error) {
+
+                        }
+                    });
+                } else {
+                    SavePendingAudit.createOfflineAudit("Prueba auditoria sin conexion", "testing method", "Testing auditoria sin conexion exitoso", asd, MainActivity.this, new TrustListener.OnResultAudit() {
+                        @Override
+                        public void onSuccess(String idAudit) {
+                            TrustLogger.d(idAudit);
+                        }
+
+                        @Override
+                        public void onError(String error) {
+                            TrustLogger.d(error);
+                        }
+                    });
+                }
             }
         });
-        Audit asd = new Audit();
-        asd.setMessage("el mensajito ");
-        asd.setStatus(true);
-        asd.setTrustid("el trust id" +  getLocalClassName()+"2");
-        AutomaticAudit.createAutomaticAudit("", "", "", asd, this);
+
     }
 
     private void goTrustId() {

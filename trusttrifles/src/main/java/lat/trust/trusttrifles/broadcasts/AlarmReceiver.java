@@ -23,12 +23,12 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         try {
-            if(TrustConfig.getInstance().isAlarm()){
+            if (TrustConfig.getInstance().isAlarm()) {
                 TrustLogger.d("[TRUST CLIENT]  ALARM AUDIT GRANT");
-                SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
+                // SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
                 TrustLogger.d("[ALARM RECEIVER] INIT ALARM: ");
                 if (Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
-                    savePendingAudit.saveAudit(
+                    SavePendingAudit.createOfflineAudit(
                             OPERATION,
                             METHOD,
                             RESULT,
@@ -41,7 +41,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                             RESULT,
                             context);
                 }
-            }else{
+            } else {
                 TrustLogger.d("[TRUST CLIENT]  ALARM AUDIT NO GRANT");
             }
         } catch (Exception ex) {

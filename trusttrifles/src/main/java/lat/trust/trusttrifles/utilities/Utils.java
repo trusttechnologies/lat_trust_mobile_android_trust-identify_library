@@ -12,8 +12,11 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.support.v4.app.ActivityCompat;
 import android.text.format.Formatter;
+import android.util.Base64;
 
 import com.google.gson.JsonObject;
+
+import java.util.UUID;
 
 import io.sentry.Sentry;
 
@@ -168,6 +171,27 @@ public class Utils {
        /* final WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         return wifiManager == null || wifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED;*/
 
+    }
+
+    public static String getRandomUUID() {
+        try {
+            return UUID.randomUUID().toString();
+        } catch (Exception ex) {
+            TrustLogger.d("[TRUST CLIENT] error get random UUID:" + ex.getMessage());
+            return "";
+        }
+    }
+
+    public static String getCurrentTimeStampBase64() {
+        try {
+            String currentTime = getCurrentTimeStamp().toString();
+            byte[] data = currentTime.getBytes("UTF-8");
+            String currentTimeStampBase64 = Base64.encodeToString(data, Base64.DEFAULT);
+            return currentTimeStampBase64.replaceAll("=", "").replaceAll("\n","");
+        } catch (Exception ex) {
+            TrustLogger.d("[TRUST CLIENT] error current time stamp base 64: " + ex.getMessage());
+            return "";
+        }
     }
 
     public static boolean get3gState(Context context) {

@@ -17,6 +17,8 @@ import com.scottyab.rootbeer.Const;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 import io.sentry.Sentry;
 import lat.trust.trusttrifles.TrustClient;
@@ -150,9 +152,15 @@ public class AutomaticAudit {
         }
     }
 
+    public static void createAutomaticAudit(final String operation, final String method, final String result, Object object, final Context context, final TrustListener.OnResultAudit onResultAudit) {
+        Gson gson = new Gson();
+        String json = gson.toJson(object);
+        createAutomaticAudit(operation, method, json, context, onResultAudit);
+    }
+
     public static void createAutomaticAudit(final String operation, final String method, final String result, final Context context, final TrustListener.OnResultAudit onResultAudit) {
         if (!Utils.chetNetworkState(context)) {
-            SavePendingAudit.getInstance().saveAudit(operation, method, result, context);
+           SavePendingAudit.createOfflineAudit(operation,method,result,context,onResultAudit);
         } else {
             TrustClient.getInstance().getTrifles(true, new TrustListener.OnResult<Audit>() {
                 @Override
@@ -164,7 +172,6 @@ public class AutomaticAudit {
                         public void run() {
                             if (!Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
                                 AuditTransaction auditTransaction = new AuditTransaction(result, method, operation, Utils.getCurrentTimeStamp());
-
                                 GPSTracker gpsTracker = new GPSTracker(context);
                                 Location location = gpsTracker.getLocation();
                                 String lat;
@@ -176,20 +183,7 @@ public class AutomaticAudit {
                                     lat = String.valueOf(location.getLatitude());
                                     lng = String.valueOf(location.getLongitude());
                                 }
-                                AuditExtraData auditExtraData = new AuditExtraData();
-                                if (Hawk.contains(Constants.DNI_USER)) {
-                                    TrustLogger.d("[AUTOMATIC AUDIT]TOKEN IS EXIST : " + Hawk.get("DNI"));
-                                    Identity identity = new Identity();
-                                    identity.setDni(Hawk.get(Constants.DNI_USER).toString());
-                                    identity.setEmail(Hawk.get(Constants.EMAIL_USER).toString());
-                                    identity.setLastname(Hawk.get(Constants.LASTNAME_USER).toString());
-                                    identity.setName(Hawk.get(Constants.NAME_USER).toString());
-                                    identity.setPhone(Hawk.get(Constants.PHONE_USER).toString());
-                                    auditExtraData.setIdentity(identity);
-                                } else {
-                                    TrustLogger.d("TOKEN NOT EXIST ");
-                                    auditExtraData.setIdentity(new Identity());
-                                }
+                                AuditExtraData auditExtraData = getExtraData();
                                 TrustClient mClient = TrustClient.getInstance();
 
                                 mClient.createAudit(getSavedTrustId(), auditTransaction, lat, lng, auditExtraData, onResultAudit);
@@ -249,43 +243,66 @@ public class AutomaticAudit {
                 public void run() {
                     if (!Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
                         AuditTransaction auditTransaction = new AuditTransaction(result, method, operation, Utils.getCurrentTimeStamp());
-
-                        GPSTracker gpsTracker = new GPSTracker(context);
-                        Location location = gpsTracker.getLocation();
-                        String lat;
-                        String lng;
-                        if (location == null) {
-                            lat = Hawk.contains(Constants.LATITUDE) ? String.valueOf(Hawk.get(Constants.LATITUDE)) : null;
-                            lng = Hawk.contains(Constants.LONGITUDE) ? String.valueOf(Hawk.get(Constants.LONGITUDE)) : null;
-                        } else {
-                            lat = String.valueOf(location.getLatitude());
-                            lng = String.valueOf(location.getLongitude());
-                        }
-                        AuditExtraData auditExtraData = new AuditExtraData();
-                        if (Hawk.contains(Constants.DNI_USER)) {
-                            TrustLogger.d("[AUTOMATIC AUDIT]TOKEN IS EXIST : " + Hawk.get("DNI"));
-                            Identity identity = new Identity();
-                            identity.setDni(Hawk.get(Constants.DNI_USER).toString());
-                            identity.setEmail(Hawk.get(Constants.EMAIL_USER).toString());
-                            identity.setLastname(Hawk.get(Constants.LASTNAME_USER).toString());
-                            identity.setName(Hawk.get(Constants.NAME_USER).toString());
-                            identity.setPhone(Hawk.get(Constants.PHONE_USER).toString());
-                            auditExtraData.setIdentity(identity);
-                        } else {
-                            TrustLogger.d("TOKEN NOT EXIST ");
-                            auditExtraData.setIdentity(new Identity());
-                        }
+                        String lat = getLatitude(context);
+                        String lng = getLongitude(context);
                         TrustClient mClient = TrustClient.getInstance();
-
+                        AuditExtraData auditExtraData = getExtraData();
                         mClient.createAudit(getSavedTrustId(), auditTransaction, lat, lng, auditExtraData);
                     }
                 }
             }, 5000);
         } catch (Exception ex) {
-            TrustLogger.d("[TRUST ID] ERROR AUTPMATIC AUDIT " + ex.getMessage());
+            TrustLogger.d("[TRUST ID] ERROR AUTOMATIC AUDIT " + ex.getMessage());
         }
 
 
+    }
+
+    public static String getLatitude(Context context) {
+        GPSTracker gpsTracker = new GPSTracker(context);
+        Location location = gpsTracker.getLocation();
+        String lat;
+        if (location == null) {
+            lat = Hawk.contains(Constants.LATITUDE) ? String.valueOf(Hawk.get(Constants.LATITUDE)) : null;
+        } else {
+            lat = String.valueOf(location.getLatitude());
+        }
+        return lat;
+    }
+
+    public static String getLongitude(Context context) {
+        GPSTracker gpsTracker = new GPSTracker(context);
+        Location location = gpsTracker.getLocation();
+        String lng;
+        if (location == null) {
+            lng = Hawk.contains(Constants.LONGITUDE) ? String.valueOf(Hawk.get(Constants.LONGITUDE)) : null;
+        } else {
+            lng = String.valueOf(location.getLongitude());
+        }
+        return lng;
+    }
+
+    public static AuditExtraData getExtraData() {
+        AuditExtraData auditExtraData = new AuditExtraData();
+        if (Hawk.contains(Constants.DNI_USER)) {
+            TrustLogger.d("[AUTOMATIC AUDIT]TOKEN IS EXIST : " + Hawk.get("DNI"));
+            Identity identity = new Identity();
+            identity.setDni(Hawk.get(Constants.DNI_USER).toString());
+            identity.setEmail(Hawk.get(Constants.EMAIL_USER).toString());
+            identity.setLastname(Hawk.get(Constants.LASTNAME_USER).toString());
+            identity.setName(Hawk.get(Constants.NAME_USER).toString());
+            identity.setPhone(Hawk.get(Constants.PHONE_USER).toString());
+            auditExtraData.setIdentity(identity);
+        } else {
+            TrustLogger.d("TOKEN NOT EXIST ");
+            auditExtraData.setIdentity(new Identity());
+        }
+
+        return auditExtraData;
+    }
+
+    public static String getUUIDAuditOffline() {
+        return Utils.getRandomUUID().concat("-").concat(Utils.getCurrentTimeStampBase64());
     }
 
     /**

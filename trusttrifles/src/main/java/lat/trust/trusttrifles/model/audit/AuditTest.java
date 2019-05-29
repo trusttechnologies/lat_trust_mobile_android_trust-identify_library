@@ -7,6 +7,7 @@ public class AuditTest {
     private String platform;
     private AuditTransaction transaction;
     private AuditExtraData extra_data;
+    private String audit_id;
 
     public String getType_audit() {
         return type_audit;
@@ -17,6 +18,14 @@ public class AuditTest {
     }
 
     public AuditTest() {
+    }
+
+    public String getAuditid() {
+        return audit_id;
+    }
+
+    public void setAuditid(String auditid) {
+        this.audit_id = auditid;
     }
 
     public String getPlatform() {

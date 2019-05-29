@@ -24,12 +24,12 @@ public class NetworkConnectionReceiver extends BroadcastReceiver {
 
 
     @Override
-    public void onReceive(final Context context, Intent intent) {
+    public void onReceive(final Context context, final Intent intent) {
         try {
-            if(TrustConfig.getInstance().isNetwork()){
+            if (TrustConfig.getInstance().isNetwork()) {
                 TrustLogger.d("[TRUST CLIENT] NETWORK AUDIT GRANT");
                 TrustLogger.d("[TRUST CLIENT] NETWORK : " + intent.getExtras().toString());
-                final SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
+                // final SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
                 new Handler().postDelayed(new Runnable() {
                     @SuppressLint("MissingPermission")
                     @Override
@@ -37,7 +37,7 @@ public class NetworkConnectionReceiver extends BroadcastReceiver {
                         switch (Utils.getActualConnection(context)) {
                             case Constants.DISCONNECT: {
                                 TrustLogger.d(Constants.DISCONNECT);
-                                savePendingAudit.saveAudit(OPERATION, METHOD, RESULT, context);
+                                SavePendingAudit.createOfflineAudit(OPERATION, METHOD, RESULT, intent, context);
                                 break;
                             }
                             case Constants.WIFI_CONNECTION: {
@@ -47,7 +47,7 @@ public class NetworkConnectionReceiver extends BroadcastReceiver {
                                         METHOD,
                                         RESULT + Utils.getNameOfWifi(context) + " IP: " + Utils.getIpOfWifi(context),
                                         context);
-                                savePendingAudit.sendPendingAudits();
+                                SavePendingAudit.sendOfflineAudit();
                                 break;
                             }
                             case Constants.MOBILE_CONNECTION: {
@@ -58,15 +58,14 @@ public class NetworkConnectionReceiver extends BroadcastReceiver {
                                         METHOD,
                                         RESULT + Utils.getActualConnection(context) + " TYPE: " + Utils.getTypeOf3GConnection(context),
                                         context);
-                                savePendingAudit.sendPendingAudits();
+                                SavePendingAudit.sendOfflineAudit();
                                 break;
                             }
                         }
 
                     }
                 }, 7000);
-            }
-            else  {
+            } else {
                 TrustLogger.d("[TRUST CLIENT]  NETWORK AUDIT NO GRANT");
             }
         } catch (Exception ex) {

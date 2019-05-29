@@ -128,6 +128,7 @@ public class AuditSource {
     public void setConnection_name(String connection_name) {
         this.connection_name = connection_name;
     }
+
     /*
     * 	"trust_id": "5c525b06a96c977a355667ea1",
 		"app_name": "Enrollment",

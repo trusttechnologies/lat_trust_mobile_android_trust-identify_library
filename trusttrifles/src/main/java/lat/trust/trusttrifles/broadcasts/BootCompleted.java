@@ -25,9 +25,9 @@ public class BootCompleted extends BroadcastReceiver {
             if(TrustConfig.getInstance().isBoot()){
                 TrustLogger.d("[TRUST CLIENT]  BOOT AUDIT GRANT");
                 TrustLogger.d("[AUTOMATIC BOOT INIT] INIT");
-                SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
+                //SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
                 if (Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
-                    savePendingAudit.saveAudit(
+                    SavePendingAudit.createOfflineAudit(
                             OPERATION,
                             METHOD,
                             RESULT,

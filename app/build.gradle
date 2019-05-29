@@ -40,6 +40,9 @@ dependencies {
     implementation "com.android.support:cardview-v7:${support}"
     implementation "com.android.support:recyclerview-v7:${support}"
 
+    implementation 'com.android.support:multidex:1.0.3'
+
+
     //--------DEXTER
     implementation 'com.karumi:dexter:5.0.0'
     //-------MATERIAL DIALOG
