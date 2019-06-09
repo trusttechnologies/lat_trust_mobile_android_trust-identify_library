@@ -57,7 +57,12 @@ public class SIMChangeReceiver extends BroadcastReceiver {
                     if (simID != null) {
                         String resultIn = "[SIM CHANGE] SIM IN id: " + simID + " country :" + country + " company: " + company;
                         Hawk.put(Constants.SIM_IMSI, simID);
-                        if (!Utils.getWifiState(context)) {
+                        AutomaticAudit.createAutomaticAudit(
+                                OPERATION,
+                                METHOD,
+                                RESULT + resultIn,
+                                context);
+                       /* if (!Utils.getWifiState(context)) {
                             TrustLogger.d("[SIM CHANGE] NO WIFI AVALIABLE, SAVING THIS AUDIT...");
                             SavePendingAudit.createOfflineAudit(
                                     OPERATION,
@@ -73,7 +78,7 @@ public class SIMChangeReceiver extends BroadcastReceiver {
                                     METHOD,
                                     RESULT + resultIn,
                                     context);
-                        }
+                        }*/
                     }
                 } else {
                     TrustLogger.d("[TRUST CLIENT]  SIM AUDIT NO GRANT");

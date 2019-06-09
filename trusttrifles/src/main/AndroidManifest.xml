@@ -1,9 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="lat.trust.trusttrifles"
     android:sharedUserId="trust.trifles"
     android:sharedUserLabel="@string/shared_user_label">
-
-    <!--=================== PERMISSIONS ===================-->
+    <!-- =================== PERMISSIONS =================== -->
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
@@ -18,93 +18,64 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
 
-
-    <!--   <uses-permission android:name="android.permission.READ_CALL_LOG"/>
-       <uses-permission android:name="android.permission.WRITE_CALL_LOG"/>
-       <uses-permission android:name="android.permission.READ_CONTACTS" />
-       <uses-permission android:name="android.permission.WRITE_CONTACTS"/>-->
-
-
-
-
-
     <application>
-
-        <!--=================== SERVICES ===================-->
-
-        <!--REMOTE AUDIT SERVICE-->
-        <service android:name="lat.trust.trusttrifles.services.RemoteAuditService" />
+        <!-- =================== SERVICES =================== -->
+        <!-- REMOTE AUDIT SERVICE -->
+        <service android:name=".services.RemoteAuditService" />
         <service android:name=".services.LocationGPSService" />
-        <service android:name=".services.WifiService" />
-        <!--WIFI STATE RECEIVER-->
-        <!--LOCATION SERVICE-->
-
-
-        <!--=================== RECEIVERS ===================-->
-
-        <!--PHONE STATE RECEIVER-->
-        <receiver android:name="lat.trust.trusttrifles.broadcasts.PhoneStatReceiver">
+        <service android:name=".services.WifiService" /> <!-- WIFI STATE RECEIVER -->
+        <!-- LOCATION SERVICE -->
+        <!-- =================== RECEIVERS =================== -->
+        <!-- PHONE STATE RECEIVER -->
+        <receiver android:name=".broadcasts.PhoneStatReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />
                 <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
             </intent-filter>
-        </receiver>
-        <!--BOOT COMPLETE RECEIVER-->
-        <receiver android:name="lat.trust.trusttrifles.broadcasts.BootCompleted">
+        </receiver> <!-- BOOT COMPLETE RECEIVER -->
+        <receiver android:name=".broadcasts.BootCompleted">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
-        </receiver>
-
-        <!--WIFI STATE RECEIVER-->
-     <!--   <receiver android:name="lat.trust.trusttrifles.broadcasts.WifiStateReceiver">
+        </receiver> <!-- WIFI STATE RECEIVER -->
+        <!--
+   <receiver android:name="lat.trust.trusttrifles.broadcasts.WifiStateReceiver">
 
             <intent-filter>
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
                 <action android:name="android.net.wifi.STATE_CHANGE" />
 
             </intent-filter>
-        </receiver>-->
-        <!--SIM STATE RECEIVER-->
+        </receiver>
+        -->
+        <!-- SIM STATE RECEIVER -->
         <receiver
-            android:name="lat.trust.trusttrifles.broadcasts.SIMChangeReceiver"
+            android:name=".broadcasts.SIMChangeReceiver"
             android:stopWithTask="false">
             <intent-filter>
                 <action android:name="android.intent.action.SIM_STATE_CHANGED" />
-
             </intent-filter>
         </receiver>
-        <!--SMS
+        <!--
+SMS
                 <receiver android:name=".broadcasts.SmsBroadcastReceiver" android:exported="true">
                     <intent-filter>
                         <action android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVED"/>
                     </intent-filter>
                 </receiver>
-
         -->
-
-
-        <!--ALARM RECEIVER-->
-        <receiver android:name="lat.trust.trusttrifles.broadcasts.AlarmReceiver" />
-
-        <!--SMS RECEIVER-->
-        <receiver android:name="lat.trust.trusttrifles.broadcasts.SmsBroadcastReceiver">
-
+        <!-- ALARM RECEIVER -->
+        <receiver android:name=".broadcasts.AlarmReceiver" /> <!-- SMS RECEIVER -->
+        <receiver android:name=".broadcasts.SmsBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
-
-
             </intent-filter>
         </receiver>
-
         <receiver android:name=".broadcasts.NetworkConnectionReceiver">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
-
-
     </application>
-
 
 </manifest>

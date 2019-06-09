@@ -96,32 +96,17 @@ public class MainActivity extends AppCompatActivity {
                 asd.setMessage("el mensajito ");
                 asd.setStatus(true);
                 asd.setTrustid("el trust id" + getLocalClassName() + "1323123");
+                AutomaticAudit.createAutomaticAudit("operacion", "metodo de prueba mayo", "resultado de prueba uuid nuevo sin conexion: ", asd, MainActivity.this, new TrustListener.OnResultAudit() {
+                    @Override
+                    public void onSuccess(String idAudit) {
 
-                if (Utils.getWifiState(MainActivity.this)) {
-                    AutomaticAudit.createAutomaticAudit("operacion", "metodo de prueba mayo", "resultado de prueba uuid nuevo sin conexion: ", asd, MainActivity.this, new TrustListener.OnResultAudit() {
-                        @Override
-                        public void onSuccess(String idAudit) {
-                            Toast.makeText(mContext, idAudit, Toast.LENGTH_SHORT).show();
-                        }
+                    }
 
-                        @Override
-                        public void onError(String error) {
+                    @Override
+                    public void onError(String error) {
 
-                        }
-                    });
-                } else {
-                    SavePendingAudit.createOfflineAudit("Prueba auditoria sin conexion", "testing method", "Testing auditoria sin conexion exitoso", asd, MainActivity.this, new TrustListener.OnResultAudit() {
-                        @Override
-                        public void onSuccess(String idAudit) {
-                            TrustLogger.d(idAudit);
-                        }
-
-                        @Override
-                        public void onError(String error) {
-                            TrustLogger.d(error);
-                        }
-                    });
-                }
+                    }
+                });
             }
         });
 

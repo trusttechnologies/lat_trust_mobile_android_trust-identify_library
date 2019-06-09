@@ -33,13 +33,20 @@ public class PhoneStatReceiver extends BroadcastReceiver {
                 TrustLogger.d("[TRUST CLIENT]  CALL AUDIT  GRANT");
 
                 TrustLogger.d("[CALL STATE RECEIVER] on receive");
-               // SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
+                // SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
 
                 if (intent.getAction().equals(Intent.ACTION_NEW_OUTGOING_CALL)) {
                     incomingFlag = false;
                     String phoneNumber = intent.getStringExtra(Intent.EXTRA_PHONE_NUMBER);
                     TrustLogger.d("[CALL STATE RECEIVER] call OUT TO:" + phoneNumber);
-                    if (Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
+                    AutomaticAudit.createAutomaticAudit(
+                            OPERATION,
+                            METHOD,
+                            RESULT + "CALL OUT: " + phoneNumber,
+                            context
+                    );
+
+                 /*   if (Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
                         SavePendingAudit.createOfflineAudit(
                                 OPERATION,
                                 METHOD,
@@ -54,7 +61,7 @@ public class PhoneStatReceiver extends BroadcastReceiver {
                                 context
                         );
                         SavePendingAudit.sendOfflineAudit();
-                    }
+                    }*/
                 } else {
                     TelephonyManager tm = (TelephonyManager) context.getSystemService(Service.TELEPHONY_SERVICE);
                     switch (tm.getCallState()) {
@@ -62,7 +69,13 @@ public class PhoneStatReceiver extends BroadcastReceiver {
                             incomingFlag = true;
                             incoming_number = intent.getStringExtra("incoming_number");
                             TrustLogger.d("[CALL STATE RECEIVER] RINGING :" + incoming_number);
-                            if (Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
+                            AutomaticAudit.createAutomaticAudit(
+                                    OPERATION,
+                                    METHOD,
+                                    RESULT + " RINGING :" + incoming_number,
+                                    context
+                            );
+                         /*   if (Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
                                 SavePendingAudit.createOfflineAudit(
                                         OPERATION,
                                         METHOD,
@@ -76,12 +89,18 @@ public class PhoneStatReceiver extends BroadcastReceiver {
                                         RESULT + " RINGING :" + incoming_number,
                                         context
                                 );
-                            }
+                            }*/
                             break;
 
                         case TelephonyManager.CALL_STATE_OFFHOOK:
                             TrustLogger.d("[CALL STATE RECEIVER] incoming ACCEPT :" + incoming_number);
-                            if (Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
+                            AutomaticAudit.createAutomaticAudit(
+                                    OPERATION,
+                                    METHOD,
+                                    RESULT + " " + "INCOMING ACCEPT :" + incoming_number,
+                                    context
+                            );
+                          /*  if (Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
                                 SavePendingAudit.createOfflineAudit(
                                         OPERATION,
                                         METHOD,
@@ -97,11 +116,17 @@ public class PhoneStatReceiver extends BroadcastReceiver {
                                             context
                                     );
                                 }
-                            }
+                            }*/
                             break;
                         case TelephonyManager.CALL_STATE_IDLE:
                             TrustLogger.d("[CALL STATE RECEIVER] incoming IDLE");
-                            if (Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
+                            AutomaticAudit.createAutomaticAudit(
+                                    OPERATION,
+                                    METHOD,
+                                    RESULT + " INCOMING IDLE: " + incoming_number,
+                                    context
+                            );
+                        /*    if (Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
                                 SavePendingAudit.createOfflineAudit(
                                         OPERATION,
                                         METHOD,
@@ -117,11 +142,11 @@ public class PhoneStatReceiver extends BroadcastReceiver {
                                             context
                                     );
                                 }
-                            }
+                            }*/
                             break;
                     }
                 }
-            }else{
+            } else {
                 TrustLogger.d("[TRUST CLIENT]  CALL AUDIT  NO GRANT");
             }
         } catch (Exception ex) {

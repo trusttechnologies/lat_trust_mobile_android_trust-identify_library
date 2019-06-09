@@ -187,7 +187,7 @@ public class Utils {
             String currentTime = getCurrentTimeStamp().toString();
             byte[] data = currentTime.getBytes("UTF-8");
             String currentTimeStampBase64 = Base64.encodeToString(data, Base64.DEFAULT);
-            return currentTimeStampBase64.replaceAll("=", "").replaceAll("\n","");
+            return currentTimeStampBase64.replaceAll("=", "").replaceAll("\n", "").toLowerCase();
         } catch (Exception ex) {
             TrustLogger.d("[TRUST CLIENT] error current time stamp base 64: " + ex.getMessage());
             return "";

@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">Trust Trifles</string>
     <string name="shared_user_label">trusttrifles</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="txt_camera_permission">El permiso de cámara es utilizado para obtener información perteneciente al hardware del mismo.</string>
+    <string name="txt_location_permission">Necesario para obtener información perteneciente al hardware del mismo.</string>
+    <string name="txt_sms_permission">Este permiso es utilizado para acceder al número telefónico y al cuerpo del mensaje, para posteriormente ser enviado como auditoria.</string>
+    <string name="txt_call_permission">Con este permiso se obtiene información de las llamadas entrantes y salientes realizadas, con la finalidad de almacenar un registro para posteriormente ser enviado como auditoria.</string>
 </resources>

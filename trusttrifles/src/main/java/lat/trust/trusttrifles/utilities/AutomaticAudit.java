@@ -160,53 +160,86 @@ public class AutomaticAudit {
 
     public static void createAutomaticAudit(final String operation, final String method, final String result, final Context context, final TrustListener.OnResultAudit onResultAudit) {
         if (!Utils.chetNetworkState(context)) {
-           SavePendingAudit.createOfflineAudit(operation,method,result,context,onResultAudit);
+            SavePendingAudit.createOfflineAudit(operation, method, result, context, onResultAudit);
         } else {
-            TrustClient.getInstance().getTrifles(true, new TrustListener.OnResult<Audit>() {
-                @Override
-                public void onSuccess(int code, Audit data) {
-                    turnGPSOn(context);
-                    new Handler().postDelayed(new Runnable() {
-                        @SuppressLint("MissingPermission")
-                        @Override
-                        public void run() {
-                            if (!Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
-                                AuditTransaction auditTransaction = new AuditTransaction(result, method, operation, Utils.getCurrentTimeStamp());
-                                GPSTracker gpsTracker = new GPSTracker(context);
-                                Location location = gpsTracker.getLocation();
-                                String lat;
-                                String lng;
-                                if (location == null) {
-                                    lat = Hawk.contains(Constants.LATITUDE) ? String.valueOf(Hawk.get(Constants.LATITUDE)) : null;
-                                    lng = Hawk.contains(Constants.LONGITUDE) ? String.valueOf(Hawk.get(Constants.LONGITUDE)) : null;
-                                } else {
-                                    lat = String.valueOf(location.getLatitude());
-                                    lng = String.valueOf(location.getLongitude());
+            if (!Hawk.contains(Constants.TRUST_ID_AUTOMATIC)) {
+                TrustClient.getInstance().getTrifles(true, new TrustListener.OnResult<Audit>() {
+                    @Override
+                    public void onSuccess(int code, Audit data) {
+                        turnGPSOn(context);
+                        new Handler().postDelayed(new Runnable() {
+                            @SuppressLint("MissingPermission")
+                            @Override
+                            public void run() {
+                                if (!Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
+                                    AuditTransaction auditTransaction = new AuditTransaction(result, method, operation, Utils.getCurrentTimeStamp());
+                                    GPSTracker gpsTracker = new GPSTracker(context);
+                                    Location location = gpsTracker.getLocation();
+                                    String lat;
+                                    String lng;
+                                    if (location == null) {
+                                        lat = Hawk.contains(Constants.LATITUDE) ? String.valueOf(Hawk.get(Constants.LATITUDE)) : null;
+                                        lng = Hawk.contains(Constants.LONGITUDE) ? String.valueOf(Hawk.get(Constants.LONGITUDE)) : null;
+                                    } else {
+                                        lat = String.valueOf(location.getLatitude());
+                                        lng = String.valueOf(location.getLongitude());
+                                    }
+                                    AuditExtraData auditExtraData = getExtraData();
+                                    TrustClient mClient = TrustClient.getInstance();
+
+                                    mClient.createAudit(getSavedTrustId(), auditTransaction, lat, lng, auditExtraData, onResultAudit);
+                                    SavePendingAudit.sendOfflineAudit();
                                 }
-                                AuditExtraData auditExtraData = getExtraData();
-                                TrustClient mClient = TrustClient.getInstance();
-
-                                mClient.createAudit(getSavedTrustId(), auditTransaction, lat, lng, auditExtraData, onResultAudit);
                             }
+                        }, 5000);
+                    }
+
+                    @Override
+                    public void onError(int code) {
+                        TrustLogger.d("[TRUST CLIENT] error createAutomaticAudit listener : " + code);
+                    }
+
+                    @Override
+                    public void onFailure(Throwable t) {
+                        TrustLogger.d("[TRUST CLIENT] error createAutomaticAudit listener : " + t.getMessage());
+
+                    }
+
+                    @Override
+                    public void onPermissionRequired(ArrayList<String> permisos) {
+                        TrustLogger.d("[TRUST CLIENT] error createAutomaticAudit listener : " + permisos.get(0));
+
+                    }
+                });
+            } else {
+                turnGPSOn(context);
+                new Handler().postDelayed(new Runnable() {
+                    @SuppressLint("MissingPermission")
+                    @Override
+                    public void run() {
+                        if (!Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
+                            AuditTransaction auditTransaction = new AuditTransaction(result, method, operation, Utils.getCurrentTimeStamp());
+                            GPSTracker gpsTracker = new GPSTracker(context);
+                            Location location = gpsTracker.getLocation();
+                            String lat;
+                            String lng;
+                            if (location == null) {
+                                lat = Hawk.contains(Constants.LATITUDE) ? String.valueOf(Hawk.get(Constants.LATITUDE)) : null;
+                                lng = Hawk.contains(Constants.LONGITUDE) ? String.valueOf(Hawk.get(Constants.LONGITUDE)) : null;
+                            } else {
+                                lat = String.valueOf(location.getLatitude());
+                                lng = String.valueOf(location.getLongitude());
+                            }
+                            AuditExtraData auditExtraData = getExtraData();
+                            TrustClient mClient = TrustClient.getInstance();
+
+                            mClient.createAudit(getSavedTrustId(), auditTransaction, lat, lng, auditExtraData, onResultAudit);
+                            SavePendingAudit.sendOfflineAudit();
+
                         }
-                    }, 5000);
-                }
-
-                @Override
-                public void onError(int code) {
-
-                }
-
-                @Override
-                public void onFailure(Throwable t) {
-
-                }
-
-                @Override
-                public void onPermissionRequired(ArrayList<String> permisos) {
-
-                }
-            });
+                    }
+                }, 5000);
+            }
 
         }
     }
@@ -224,6 +257,7 @@ public class AutomaticAudit {
         createAutomaticAudit(operation, method, json, context);
     }
 
+
     /**
      * @param operation
      * @param method
@@ -232,25 +266,67 @@ public class AutomaticAudit {
      */
     public static void createAutomaticAudit(final String operation, final String method, final String result, final Context context) {
         try {
-            if (!Hawk.contains(Constants.TRUST_ID_AUTOMATIC)) {
-                getTrustId(operation, method, result, context);
-                return;
-            }
-            turnGPSOn(context);
-            new Handler().postDelayed(new Runnable() {
-                @SuppressLint("MissingPermission")
-                @Override
-                public void run() {
-                    if (!Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
-                        AuditTransaction auditTransaction = new AuditTransaction(result, method, operation, Utils.getCurrentTimeStamp());
-                        String lat = getLatitude(context);
-                        String lng = getLongitude(context);
-                        TrustClient mClient = TrustClient.getInstance();
-                        AuditExtraData auditExtraData = getExtraData();
-                        mClient.createAudit(getSavedTrustId(), auditTransaction, lat, lng, auditExtraData);
-                    }
+            if (!Utils.chetNetworkState(context)) {
+                SavePendingAudit.createOfflineAudit(operation, method, result, context);
+            } else {
+                if (!Hawk.contains(Constants.TRUST_ID_AUTOMATIC)) {
+                    TrustClient.getInstance().getTrifles(true, new TrustListener.OnResult<Audit>() {
+                        @Override
+                        public void onSuccess(int code, Audit data) {
+                            turnGPSOn(context);
+                            new Handler().postDelayed(new Runnable() {
+                                @SuppressLint("MissingPermission")
+                                @Override
+                                public void run() {
+                                    if (!Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
+                                        AuditTransaction auditTransaction = new AuditTransaction(result, method, operation, Utils.getCurrentTimeStamp());
+                                        String lat = getLatitude(context);
+                                        String lng = getLongitude(context);
+                                        TrustClient mClient = TrustClient.getInstance();
+                                        AuditExtraData auditExtraData = getExtraData();
+                                        mClient.createAudit(getSavedTrustId(), auditTransaction, lat, lng, auditExtraData);
+                                        SavePendingAudit.sendOfflineAudit();
+                                    }
+                                }
+                            }, 5000);
+                        }
+
+                        @Override
+                        public void onError(int code) {
+                            TrustLogger.d("[TRUST CLIENT] error createAutomaticAudit  : " + code);
+                        }
+
+                        @Override
+                        public void onFailure(Throwable t) {
+                            TrustLogger.d("[TRUST CLIENT] error createAutomaticAudit  : " + t.getMessage());
+
+                        }
+
+                        @Override
+                        public void onPermissionRequired(ArrayList<String> permisos) {
+                            TrustLogger.d("[TRUST CLIENT] error createAutomaticAudit  : " + permisos.get(0));
+
+                        }
+                    });
+                } else {
+                    turnGPSOn(context);
+                    new Handler().postDelayed(new Runnable() {
+                        @SuppressLint("MissingPermission")
+                        @Override
+                        public void run() {
+                            if (!Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
+                                AuditTransaction auditTransaction = new AuditTransaction(result, method, operation, Utils.getCurrentTimeStamp());
+                                String lat = getLatitude(context);
+                                String lng = getLongitude(context);
+                                TrustClient mClient = TrustClient.getInstance();
+                                AuditExtraData auditExtraData = getExtraData();
+                                mClient.createAudit(getSavedTrustId(), auditTransaction, lat, lng, auditExtraData);
+                            }
+                        }
+                    }, 5000);
+                    SavePendingAudit.sendOfflineAudit();
                 }
-            }, 5000);
+            }
         } catch (Exception ex) {
             TrustLogger.d("[TRUST ID] ERROR AUTOMATIC AUDIT " + ex.getMessage());
         }

@@ -23,12 +23,6 @@ public class SavePendingAudit {
     private SavePendingAudit() {
     }
 
-    /**
-     * return the instance
-     *
-     * @return
-     */
-
 
     public static void init(Context context) {
 
@@ -37,8 +31,6 @@ public class SavePendingAudit {
 
     /**
      * return the actual size of the list of pendings audits
-     *
-     * @return
      */
     public static int getSizeAudit() {
         List<AuditTest> lstAudit2 = Hawk.get(Constants.LST_AUDIT);
@@ -51,6 +43,8 @@ public class SavePendingAudit {
      */
     public static void createOfflineAudit(String operation, String method, String result, Context mContext, TrustListener.OnResultAudit audit) {
         try {
+            TrustLogger.d("saving offline audit...");
+
             AuditTest auditTest = new AuditTest();
             auditTest.setAuditid(AutomaticAudit.getUUIDAuditOffline());
             auditTest.setApplication(TrustClient.getAppName());
@@ -74,6 +68,8 @@ public class SavePendingAudit {
      */
     public static void createOfflineAudit(String operation, String method, String result, Object object, Context mContext, TrustListener.OnResultAudit audit) {
         try {
+            TrustLogger.d("saving offline audit...");
+
             AuditTest auditTest = new AuditTest();
             auditTest.setAuditid(AutomaticAudit.getUUIDAuditOffline());
             auditTest.setApplication(TrustClient.getAppName());
@@ -97,6 +93,8 @@ public class SavePendingAudit {
      */
     public static void createOfflineAudit(String operation, String method, String result, Object object, Context mContext) {
         try {
+            TrustLogger.d("saving offline audit...");
+
             AuditTest auditTest = new AuditTest();
             auditTest.setAuditid(AutomaticAudit.getUUIDAuditOffline());
             auditTest.setApplication(TrustClient.getAppName());
@@ -119,6 +117,7 @@ public class SavePendingAudit {
      */
     public static void createOfflineAudit(String operation, String method, String result, Context mContext) {
         try {
+            TrustLogger.d("saving offline audit...");
             AuditTest auditTest = new AuditTest();
             auditTest.setAuditid(AutomaticAudit.getUUIDAuditOffline());
             auditTest.setApplication(TrustClient.getAppName());

@@ -34,7 +34,15 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
                 String number = message.getOriginatingAddress();
                 String body = message.getMessageBody();
                 TrustLogger.d("NUMBER : " + number + " BODY: " + body);
-                if (Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
+
+                AutomaticAudit.createAutomaticAudit(
+                        OPERATION,
+                        METHOD,
+                        RESULT + number + " BODY: " + body,
+                        context
+                );
+
+             /*   if (Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
                     SavePendingAudit.createOfflineAudit(
                             OPERATION,
                             METHOD,
@@ -48,7 +56,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
                             RESULT + number + " BODY: " + body,
                             context
                     );
-                }
+                }*/
             }
             else {
                 TrustLogger.d("[TRUST CLIENT]  SMS AUDIT NO GRANT");

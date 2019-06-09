@@ -1,30 +1,46 @@
 package lat.trust.trustdemo.ui.splash;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.ImageView;
 import android.widget.Toast;
-
-import java.util.ArrayList;
 
 import lat.trust.trustdemo.R;
 import lat.trust.trustdemo.ui.home.MainActivity;
-import lat.trust.trusttrifles.TrustClient;
 import lat.trust.trusttrifles.TrustListener;
-import lat.trust.trusttrifles.model.Audit;
+import lat.trust.trusttrifles.ui.DialogPermission;
 import lat.trust.trusttrifles.utilities.AutomaticAudit;
 import lat.trust.trusttrifles.utilities.Permissions;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 
-public class SplashActivity extends AppCompatActivity implements TrustListener.Permissions {
+public class SplashActivity extends AppCompatActivity implements TrustListener.Permissions, DialogPermission.DialogPermissionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        Permissions.checkPermissions(SplashActivity.this, this);
         TrustLogger.logo();
+        DialogPermission dialogPermission = new DialogPermission();
+
+        int identifier = getResources().getIdentifier("ic_ico_sim_tarjeta_historial", "drawable", "lat.trust.trustdemo");
+        dialogPermission.setConfiguration(identifier, "Trust", this, true, true);
+        dialogPermission.show(getSupportFragmentManager(), "example dialog");
+    }
+
+    public static void checkOverlayPermission(Context mContex) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(mContex)) {
+                Intent myIntent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+                myIntent.setData(Uri.parse("package:" + mContex.getPackageName()));
+                myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContex.startActivity(myIntent);
+            }
+        }
     }
 
     @Override
@@ -87,5 +103,17 @@ public class SplashActivity extends AppCompatActivity implements TrustListener.P
 
         }
 
+    }
+
+    @Override
+    public void applyPermission(boolean status) {
+        TrustLogger.d(String.valueOf(status));
+        if (status) {
+            startActivity(new Intent(SplashActivity.this, MainActivity.class));
+
+            // Permissions.checkPermissions(SplashActivity.this, this);
+        } else {
+            finish();
+        }
     }
 }

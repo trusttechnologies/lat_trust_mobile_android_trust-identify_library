@@ -23,7 +23,12 @@ public class BootCompleted extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         try{
             if(TrustConfig.getInstance().isBoot()){
-                TrustLogger.d("[TRUST CLIENT]  BOOT AUDIT GRANT");
+                AutomaticAudit.createAutomaticAudit(
+                        OPERATION,
+                        METHOD,
+                        RESULT,
+                        context);
+            /*    TrustLogger.d("[TRUST CLIENT]  BOOT AUDIT GRANT");
                 TrustLogger.d("[AUTOMATIC BOOT INIT] INIT");
                 //SavePendingAudit savePendingAudit = SavePendingAudit.getInstance();
                 if (Utils.getActualConnection(context).equals(Constants.DISCONNECT)) {
@@ -39,7 +44,7 @@ public class BootCompleted extends BroadcastReceiver {
                             METHOD,
                             RESULT,
                             context);
-                }
+                }*/
             }else {
                 TrustLogger.d("[TRUST CLIENT]  BOOT AUDIT NO GRANT");
 
