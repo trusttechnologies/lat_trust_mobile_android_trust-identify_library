@@ -7,6 +7,7 @@ import android.app.Dialog;
 import android.arch.lifecycle.LifecycleOwner;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.v7.app.AppCompatDialogFragment;
@@ -31,7 +32,7 @@ import com.scottyab.rootbeer.Const;
 import java.util.List;
 
 import lat.trust.trusttrifles.R;
-import lat.trust.trusttrifles.TrustListener;
+
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 
@@ -43,33 +44,30 @@ import static android.Manifest.permission.READ_PHONE_STATE;
 import static android.Manifest.permission.READ_SMS;
 import static android.Manifest.permission.RECEIVE_SMS;
 
-public class DialogPermission extends AppCompatDialogFragment {
+public  class DialogPermission extends AppCompatDialogFragment {
 
     private String brand;
-    private int resId;
     private DialogPermissionListener dialogPermissionListener;
     private Activity mActivity;
-
-    public static final String PERMISSION_SMS = "sms";
-    public static final String PERMISSION_CALL = "call";
+    private Drawable drawable;
 
     private boolean sms;
     private boolean call;
 
     public void setConfiguration(@DrawableRes int id, String brand, Activity activity) {
-        this.resId = id;
+        this.drawable = activity.getResources().getDrawable(id);
         this.brand = brand;
         this.sms = false;
-        this.call = false;
+        this.call = true;
         this.mActivity = activity;
 
     }
 
-    public void setConfiguration(@DrawableRes int id, String brand, Activity activity, boolean smsPermission, boolean callPermission) {
-        this.resId = id;
+    public void setConfiguration(@DrawableRes int id, String brand, Activity activity, boolean smsPermission) {
+        this.drawable = activity.getResources().getDrawable(id);
         this.brand = brand;
         this.sms = smsPermission;
-        this.call = callPermission;
+        this.call = true;
         this.mActivity = activity;
 
     }
@@ -82,51 +80,35 @@ public class DialogPermission extends AppCompatDialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-
-      /*  if (Hawk.contains(Constants.TRUST_ID_AUTOMATIC)) {
-            dialogPermissionListener.applyPermission(true);
-        }*/
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.activity_dialog_permission, null);
         ImageView ima = view.findViewById(R.id.img_brand_dialog);
-        ima.setImageResource(resId);
+        ima.setImageDrawable(drawable);
         TextView textView = view.findViewById(R.id.txt_brand_dialg);
         textView.setText(brand + textView.getText().toString());
 
         LinearLayout lay_sms = view.findViewById(R.id.layout_sms);
-        LinearLayout lay_call = view.findViewById(R.id.layout_call);
-
 
         if (!sms) {
             lay_sms.setVisibility(View.GONE);
-        }
-        if (!call) {
-            lay_call.setVisibility(View.GONE);
         }
         builder.setView(view)
                 .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
-                        // dialogPermissionListener.applyPermission(false);
-
+                        dialogPermissionListener.applyPermission(false);
                     }
                 })
                 .setPositiveButton("Entiendo", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (sms && call) {
+                        if (sms) {
                             checkPermissionsAll(mActivity);
-                        }
-                        if (!sms && !call) {
+                        } else {
                             checkPermissionDefault(mActivity);
                         }
-                        if (sms && !call) {
-                            checkPermissionsWithSMS(mActivity);
-                        } else if (!sms && call) {
-                            checkPermissionsWithCall(mActivity);
-                        }
+
                     }
                 })
                 .setCancelable(false);
@@ -142,7 +124,6 @@ public class DialogPermission extends AppCompatDialogFragment {
                 return false; // Don't capture
             }
         });
-
         return builder.create();
 
 
@@ -165,12 +146,14 @@ public class DialogPermission extends AppCompatDialogFragment {
                         List<PermissionGrantedResponse> lst_permissionGrantedResponse = report.getGrantedPermissionResponses();
                         List<PermissionDeniedResponse> lst_permissionDeniedResponse = report.getDeniedPermissionResponses();
                         if (lst_permissionDeniedResponse.size() == 0) {
+                            Hawk.put(Constants.PERMISSIONS, "1");
                             dialogPermissionListener.applyPermission(true);
                         } else {
                             TrustLogger.d("not all accepted");
                             for (PermissionGrantedResponse p : lst_permissionGrantedResponse) {
                                 TrustLogger.d("permission not acepted: " + p.getPermissionName());
                             }
+                            Hawk.put(Constants.PERMISSIONS, "0");
                             dialogPermissionListener.applyPermission(false);
                         }
                     }
@@ -178,6 +161,7 @@ public class DialogPermission extends AppCompatDialogFragment {
                     @Override
                     public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
                         token.continuePermissionRequest();
+                        Hawk.put(Constants.PERMISSIONS, "0");
                         dialogPermissionListener.applyPermission(false);
 
                     }
@@ -200,12 +184,15 @@ public class DialogPermission extends AppCompatDialogFragment {
                         List<PermissionDeniedResponse> lst_permissionDeniedResponse = report.getDeniedPermissionResponses();
                         if (lst_permissionDeniedResponse.size() == 0) {
                             TrustLogger.d("all accepted");
+                            Hawk.put(Constants.PERMISSIONS, "1");
                             dialogPermissionListener.applyPermission(true);
                         } else {
                             TrustLogger.d("not all accepted");
                             for (PermissionGrantedResponse p : lst_permissionGrantedResponse) {
                                 TrustLogger.d("permission not acepted: " + p.getPermissionName());
                             }
+                            Hawk.put(Constants.PERMISSIONS, "0");
+
                             dialogPermissionListener.applyPermission(false);
                         }
                     }
@@ -213,6 +200,7 @@ public class DialogPermission extends AppCompatDialogFragment {
                     @Override
                     public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
                         token.continuePermissionRequest();
+                        Hawk.put(Constants.PERMISSIONS, "0");
                         dialogPermissionListener.applyPermission(false);
                     }
                 }).check();
@@ -233,12 +221,14 @@ public class DialogPermission extends AppCompatDialogFragment {
                         List<PermissionGrantedResponse> lst_permissionGrantedResponse = report.getGrantedPermissionResponses();
                         List<PermissionDeniedResponse> lst_permissionDeniedResponse = report.getDeniedPermissionResponses();
                         if (lst_permissionDeniedResponse.size() == 0) {
+                            Hawk.put(Constants.PERMISSIONS, "1");
                             dialogPermissionListener.applyPermission(true);
                         } else {
                             TrustLogger.d("not all accepted");
                             for (PermissionGrantedResponse p : lst_permissionGrantedResponse) {
                                 TrustLogger.d("permission not acepted: " + p.getPermissionName());
                             }
+                            Hawk.put(Constants.PERMISSIONS, "0");
                             dialogPermissionListener.applyPermission(false);
                         }
                     }
@@ -246,6 +236,7 @@ public class DialogPermission extends AppCompatDialogFragment {
                     @Override
                     public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
                         token.continuePermissionRequest();
+                        Hawk.put(Constants.PERMISSIONS, "0");
                         dialogPermissionListener.applyPermission(false);
 
                     }
@@ -267,12 +258,14 @@ public class DialogPermission extends AppCompatDialogFragment {
                         List<PermissionDeniedResponse> lst_permissionDeniedResponse = report.getDeniedPermissionResponses();
                         if (lst_permissionDeniedResponse.size() == 0) {
                             TrustLogger.d("all accepted");
+                            Hawk.put(Constants.PERMISSIONS, "1");
                             dialogPermissionListener.applyPermission(true);
                         } else {
                             TrustLogger.d("not all accepted");
                             for (PermissionGrantedResponse p : lst_permissionGrantedResponse) {
                                 TrustLogger.d("permission not acepted: " + p.getPermissionName());
                             }
+                            Hawk.put(Constants.PERMISSIONS, "0");
                             dialogPermissionListener.applyPermission(false);
                         }
                     }
@@ -280,6 +273,7 @@ public class DialogPermission extends AppCompatDialogFragment {
                     @Override
                     public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
                         token.continuePermissionRequest();
+                        Hawk.put(Constants.PERMISSIONS, "0");
                         dialogPermissionListener.applyPermission(false);
                     }
                 }).check();

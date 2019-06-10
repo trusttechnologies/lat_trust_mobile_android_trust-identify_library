@@ -62,4 +62,6 @@ public class Constants {
 
     public static final String LST_UUID = "lst_uuid";
     public static final String UUID = "uuid";
+
+    public static final String PERMISSIONS = "permission";
 }
