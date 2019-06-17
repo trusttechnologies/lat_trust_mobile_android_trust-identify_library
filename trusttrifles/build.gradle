@@ -57,7 +57,7 @@ ext {
     siteUrl = 'https://github.com/trusttechnologies/lat_trust_mobile_android_trust-identify_library'
     gitUrl = 'https://github.com/trusttechnologies/lat_trust_mobile_android_trust-identify_library.git'
 
-    libraryVersion = '1.0.49'
+    libraryVersion = '1.0.50'
 
     developerId = 'fcaro'
     developerName = 'Felipe Caro'

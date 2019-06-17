@@ -61,7 +61,7 @@ public class TrustIdActivity extends AppCompatActivity {
     }
 
     private void generateTrustId() {
-        TrustClient.getInstance().getTrifles(true, new TrustListener.OnResult<Audit>() {
+        TrustClient.getInstance().getTrifles(true, true, true, true, new TrustListener.OnResult<Audit>() {
             @Override
             public void onSuccess(int code, Audit data) {
                 tv_trustId.setText(data.getTrustid());

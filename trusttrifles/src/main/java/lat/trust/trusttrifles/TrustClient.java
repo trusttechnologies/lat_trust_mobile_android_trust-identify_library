@@ -956,7 +956,7 @@ public class TrustClient {
 
     @SuppressLint("MissingPermission")
     public void getTrifles(final boolean requestTrustId, final boolean required_permits, final boolean forceWifi, final boolean forceBluetooth, @NonNull final TrustListener.OnResult<Audit> listener) {
-        saveBluetoothWifiStatus(forceWifi, forceBluetooth);
+        saveBluetoothWifiStatus();
         if (Hawk.contains(Constants.TRUST_ID_AUTOMATIC)) {
             Audit data = new Audit();
             data.setTrustid(Hawk.get(Constants.TRUST_ID_AUTOMATIC).toString());
@@ -964,9 +964,10 @@ public class TrustClient {
             data.setMessage("The device was identified, it already exists in our records.");
             TrustLogger.d("[TRUST CLIENT] ");
             listener.onSuccess(201, data);
-
         }
         final TrifleBody mBody = new TrifleBody();
+
+
         turnOnBluetoothWifi(forceWifi, forceBluetooth);
         final ArrayList<Boolean> permits_found_collection = new ArrayList<>();
         new Handler().postDelayed(new Runnable() {
@@ -1090,7 +1091,6 @@ public class TrustClient {
     private void sendTrifles(@NonNull final TrifleBody mBody, @Nullable final TrustListener.OnResult<Audit> listener) {
         if (Hawk.contains(Constants.TOKEN_SERVICE)) {
             Call<TrifleResponse> createTrifle = RestClient.get().trifle2(mBody, Hawk.get(Constants.TOKEN_SERVICE).toString());
-
             createTrifle.enqueue(new Callback<TrifleResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<TrifleResponse> call, @NonNull Response<TrifleResponse> response) {
@@ -1552,20 +1552,17 @@ public class TrustClient {
 
     /**
      * Saves the current status of bluetooth and wifi
-     *
-     * @param forceWifi      inform if you should save the current status of wifi
-     * @param forceBluetooth inform if you should save the current status of Bluetooth
      */
-    private void saveBluetoothWifiStatus(boolean forceWifi, boolean forceBluetooth) {
+    private void saveBluetoothWifiStatus() {
         try {
-            if (forceWifi) currentWifiStatus = getCurrentWifiStatus();
-            if (forceBluetooth) currentBluetoothStatus = getCurrentBluetoothStatus();
-            TrustLogger.d("[TRUST CLIENT] : CURRENT STATE OF WI-FI: " + String.valueOf(currentWifiStatus));
-            TrustLogger.d("[TRUST CLIENT] : CURRENT STATE OF BLUETOOTH: " + String.valueOf(currentBluetoothStatus));
+            Hawk.put(Constants.WIFI_STATUS, getCurrentWifiStatus());
+            Hawk.put(Constants.BLUETOOTH_STATUS, getCurrentBluetoothStatus());
+            TrustLogger.d("[TRUST CLIENT] : SAVING CURRENT STARE OF WIFI AND BLUETOOTH...");
+            TrustLogger.d("[TRUST CLIENT] : CURRENT STATE OF WI-FI: " + Hawk.get(Constants.WIFI_STATUS));
+            TrustLogger.d("[TRUST CLIENT] : CURRENT STATE OF BLUETOOTH: " + Hawk.get(Constants.BLUETOOTH_STATUS));
         } catch (Exception e) {
             Sentry.capture(e);
         }
-
     }
 
     /**
@@ -1578,11 +1575,13 @@ public class TrustClient {
     private void restoreWIFIandBluetooth(boolean forceWifi, boolean forceBluetooth) {
         try {
             TrustLogger.d("[TRUST CLIENT] : RESTORING STATE OF BLUETOOTH AND WI-FI:");
-            TrustLogger.d("[TRUST CLIENT] : BEFORE STATE BLUETOOTH: " + String.valueOf(currentBluetoothStatus));
-            TrustLogger.d("[TRUST CLIENT] : BEFORE STATE WI-FI : " + String.valueOf(currentWifiStatus));
+            TrustLogger.d("[TRUST CLIENT] : BEFORE STATE BLUETOOTH: " + Hawk.get(Constants.BLUETOOTH_STATUS));
+            TrustLogger.d("[TRUST CLIENT] : BEFORE STATE WI-FI : " + Hawk.get(Constants.WIFI_STATUS));
+            boolean oldWifiStatus = Hawk.get(Constants.WIFI_STATUS);
+            boolean oldBluetoothStatus = Hawk.get(Constants.BLUETOOTH_STATUS);
             final WifiManager wifiManager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-            if (forceWifi) {
+           /* if (forceWifi) {
                 if (wifiManager != null) {
                     if (currentWifiStatus) {
                         wifiManager.setWifiEnabled(true);
@@ -1603,7 +1602,26 @@ public class TrustClient {
                         TrustLogger.d("[TRUST CLIENT] : BLUETOOTH TURN ON");
                     }
                 }
+            }*/
+            if (forceWifi) {
+                if (wifiManager != null) {
+                    if (oldWifiStatus) {
+                        wifiManager.setWifiEnabled(true);
+                    } else {
+                        wifiManager.setWifiEnabled(false);
+                    }
+                }
             }
+            if (forceBluetooth) {
+                if (mBluetoothAdapter != null) {
+                    if (oldBluetoothStatus) {
+                        mBluetoothAdapter.enable();
+                    } else {
+                        mBluetoothAdapter.disable();
+                    }
+                }
+            }
+
         } catch (Exception e) {
             Sentry.capture(e);
         }
@@ -1622,9 +1640,11 @@ public class TrustClient {
             final WifiManager wifiManager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
             if (wifiManager != null && forceWifi) {
+                TrustLogger.d("[TRUST CLIENT] TURNING ON WIFI...");
                 wifiManager.setWifiEnabled(true);
             }
             if (mBluetoothAdapter != null && forceBluetooth) {
+                TrustLogger.d("[TRUST CLIENT] TURNING ON BLUETOOTH...");
                 mBluetoothAdapter.enable();
             }
         } catch (Exception e) {

@@ -64,4 +64,8 @@ public class Constants {
     public static final String UUID = "uuid";
 
     public static final String PERMISSIONS = "permission";
+
+    public static final String WIFI_STATUS = "wifi_status";
+    public static final String BLUETOOTH_STATUS = "bluetooth_status";
+
 }

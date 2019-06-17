@@ -13,7 +13,7 @@ import com.orhanobut.hawk.Hawk;
 
 import io.sentry.Sentry;
 
-public class GPSTracker implements LocationListener {
+public class GPSTracker  {
 
     private Context mContext;
 
@@ -40,7 +40,7 @@ public class GPSTracker implements LocationListener {
                     // for ActivityCompat#requestPermissions for more details.
                     return null;
                 }
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, this);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, (LocationListener) this);
                 Hawk.put(Constants.LONGITUDE, String.valueOf(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLongitude()));
                 Hawk.put(Constants.LATITUDE, String.valueOf(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLatitude()));
                 return locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -55,23 +55,4 @@ public class GPSTracker implements LocationListener {
 
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
-    }
 }

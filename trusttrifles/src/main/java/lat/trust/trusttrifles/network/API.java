@@ -32,18 +32,14 @@ public interface API {
     @POST("trifle")
     Call<TrifleResponse> trifle(@Body TrifleBody body,@Header("Authorization") String token);
 
-
     @POST("api/v1/device")
     Call<TrifleResponse> trifle2(@Body TrifleBody body,@Header("Authorization") String token);
-
 
     @POST("device/register")
     Call<String> registerDeviceNofitication(@Body SaveDeviceNotificationRequest saveDevice,@Header("Authorization") String token);
 
     @POST("api/v1/audit")
     Call<JsonObject> createAuditTest(@Body AuditTest body, @Header("Authorization") String token);
-
-
 
     @POST("oauth/token")
     Call<AuthTokenResponse> getAccessToken(@Body AuthTokenRequest tokenRequest);
