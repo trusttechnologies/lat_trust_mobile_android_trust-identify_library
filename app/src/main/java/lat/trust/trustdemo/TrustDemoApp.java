@@ -3,11 +3,9 @@ package lat.trust.trustdemo;
 import android.app.Application;
 
 import com.orhanobut.hawk.Hawk;
+import com.trust.audit.audit.Audit;
 
 import lat.trust.trusttrifles.TrustClient;
-import lat.trust.trusttrifles.TrustConfig;
-import lat.trust.trusttrifles.utilities.TrustLogger;
-import lat.trust.trusttrifles.utilities.TrustPreferences;
 
 public class TrustDemoApp extends Application {
     @Override
@@ -15,10 +13,16 @@ public class TrustDemoApp extends Application {
         super.onCreate();
         Hawk.init(this).build();
         TrustClient.init(this);
-        String[] audits = {
-                TrustConfig.AUDIT_SIM,
-                TrustConfig.AUDIT_NETWORK
-        };
-        TrustClient.getInstance().setAudits(audits);
+
+
+        Audit.init(this);
+      /*  AuditConfiguration.setAudits(new String[]{
+                AuditConfiguration.AUDIT_SIM,
+                AuditConfiguration.AUDIT_SMS,
+                AuditConfiguration.AUDIT_CALL,
+                AuditConfiguration.AUDIT_NETWORK
+        });*/
+
     }
+
 }

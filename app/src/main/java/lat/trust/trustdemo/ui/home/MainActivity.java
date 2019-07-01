@@ -1,159 +1,110 @@
 package lat.trust.trustdemo.ui.home;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.location.LocationManager;
-import android.os.Build;
+import android.content.res.Resources;
 import android.os.Bundle;
-import android.support.design.button.MaterialButton;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.Theme;
 import com.crashlytics.android.Crashlytics;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.orhanobut.hawk.Hawk;
-
-import java.util.ArrayList;
 
 import io.fabric.sdk.android.Fabric;
 import lat.trust.trustdemo.R;
-import lat.trust.trustdemo.ui.audit.AuditActivity;
-import lat.trust.trustdemo.ui.trustid.TrustIdActivity;
-import lat.trust.trusttrifles.TrustListener;
-import lat.trust.trusttrifles.model.Audit;
-import lat.trust.trusttrifles.model.audit.AuditTransaction;
-import lat.trust.trusttrifles.services.Notifications;
-import lat.trust.trusttrifles.utilities.AutomaticAudit;
-import lat.trust.trusttrifles.utilities.Constants;
-import lat.trust.trusttrifles.utilities.SavePendingAudit;
 import lat.trust.trusttrifles.utilities.TrustLogger;
-import lat.trust.trusttrifles.utilities.TrustPreferences;
-import lat.trust.trusttrifles.utilities.Utils;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements HomeContract.View {
 
-
-    private MaterialDialog loadingDialog;
-    private TrustPreferences mPreferences;
-    private LocationManager mLocationManager;
-    private BroadcastReceiver broadcastReceiver;
-    private MaterialButton materialButton;
-    private Context mContext;
-    private EditText et;
-    private Button btn_audit;
-    private Button btn_trust_id;
-    private Button btn_session;
+    private HomeContract.Presenter mPresenter;
+    private TextView txt_trust_id, txt_audit, txt_notification, txt_company, txt_login;
+    private ImageView img_trust_id, img_audit, img_notification, img_company, img_login;
+    private Button btn_audit, btn_login;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //checkPermissions();
-        mContext = this;
+
         TrustLogger.d(FirebaseInstanceId.getInstance().getToken() != null ? FirebaseInstanceId.getInstance().getToken() : "no firebase token id");
         Fabric.with(this, new Crashlytics());
-       /* materialButton = findViewById(R.id.button);
-        materialButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TrustLogger.d(Utils.getActualConnection(MainActivity.this));
-                Hawk.put(Constants.DNI_USER, "18236924-1");
-                Hawk.put(Constants.EMAIL_USER, "fcaro@trust.lat");
-                Hawk.put(Constants.LASTNAME_USER, "Caro");
-                Hawk.put(Constants.NAME_USER, "FELIPE");
-                Hawk.put(Constants.PHONE_USER, "+56982110950");
-                //AutomaticAudit.createAutomaticAudit("test1","test2","result test",MainActivity.this);
-                TrustLogger.d(FirebaseInstanceId.getInstance().getToken());
-                Notifications.registerDevice(FirebaseInstanceId.getInstance().getToken(), MainActivity.this);
+        mPresenter = new HomePresenter(this);
+        mPresenter.onCreate();
+        btn_audit = findViewById(R.id.btn_send_audit);
+        btn_login = findViewById(R.id.btn_login);
 
-            }
-        });*/
-        bind();
+
         btn_audit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                goAudit();
+                mPresenter.audit();
             }
         });
-        btn_trust_id.setOnClickListener(new View.OnClickListener() {
+
+        btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                goTrustId();
+                mPresenter.login();
             }
         });
+    }
 
-        btn_session.setOnClickListener(new View.OnClickListener() {
+
+    @Override
+    public void showTrustId(String trustId) {
+        txt_trust_id = findViewById(R.id.txt_trust_id);
+        img_trust_id = findViewById(R.id.img_trust_id);
+        txt_trust_id.setText(trustId);
+        img_trust_id.setImageResource(R.drawable.ic_green_24dp);
+
+    }
+
+    @Override
+    public void showNotification() {
+        txt_notification = findViewById(R.id.txt_notification);
+        img_notification = findViewById(R.id.img_notification);
+
+        txt_notification.setText("Notification was succes!");
+        img_notification.setImageResource(R.drawable.ic_green_24dp);
+    }
+
+    @Override
+    public void showCompany() {
+        txt_company = findViewById(R.id.txt_company);
+        img_company = findViewById(R.id.img_company);
+
+        txt_company.setText("Company was sended!");
+        img_company.setImageResource(R.drawable.ic_green_24dp);
+    }
+
+    @Override
+    public void showAudit() {
+        txt_audit = findViewById(R.id.txt_audit);
+        img_audit = findViewById(R.id.img_audit);
+
+       /* Audit.createAudit("operacion", "metodo", "result", this, new AuditListener.OnResult<String>() {
             @Override
-            public void onClick(View v) {
-                Audit asd = new Audit();
-                asd.setMessage("el mensajito ");
-                asd.setStatus(true);
-                asd.setTrustid("el trust id" + getLocalClassName() + "1323123");
-                AutomaticAudit.createAutomaticAudit("operacion", "metodo de prueba mayo", "resultado de prueba uuid nuevo sin conexion: ", asd, MainActivity.this, new TrustListener.OnResultAudit() {
-                    @Override
-                    public void onSuccess(String idAudit) {
-
-                    }
-
-                    @Override
-                    public void onError(String error) {
-
-                    }
-                });
+            public void onSuccess(int code, String data) {
+                txt_audit.setText(data);
+                img_audit.setImageResource(R.drawable.ic_green_24dp);
             }
-        });
+
+            @Override
+            public void onError(int code) {
+
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+
+            }
+        });*/
 
     }
 
-    private void goTrustId() {
-        startActivity(new Intent(MainActivity.this, TrustIdActivity.class));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            finishAffinity();
-        } else {
-            finish();
-        }
-    }
-
-    private void goAudit() {
-        startActivity(new Intent(MainActivity.this, AuditActivity.class));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            finishAffinity();
-        } else {
-            finish();
-        }
+    @Override
+    public void showLogin() {
 
     }
-
-    private void bind() {
-        btn_audit = findViewById(R.id.btn_audit_home);
-        btn_trust_id = findViewById(R.id.btn_trust_id_home);
-
-        et = findViewById(R.id.et);
-        btn_session = findViewById(R.id.btn_session);
-    }
-
-    private void showLoading() {
-        loadingDialog = new MaterialDialog.Builder(this)
-                .theme(Theme.LIGHT)
-                .typeface(ResourcesCompat.getFont(this, R.font.fira_sans_extra_condensed_medium), ResourcesCompat.getFont(this, R.font.fira_sans_extra_condensed))
-                .progressIndeterminateStyle(true)
-                .progress(true, 100)
-                .content("Creando Trust ID...")
-                .cancelable(false)
-                .canceledOnTouchOutside(false)
-                .show();
-    }
-
-    private void dismissLoading() {
-        if (loadingDialog != null && loadingDialog.isShowing()) loadingDialog.dismiss();
-    }
-
-
 }

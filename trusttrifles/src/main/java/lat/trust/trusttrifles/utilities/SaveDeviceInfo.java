@@ -16,9 +16,10 @@ public class SaveDeviceInfo {
     /**
      * Overload 1
      * Save a DNI of user session, bundle id and trust id
-     * @param dni of the user session logged in.
+     *
+     * @param dni      of the user session logged in.
      * @param bundleId of the application.
-     * @param trustId of the device.
+     * @param trustId  of the device.
      */
     public static void saveDeviceInfo(final String dni, final String bundleId, final String trustId) {
         TrustLogger.d("[TRUST CLIENT] SAVING DEVICE...");
@@ -31,8 +32,9 @@ public class SaveDeviceInfo {
 
     /**
      * Save a bundle id and trust id without a DNI of a user session.
+     *
      * @param bundleId of the application.
-     * @param trustId of the device.
+     * @param trustId  of the device.
      */
     public static void saveDeviceInfo(final String bundleId, final String trustId) {
         TrustLogger.d("[TRUST CLIENT] SAVING DEVICE...");
@@ -44,6 +46,7 @@ public class SaveDeviceInfo {
 
     /**
      * Call the api for save the data of the device
+     *
      * @param saveDeviceInfo
      */
     private static void saveDevice(final SaveDeviceInfoRequest saveDeviceInfo) {
@@ -117,7 +120,8 @@ public class SaveDeviceInfo {
 
     /**
      * Save a DNI of user session, bundle id and trust id
-     * @param dni of the user session logged in
+     *
+     * @param dni     of the user session logged in
      * @param context of the current appor activity.
      */
     public static void saveDeviceInfo(final String dni, Context context) {

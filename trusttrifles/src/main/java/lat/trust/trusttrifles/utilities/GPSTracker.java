@@ -14,18 +14,18 @@ import com.orhanobut.hawk.Hawk;
 import io.sentry.Sentry;
 
 public class GPSTracker  {
-
+/*
     private Context mContext;
 
     public GPSTracker(Context mContext) {
         this.mContext = mContext;
     }
 
-    /**
+    *//**
      * return the actual location from GPS.
      *
      * @return Location
-     */
+     *//*
     public Location getLocation() {
         try {
             LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
@@ -53,6 +53,6 @@ public class GPSTracker  {
             return null;
         }
 
-    }
+    }*/
 
 }

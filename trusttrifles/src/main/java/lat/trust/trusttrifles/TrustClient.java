@@ -1,6 +1,5 @@
 package lat.trust.trusttrifles;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
@@ -15,7 +14,6 @@ import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcManager;
@@ -26,14 +24,12 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.google.gson.JsonObject;
 import com.orhanobut.hawk.Hawk;
 import com.scottyab.rootbeer.RootBeer;
 
@@ -60,19 +56,12 @@ import lat.trust.trusttrifles.model.Identity;
 import lat.trust.trusttrifles.model.SIM;
 import lat.trust.trusttrifles.model.SensorData;
 import lat.trust.trusttrifles.model.TrustAuth;
-import lat.trust.trusttrifles.model.audit.AuditExtraData;
-import lat.trust.trusttrifles.model.audit.AuditSource;
-import lat.trust.trusttrifles.model.audit.AuditTest;
-import lat.trust.trusttrifles.model.audit.AuditTransaction;
 import lat.trust.trusttrifles.network.RestClient;
-import lat.trust.trusttrifles.network.RestClientAudit;
 import lat.trust.trusttrifles.network.TrifleResponse;
 import lat.trust.trusttrifles.network.req.TrifleBody;
 import lat.trust.trusttrifles.services.WifiService;
-import lat.trust.trusttrifles.utilities.AutomaticAudit;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.SaveDeviceInfo;
-import lat.trust.trusttrifles.utilities.SavePendingAudit;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 import lat.trust.trusttrifles.utilities.TrustPreferences;
 import retrofit2.Call;
@@ -99,34 +88,17 @@ import static lat.trust.trusttrifles.utilities.Utils.getValue;
 
 @SuppressLint("StaticFieldLeak")
 public class TrustClient {
-    //region Declaracion de variables y constantes
     private static volatile TrustClient trustInstance;
     private static Context mContext;
     private TrustPreferences mPreferences;
-    private boolean currentWifiStatus;
-    private boolean currentBluetoothStatus;
 
-    //endregion
 
-    //region Configuracion e instancia de Clase
     private TrustClient() {
         TrustLogger.d("[TRUST CLIENT] : CREATE A INSTANCE");
-        SavePendingAudit.init(mContext);
         TrustPreferences.init(mContext);
         mPreferences = TrustPreferences.getInstance();
     }
 
-    public void setNoneAudit() {
-        TrustConfig.getInstance().setNoneAudits();
-    }
-
-    public void setAllAudit() {
-        TrustConfig.getInstance().setAllAudits();
-    }
-
-    public void setAudits(String[] audits) {
-        TrustConfig.getInstance().setAudits(audits);
-    }
 
     /**
      * Init.
@@ -143,8 +115,6 @@ public class TrustClient {
             Hawk.init(mContext).build();
             TrustLogger.d("[TRUST CLIENT] : Hawk was build.. ");
         }
-        TrustConfig.init();
-        TrustConfig.getInstance().setNoneAudits();
         TrustAuth.setSecretAndId(mContext);
         sentryInit(context);
     }
@@ -430,7 +400,6 @@ public class TrustClient {
     private void getImei(Device device) {
         try {
             TelephonyManager tm = (TelephonyManager) mContext.getSystemService(TELEPHONY_SERVICE);
-
             if (tm != null) {
                 device.setImei(tm.getDeviceId());
                 device.setSoftwareVersion(tm.getDeviceSoftwareVersion());
@@ -451,7 +420,6 @@ public class TrustClient {
     public String getImei() {
         try {
             TelephonyManager tm = (TelephonyManager) mContext.getSystemService(TELEPHONY_SERVICE);
-
             if (tm != null) {
                 return tm.getDeviceId();
             } else {
@@ -1097,43 +1065,29 @@ public class TrustClient {
                     if (response.code() == 401) {
                         refreshSendTrifles(mBody, listener);
                         return;
-                    }
-                    if (response.isSuccessful()) {
-                        TrustLogger.d("[TRUST CLIENT]  VALID TOKEN: " + Hawk.get(Constants.TOKEN_SERVICE));
-                        if (listener != null) {
-                            if (response.isSuccessful()) {
-                                TrifleResponse body = response.body();
-                                Audit audit = new Audit();
-                                audit.setMessage(body.getMessage());
-                                audit.setStatus(body.getStatus());
-                                audit.setTrustid(body.getTrustid());
-                                body.setAudit(audit);
-                                if (body != null) {
-                                    if (!Hawk.contains(Constants.TRUST_ID_AUTOMATIC)) {
-                                        listener.onSuccess(response.code(), body.getAudit());
-                                    }
-                                    Hawk.put(Constants.TRUST_ID_AUTOMATIC, body.getTrustid());
-                                    mPreferences.put(TRUST_ID, body.getAudit().getTrustid());
-                                    TrustLogger.d("[TRUST CLIENT] TRUST ID WAS CREATED: " + body.getTrustid());
-                                    restoreWIFIandBluetooth(true, true);
-                                    if (Hawk.contains(Constants.DNI_USER)) {
-                                        TrustLogger.d("[TRUST CLIENT] Save Device Info Company: first time with DNI");
-                                        SaveDeviceInfo.saveDeviceInfo(Hawk.get(Constants.DNI_USER).toString(), mContext.getPackageName(), audit.getTrustid());
-                                    } else {
-                                        TrustLogger.d("[TRUST CLIENT] Save Device Info Company: first time no DNI");
-                                        SaveDeviceInfo.saveDeviceInfo(mContext.getPackageName(), audit.getTrustid());
-                                    }
+                    } else {
+                        TrifleResponse body = response.body();
+                        Audit audit = new Audit();
+                        audit.setMessage(body.getMessage());
+                        audit.setStatus(body.getStatus());
+                        audit.setTrustid(body.getTrustid());
+                        body.setAudit(audit);
 
-                                } else {
-                                    Throwable cause = new Throwable("Body null");
-                                    listener.onFailure(new Throwable("Cannot get the response body", cause));
-                                }
-                            } else {
-                                listener.onError(response.code());
-                            }
+                        Hawk.put(Constants.TRUST_ID_AUTOMATIC, audit.getTrustid());
+                        mPreferences.put(TRUST_ID, body.getAudit().getTrustid());
+                        TrustLogger.d("[TRUST CLIENT] TRUST ID WAS CREATED: " + body.getTrustid());
+
+                        restoreWIFIandBluetooth(true, true);
+                        if (Hawk.contains(Constants.DNI_USER)) {
+                            TrustLogger.d("[TRUST CLIENT] Save Device Info Company: first time with DNI");
+                            SaveDeviceInfo.saveDeviceInfo(Hawk.get(Constants.DNI_USER).toString(), mContext.getPackageName(), audit.getTrustid());
+                        } else {
+                            TrustLogger.d("[TRUST CLIENT] Save Device Info Company: first time no DNI");
+                            SaveDeviceInfo.saveDeviceInfo(mContext.getPackageName(), audit.getTrustid());
                         }
-                    }
 
+                        listener.onSuccess(response.code(), body.getAudit());
+                    }
                 }
 
                 @Override
@@ -1155,7 +1109,6 @@ public class TrustClient {
                 @Override
                 public void onErrorAccessToken(String error) {
                     TrustLogger.d("[TRUST CLIENT] ERROR TOKEN GET " + error);
-
                 }
             });
         }
@@ -1217,248 +1170,6 @@ public class TrustClient {
 
     }
 
-    public void createAudit(String trustid, AuditTransaction auditTransaction, String lat, String lng, AuditExtraData auditExtraData, final TrustListener.OnResultAudit onResultAudit) {
-        AuditSource source = getAuditSource(trustid, lat, lng);
-        final AuditTest auditTest = new AuditTest();
-        auditTest.setType_audit("trust identify");
-        auditTest.setApplication(getAppName());
-        auditTest.setSource(source);
-        auditTest.setTransaction(auditTransaction);
-        auditTest.setPlatform("Android");
-        auditTest.setExtra_data(auditExtraData);
-
-        if (Hawk.contains(Constants.TOKEN_SERVICE)) {
-            sendAudit(auditTest, onResultAudit);
-        } else {
-            AuthToken.getAccessToken(new AuthTokenListener.Auth() {
-                @Override
-                public void onSuccessAccessToken(String token) {
-                    Hawk.put(Constants.TOKEN_SERVICE, "Bearer " + token);
-                    sendAudit(auditTest, onResultAudit);
-                }
-
-                @Override
-                public void onErrorAccessToken(String error) {
-                    TrustLogger.d("[TRUST CLIENT] ERROR TOKEN " + error);
-                }
-            });
-        }
-
-    }
-
-    public static String getAppName() {
-        return mContext.getString(R.string.app_name);
-    }
-
-    public static AuditSource getAuditSourceOffline(String trustid, String lat, String lng) {
-        AuditSource auditSource = getAuditSource(trustid, lat, lng);
-        //auditSource.setAudit_id(AutomaticAudit.getUUIDAuditOffline());
-        return auditSource;
-    }
-
-    public static AuditSource getAuditSource(String trustid, String lat, String lng) {
-        String wifiName = "no wifi avaliable";
-        final TelephonyManager telephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
-        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            wifiName = "no wifi avaliable for permission";
-        }
-        WifiManager wifiMgr = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
-        WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
-        wifiName = wifiInfo.getSSID().replaceAll("\"", "");
-        String imsi = telephonyManager.getSubscriberId() == null ? "sim extraida" : telephonyManager.getSubscriberId();
-        String appName = getAppName();
-        String packageName = mContext.getApplicationContext().getPackageName();
-        Hawk.put(Constants.BUNDLE_ID, packageName);
-        ConnectivityManager connManager = (ConnectivityManager) mContext.getSystemService(CONNECTIVITY_SERVICE);
-        NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        NetworkInfo mMobile = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-        String connection;
-        if (mWifi.isAvailable() == true) {
-            connection = Constants.WIFI_CONNECTION;
-        } else if (mMobile.isAvailable() == true) {
-            connection = Constants.MOBILE_CONNECTION;
-        } else connection = Constants.DISCONNECT;
-
-        PackageInfo pInfo = null;
-        try {
-            pInfo = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        String version = pInfo == null ? "0.0" : pInfo.versionName;
-        AuditSource source = new AuditSource(
-                trustid,
-                appName,
-                packageName,
-                "Android"
-                , String.valueOf(Build.VERSION.SDK_INT),
-                Build.MODEL,
-                imsi,
-                lat,
-                lng,
-                connection,
-                wifiName,
-                version
-        );
-
-        return source;
-    }
-
-    public void createAudit(String trustid, AuditTransaction auditTransaction, String lat, String lng, AuditExtraData auditExtraData) {
-        final AuditTest auditTest = new AuditTest();
-        auditTest.setType_audit("trust identify");
-        auditTest.setApplication(getAppName());
-        auditTest.setSource(getAuditSource(trustid, lat, lng));
-        auditTest.setTransaction(auditTransaction);
-        auditTest.setPlatform("Android");
-        auditTest.setExtra_data(auditExtraData);
-
-        if (Hawk.contains(Constants.TOKEN_SERVICE)) {
-            sendAudit(auditTest);
-        } else {
-            AuthToken.getAccessToken(new AuthTokenListener.Auth() {
-                @Override
-                public void onSuccessAccessToken(String token) {
-                    Hawk.put(Constants.TOKEN_SERVICE, "Bearer " + token);
-                    sendAudit(auditTest);
-                }
-
-                @Override
-                public void onErrorAccessToken(String error) {
-                    TrustLogger.d("[TRUST CLIENT] ERROR TOKEN " + error);
-                }
-            });
-        }
-
-    }
-
-    public void sendAudit(final AuditTest auditTest) {
-        RestClientAudit.get().createAuditTest(auditTest, Hawk.get(Constants.TOKEN_SERVICE).toString()).enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                TrustLogger.d("audit test code: " + String.valueOf(response.code()));
-                TrustLogger.d("audit test body: " + String.valueOf(response.body()));
-                if (response.code() == 401) {
-                    TrustLogger.d("[TRUST CLIENT] ACCESS TOKEN AUDIT EXPIRED: " + response.code() + " MESSAGE: " + response.message());
-                    refreshTokenAudit(auditTest);
-                }
-                if (response.isSuccessful()) {
-                    TrustLogger.d("[TRUST CLIENT]  VALID TOKEN: " + Hawk.get(Constants.TOKEN_SERVICE));
-                    TrustLogger.d("[TRUST CLIENT] Audit code: " + response.code() + " Audit message: " + response.message());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                TrustLogger.d("[TRUST CLIENT] Audit code: -1 Audit message: " + t.getMessage());
-            }
-        });
-    }
-
-    private void sendAudit(final AuditTest auditTest, final TrustListener.OnResultAudit onResultAudit) {
-        RestClientAudit.get().createAuditTest(auditTest, Hawk.get(Constants.TOKEN_SERVICE).toString()).enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                TrustLogger.d("audit test code: " + String.valueOf(response.code()));
-                TrustLogger.d("audit test body: " + String.valueOf(response.body()));
-                if (response.code() == 401) {
-                    TrustLogger.d("[TRUST CLIENT] ACCESS TOKEN AUDIT EXPIRED: " + response.code() + " MESSAGE: " + response.message());
-                    refreshTokenAudit(auditTest, onResultAudit);
-                    return;
-                }
-                if (response.isSuccessful()) {
-
-                    TrustLogger.d("[TRUST CLIENT]  VALID TOKEN: " + Hawk.get(Constants.TOKEN_SERVICE));
-                    TrustLogger.d("[TRUST CLIENT]  Audit code: " + response.code() + " Audit message: " + response.message());
-                    JsonObject object = response.body().get("audit").getAsJsonObject();
-                    String id = object.get("auditid").getAsString();
-                    onResultAudit.onSuccess(id);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                TrustLogger.d("[TRUST CLIENT] Audit code: -1 Audit message: " + t.getMessage());
-                onResultAudit.onError(t.getMessage());
-            }
-        });
-    }
-
-    private void refreshTokenAudit(final AuditTest auditTest) {
-        AuthToken.getAccessToken(new AuthTokenListener.Auth() {
-            @Override
-            public void onSuccessAccessToken(String token) {
-                TrustLogger.d("[TRUST CLIENT] SUCCESS REFRESH TOKEN");
-                Hawk.put(Constants.TOKEN_SERVICE, "Bearer " + token);
-                RestClientAudit.get().createAuditTest(auditTest, "Bearer " + token).enqueue(new Callback<JsonObject>() {
-                    @Override
-                    public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                        if (response.code() == 401) {
-                            TrustLogger.d("[TRSUT CLIENT] ERROR AUDIT REFRESH TOKEN" + response.code() + " MESSAGE: " + response.message());
-                            return;
-                        }
-                        if (response.isSuccessful()) {
-                            TrustLogger.d("[TRUST CLIENT]  VALID TOKEN: " + Hawk.get(Constants.TOKEN_SERVICE));
-                            TrustLogger.d("[TRUST CLIENT] Audit code: " + response.code() + " Audit message: " + response.message());
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<JsonObject> call, Throwable t) {
-                        TrustLogger.d("[TRSUT CLIENT] ERROR AUDIT REFRESH TOKEN: " + t.getMessage());
-
-                    }
-                });
-
-            }
-
-            @Override
-            public void onErrorAccessToken(String error) {
-                TrustLogger.d("[TRUST CLIENT] ERROR ACCESS TOKEN: " + error);
-            }
-        });
-    }
-
-    private void refreshTokenAudit(final AuditTest auditTest, final TrustListener.OnResultAudit onResultAudit) {
-        AuthToken.getAccessToken(new AuthTokenListener.Auth() {
-            @Override
-            public void onSuccessAccessToken(String token) {
-                TrustLogger.d("[TRUST CLIENT] SUCCESS REFRESH TOKEN");
-                Hawk.put(Constants.TOKEN_SERVICE, "Bearer " + token);
-                RestClientAudit.get().createAuditTest(auditTest, "Bearer " + token).enqueue(new Callback<JsonObject>() {
-                    @Override
-                    public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                        if (response.code() == 401) {
-                            TrustLogger.d("[TRSUT CLIENT] ERROR AUDIT REFRESH TOKEN" + response.code() + " MESSAGE: " + response.message());
-                            onResultAudit.onError(String.valueOf("Error token auth: " + response.code()));
-                            return;
-                        }
-                        if (response.isSuccessful()) {
-                            TrustLogger.d("[TRUST CLIENT]  VALID TOKEN: " + Hawk.get(Constants.TOKEN_SERVICE));
-                            TrustLogger.d("[TRUST CLIENT] Audit code: " + response.code() + " Audit message: " + response.message());
-                            JsonObject object = response.body().get("audit").getAsJsonObject();
-                            String id = object.get("auditid").getAsString();
-                            onResultAudit.onSuccess(id);
-                        }
-
-                    }
-
-                    @Override
-                    public void onFailure(Call<JsonObject> call, Throwable t) {
-                        TrustLogger.d("[TRSUT CLIENT] ERROR AUDIT REFRESH TOKEN: " + t.getMessage());
-                        onResultAudit.onError(t.getMessage());
-                    }
-                });
-
-            }
-
-            @Override
-            public void onErrorAccessToken(String error) {
-                TrustLogger.d("[TRUST CLIENT] ERROR ACCESS TOKEN: " + error);
-                onResultAudit.onError(error);
-            }
-        });
-    }
 
     //endregion
 
@@ -1581,28 +1292,6 @@ public class TrustClient {
             boolean oldBluetoothStatus = Hawk.get(Constants.BLUETOOTH_STATUS);
             final WifiManager wifiManager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-           /* if (forceWifi) {
-                if (wifiManager != null) {
-                    if (currentWifiStatus) {
-                        wifiManager.setWifiEnabled(true);
-                        TrustLogger.d("[TRUST CLIENT] : WIFI TURN ON");
-                    } else {
-                        wifiManager.setWifiEnabled(false);
-                        TrustLogger.d("[TRUST CLIENT] : WIFI TURN OFF");
-                    }
-                }
-            }
-            if (forceBluetooth) {
-                if (mBluetoothAdapter != null) {
-                    if (currentBluetoothStatus) {
-                        mBluetoothAdapter.enable();
-                        TrustLogger.d("[TRUST CLIENT] : BLUETOOTH TURN ON");
-                    } else {
-                        mBluetoothAdapter.disable();
-                        TrustLogger.d("[TRUST CLIENT] : BLUETOOTH TURN ON");
-                    }
-                }
-            }*/
             if (forceWifi) {
                 if (wifiManager != null) {
                     if (oldWifiStatus) {

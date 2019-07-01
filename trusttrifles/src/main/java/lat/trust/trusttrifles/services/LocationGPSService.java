@@ -15,7 +15,15 @@ import android.support.annotation.Nullable;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 
 public class LocationGPSService extends Service {
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
 
+
+
+    /*
     private LocationListener locationListener;
     private LocationManager locationManager;
     private static String longitude;
@@ -77,5 +85,6 @@ public class LocationGPSService extends Service {
         }
     }
 
+*/
 
 }

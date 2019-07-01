@@ -13,12 +13,19 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 
 import lat.trust.trusttrifles.utilities.TrustLogger;
 
-public class TestLocationService extends  Service {
+public class TestLocationService extends Service {
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
 
+/*
         private Location lastRegisteredLocation;
         //private LocationManager networkLocationManager;
         private LocationManager androidLocationManager;
@@ -27,10 +34,10 @@ public class TestLocationService extends  Service {
         // RemoteService for a more complete example.
         private final IBinder mBinder = new LocalBinder();
 
-        /**
-         * Class for clients to access. Because we know this service always runs in
-         * the same process as its clients, we don't need to deal with IPC.
-         */
+        *//**
+ * Class for clients to access. Because we know this service always runs in
+ * the same process as its clients, we don't need to deal with IPC.
+ *//*
         public class LocalBinder extends Binder {
             TestLocationService getService() {
                 return TestLocationService.this;
@@ -164,7 +171,7 @@ public class TestLocationService extends  Service {
             public void onLocationChanged(Location location) {
                 setNewLocation(location);
             }
-        };
+        };*/
     }
 
 

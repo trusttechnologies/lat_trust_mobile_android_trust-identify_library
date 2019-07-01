@@ -7,198 +7,132 @@
     android:fitsSystemWindows="true"
     android:keepScreenOn="true"
     android:paddingLeft="16dp"
-    android:paddingRight="16dp"
-    >
+    android:paddingRight="16dp">
 
-    <android.support.v4.widget.NestedScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_weight="2"
+            android:orientation="horizontal">
 
-            <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/cv_auditoria"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/txt_trust_id"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1.9"
+                android:text="Trust id:" />
+
+            <ImageView
+                android:id="@+id/img_trust_id"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                card_view:cardBackgroundColor="@color/black_bright"
-                card_view:cardCornerRadius="10dp"
-                card_view:cardElevation="5dp"
-                card_view:cardUseCompatPadding="true">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:padding="8dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="16dp"
-                        android:text="Una auditoria se utiliza para dar a conocer el estado o una accion del dispositivo "
-                        android:textColor="@color/white" />
-
-                    <Button
-                        android:id="@+id/btn_audit_home"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/gradient"
-                        android:text="Enviar Auditoria"
-                        android:textColor="@color/white" />
-
-
-                </LinearLayout>
-
-            </android.support.v7.widget.CardView>
-
-            <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/cv_company"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                card_view:cardBackgroundColor="@color/black_bright"
-                card_view:cardCornerRadius="10dp"
-                card_view:cardElevation="5dp"
-                card_view:cardUseCompatPadding="true">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:padding="8dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="16dp"
-                        android:text="Trust id es un identificador unico dependiendo de las caractiristicas del dispositivo, lo que permite poder identificar un dispositivo de manera unica."
-                        android:textColor="@color/white" />
-
-                    <Button
-                        android:id="@+id/btn_trust_id_home"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/gradient"
-                        android:text="obtener trust id"
-                        android:textColor="@color/white" />
-                </LinearLayout>
-
-            </android.support.v7.widget.CardView>
-
-            <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/cv_trust_id"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                card_view:cardBackgroundColor="@color/black_bright"
-                card_view:cardCornerRadius="10dp"
-                card_view:cardElevation="5dp"
-                card_view:cardUseCompatPadding="true">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:padding="8dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="16dp"
-                        android:text="Esta funcionalidad es util para poder recibir notificaciones remotas mediante firebase."
-                        android:textColor="@color/white" />
-
-                    <Button
-                        android:id="@+id/btn_trust_id"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/gradient"
-                        android:text="Registrar dispositivo en firebase"
-                        android:textColor="@color/white" />
-
-                </LinearLayout>
-            </android.support.v7.widget.CardView>
-
-            <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/cv_firebase"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                card_view:cardBackgroundColor="@color/black_bright"
-                card_view:cardCornerRadius="10dp"
-                card_view:cardElevation="5dp"
-                card_view:cardUseCompatPadding="true">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:padding="8dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="16dp"
-                        android:text="Permite asociar el dispositivo a un usuario"
-                        android:textColor="@color/white" />
-
-                    <Button
-                        android:id="@+id/btn_firebase"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/gradient"
-                        android:text="Iniciar sesion"
-                        android:textColor="@color/white" />
-
-                </LinearLayout>
-            </android.support.v7.widget.CardView>
-
-            <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/cv_session"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                card_view:cardBackgroundColor="@color/black_bright"
-                card_view:cardCornerRadius="10dp"
-                card_view:cardElevation="5dp"
-                card_view:cardUseCompatPadding="true">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:padding="8dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="16dp"
-                        android:text="Obtiene firebase token"
-                        android:textColor="@color/white" />
-<EditText
-    android:layout_width="match_parent"
-    android:id="@+id/et"
-    android:layout_height="wrap_content"
-    android:hint="123123123"/>
-                    <Button
-                        android:id="@+id/btn_session"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/gradient"
-                        android:text="Obtener firebase token id "
-                        android:textColor="@color/white" />
-
-
-                </LinearLayout>
-            </android.support.v7.widget.CardView>
+                android:layout_weight=".1"
+                app:srcCompat="@drawable/ic_red_24dp" />
         </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
 
 
-    </RelativeLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txt_company"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1.9"
+                android:text="Company:" />
+
+            <ImageView
+                android:id="@+id/img_company"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight=".1"
+                app:srcCompat="@drawable/ic_red_24dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txt_audit"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1.9"
+                android:text="Audit:" />
+
+            <ImageView
+                android:id="@+id/img_audit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight=".1"
+                app:srcCompat="@drawable/ic_red_24dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txt_notification"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1.9"
+                android:text="Notification:" />
+
+            <ImageView
+                android:id="@+id/img_notification"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight=".1"
+                app:srcCompat="@drawable/ic_red_24dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txt_login"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1.9"
+                android:text="Login:" />
+
+            <ImageView
+                android:id="@+id/img_login"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight=".1"
+                app:srcCompat="@drawable/ic_red_24dp" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_send_audit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Send audit" />
+
+        <Button
+            android:id="@+id/btn_login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Login" />
+    </LinearLayout>
 
 
 </android.support.design.widget.CoordinatorLayout>

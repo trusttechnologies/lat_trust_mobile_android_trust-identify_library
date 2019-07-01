@@ -1,4 +1,12 @@
 package lat.trust.trustdemo.ui.home;
 
-public class HomeRouter {
+import android.app.Activity;
+
+public class HomeRouter implements HomeContract.Router {
+
+    private Activity mActivity;
+
+    public HomeRouter(Activity mActivity) {
+        this.mActivity = mActivity;
+    }
 }

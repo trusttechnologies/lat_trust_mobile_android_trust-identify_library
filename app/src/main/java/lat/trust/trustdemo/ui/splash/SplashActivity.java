@@ -1,11 +1,8 @@
 package lat.trust.trustdemo.ui.splash;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
 
 import lat.trust.trustdemo.R;
 import lat.trust.trustdemo.ui.home.MainActivity;
@@ -36,7 +33,6 @@ public class SplashActivity extends AppCompatActivity implements DialogPermissio
         TrustLogger.d(String.valueOf(status));
         if (status) {
             startActivity(new Intent(SplashActivity.this, MainActivity.class));
-            // Permissions.checkPermissions(SplashActivity.this, this);
         } else {
             finish();
         }

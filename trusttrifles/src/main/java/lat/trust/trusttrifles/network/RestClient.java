@@ -7,14 +7,9 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/**
- * Created by felipe on 15-03-18.
- * <p>
- * This class contains default networking configurations for OkHttp and Retrofit
- */
 
 public class RestClient {
-    public static final String BASE_URL2 = "https://api.trust.lat/identification/";
+    private static final String BASE_URL2 = "https://api.trust.lat/identification/";
     private static final int CONNECT_TIMEOUT = 30 * 4;
     private static final int WRITE_TIMEOUT = 30 * 4;
     private static final int READ_TIMEOUT = 30 * 4;
@@ -24,9 +19,6 @@ public class RestClient {
         setup();
     }
 
-    /**
-     * Class constructor
-     */
 
 
     /**

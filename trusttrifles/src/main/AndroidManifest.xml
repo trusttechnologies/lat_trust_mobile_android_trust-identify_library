@@ -21,23 +21,12 @@
     <application>
         <!-- =================== SERVICES =================== -->
         <!-- REMOTE AUDIT SERVICE -->
-        <service android:name=".services.RemoteAuditService" />
         <service android:name=".services.LocationGPSService" />
         <service android:name=".services.WifiService" /> <!-- WIFI STATE RECEIVER -->
         <!-- LOCATION SERVICE -->
         <!-- =================== RECEIVERS =================== -->
-        <!-- PHONE STATE RECEIVER -->
-        <receiver android:name=".broadcasts.PhoneStatReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.PHONE_STATE" />
-                <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
-            </intent-filter>
-        </receiver> <!-- BOOT COMPLETE RECEIVER -->
-        <receiver android:name=".broadcasts.BootCompleted">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver> <!-- WIFI STATE RECEIVER -->
+
+
         <!--
    <receiver android:name="lat.trust.trusttrifles.broadcasts.WifiStateReceiver">
 
@@ -56,26 +45,9 @@
                 <action android:name="android.intent.action.SIM_STATE_CHANGED" />
             </intent-filter>
         </receiver>
-        <!--
-SMS
-                <receiver android:name=".broadcasts.SmsBroadcastReceiver" android:exported="true">
-                    <intent-filter>
-                        <action android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVED"/>
-                    </intent-filter>
-                </receiver>
-        -->
-        <!-- ALARM RECEIVER -->
-        <receiver android:name=".broadcasts.AlarmReceiver" /> <!-- SMS RECEIVER -->
-        <receiver android:name=".broadcasts.SmsBroadcastReceiver">
-            <intent-filter>
-                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
-            </intent-filter>
-        </receiver>
-        <receiver android:name=".broadcasts.NetworkConnectionReceiver">
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-            </intent-filter>
-        </receiver>
+
+
+
     </application>
 
 </manifest>
