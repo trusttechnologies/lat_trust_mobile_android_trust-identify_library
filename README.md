@@ -18,7 +18,7 @@ Trust is a platform that allows building trust and security between people and t
   
 ```java  
 dependencies {  
- implementation 'lat.trust.trustdemo:trusttrifles:1.0.38'
+ implementation 'lat.trust.trustdemo:trusttrifles:1.0.50'
  }  
   
 ```  
@@ -141,10 +141,35 @@ Notifications.registerDevice(FirebaseInstanceId.getInstance().getToken(),context
 ```java  
 AutomaticAudit.createAutomaticAudit("operation test","method test","result test",context);  
 ```  
+
 Where  
 **Operation**: It is the context that you want to register, example: Daily audit of login.  
 **Method**: It is the process that executed the audit, example: DailyAudit.  
 **Result**: It is the result of that audit, example: start of successful session!  
+
+## Audit  return id
+  Audits are events that are to be reported to be stored and subsequently consulted as a record  
+```java  
+AutomaticAudit.createAutomaticAudit(“operation”, “method”, “result”,object_audit, this, new TrustListener.OnResultAudit() {
+               @Override
+               public void onSuccess(String idAudit) {
+                      //code for idaudit
+               }
+
+               @Override
+               public void onError(String error) {
+
+               }
+           });  
+```  
+
+Where  
+**Operation**: It is the context that you want to register, example: Daily audit of login.  
+**Method**: It is the process that executed the audit, example: DailyAudit.  
+**Result**: It is the result of that audit, example: start of successful session!  
+**Object_Audit**:  It is an object that has audit data.
+**Context**:Context of the application or activity.
+**OnResultAudit**:Interface listener to get idAudit.
 
   ### Types of automatic audits
     
