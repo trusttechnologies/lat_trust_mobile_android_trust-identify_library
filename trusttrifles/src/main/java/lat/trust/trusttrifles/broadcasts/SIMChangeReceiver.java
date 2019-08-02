@@ -13,9 +13,6 @@ import static lat.trust.trusttrifles.utilities.Constants.SIM_RECEIVER_TAG;
 
 
 public class SIMChangeReceiver extends BroadcastReceiver {
-    private static final String OPERATION = "AUTOMATIC SIM CHANGE";
-    private static final String METHOD = "METHOD: SIM CHANGE";
-    public static final String RESULT = "RESULT: ";
 
     /**
      * This method will be called when a sim state change was detected

@@ -2,6 +2,7 @@ package lat.trust.trusttrifles.network;
 
 import java.util.concurrent.TimeUnit;
 
+import lat.trust.trusttrifles.TrustIdentifyConfigurationService;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -9,7 +10,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class RestClient {
-    private static final String BASE_URL2 = "https://api.trust.lat/identification/";
+    private static final String URL_PROD = "https://api.trust.lat/identification/";
+    private static final String URL_DEV = "https://api2.trust.lat/identification/";
     private static final int CONNECT_TIMEOUT = 30 * 4;
     private static final int WRITE_TIMEOUT = 30 * 4;
     private static final int READ_TIMEOUT = 30 * 4;
@@ -18,7 +20,6 @@ public class RestClient {
     static {
         setup();
     }
-
 
 
     /**
@@ -45,7 +46,7 @@ public class RestClient {
                 .build();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL2)
+                .baseUrl(TrustIdentifyConfigurationService.getEnvironment() ? URL_PROD : URL_DEV)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(okHttpClient)
                 .build();

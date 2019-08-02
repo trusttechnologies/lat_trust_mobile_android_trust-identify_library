@@ -5,11 +5,11 @@ import com.google.gson.annotations.SerializedName;
 import lat.trust.trusttrifles.model.Audit;
 
 public class TrifleResponse {
-   private Boolean status;
-   private String message;
-   private  String trustid;
+    private Boolean status;
+    private String message;
+    private String trustid;
 
-   private Audit audit;
+    private Audit audit;
 
     public Audit getAudit() {
         return audit;
@@ -45,5 +45,8 @@ public class TrifleResponse {
     public void setTrustid(String trustid) {
         this.trustid = trustid;
     }
+
+
+    //todo cambiar url a url2
 }
- //{"status":true,"message":"The device was identified, it already exists in our records.","trustid":"46de3ab6-f250-4149-ad9d-34bc32f21095"}
+//{"status":true,"message":"The device was identified, it already exists in our records.","trustid":"46de3ab6-f250-4149-ad9d-34bc32f21095"}
