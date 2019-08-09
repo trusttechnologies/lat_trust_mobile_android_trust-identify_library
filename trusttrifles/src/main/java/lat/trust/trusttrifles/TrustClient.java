@@ -1056,7 +1056,7 @@ public class TrustClient {
      * @param mBody
      * @param listener envialo si quieres recuperar la respuesta desde tu aplicacion
      */
-    private void sendTrifles(@NonNull final TrifleBody mBody, @Nullable final TrustListener.OnResult<Audit> listener) {
+    void sendTrifles(@NonNull final TrifleBody mBody, @Nullable final TrustListener.OnResult<Audit> listener) {
         if (Hawk.contains(Constants.TOKEN_SERVICE)) {
             Call<TrifleResponse> createTrifle = RestClient.get().trifle2(mBody, Hawk.get(Constants.TOKEN_SERVICE).toString());
             createTrifle.enqueue(new Callback<TrifleResponse>() {

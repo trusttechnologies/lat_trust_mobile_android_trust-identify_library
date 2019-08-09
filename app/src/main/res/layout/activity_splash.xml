@@ -17,6 +17,7 @@
             android:src="@mipmap/ic_launcher"
             />
         <TextView
+            android:id="@+id/trustid"
             android:layout_marginTop="32dp"
             android:textAlignment="center"
             android:layout_width="match_parent"

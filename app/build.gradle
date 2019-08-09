@@ -68,6 +68,5 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:9.2.0'
 
 
-    implementation 'com.trust.audit:audit:1.0.0'
 
 }
