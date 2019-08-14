@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import lat.trust.trusttrifles.model.Audit;
 import lat.trust.trusttrifles.model.Camera;
 import lat.trust.trusttrifles.model.Device;
+import lat.trust.trusttrifles.model.Identity;
 import lat.trust.trusttrifles.model.TrustAuth;
 import lat.trust.trusttrifles.network.req.TrifleBody;
 import lat.trust.trusttrifles.utilities.Constants;
@@ -94,6 +95,8 @@ public class TrustClientLite {
         //=============== nope zone =================
         device.setCameras(new ArrayList<Camera>());
         device.setCameras_size("0");
+
+
         TrustLogger.d(new Gson().toJson(device));
 
         return device;
@@ -105,8 +108,19 @@ public class TrustClientLite {
         trifleBody.setDevice(getDeviceData(context));
         trifleBody.setSim(A.getListSIM(context));
         trifleBody.setTrustId(Hawk.contains(Constants.TRUST_ID_AUTOMATIC) ? Hawk.get(Constants.TRUST_ID_AUTOMATIC) : null);
+        trifleBody.setIdentity(A.getIdentity());
         TrustClient.init(context);
         TrustClient.getInstance().sendTrifles(trifleBody, listener);
+    }
+
+    public static void saveIdentity(Identity identity) {
+        Hawk.put(Constants.IDENTITY, identity);
+    }
+
+    public static void deleteIdentity() {
+        if (Hawk.contains(Constants.IDENTITY)) {
+            Hawk.delete(Constants.IDENTITY);
+        }
     }
 
 }

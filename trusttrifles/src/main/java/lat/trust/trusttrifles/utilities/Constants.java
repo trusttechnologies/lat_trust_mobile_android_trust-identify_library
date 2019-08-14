@@ -68,4 +68,6 @@ public class Constants {
     public static final String WIFI_STATUS = "wifi_status";
     public static final String BLUETOOTH_STATUS = "bluetooth_status";
 
+    public static final String IDENTITY = "com.trust.identity";
+
 }

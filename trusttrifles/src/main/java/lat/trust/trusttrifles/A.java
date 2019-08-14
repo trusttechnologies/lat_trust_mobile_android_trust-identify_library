@@ -35,6 +35,7 @@ import java.util.UUID;
 
 import io.sentry.Sentry;
 import lat.trust.trusttrifles.model.Device;
+import lat.trust.trusttrifles.model.Identity;
 import lat.trust.trusttrifles.model.SIM;
 import lat.trust.trusttrifles.model.SensorData;
 import lat.trust.trusttrifles.utilities.Constants;
@@ -549,4 +550,20 @@ class A {
         return result;
     }
 
+
+    static Identity getIdentity() {
+        try {
+            Identity identity = new Identity();
+
+            if (Hawk.contains(Constants.IDENTITY)) {
+                identity = Hawk.get(Constants.IDENTITY);
+            }
+            return identity;
+        } catch (Exception ex) {
+            TrustLogger.d("error get Identity: " + ex.getMessage());
+            return new Identity();
+        }
+
+
+    }
 }
