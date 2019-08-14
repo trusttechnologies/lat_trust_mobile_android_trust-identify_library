@@ -50,5 +50,10 @@ public class Identity {
     }
 
     public Identity() {
+        this.setPhone("");
+        this.setName("");
+        this.setLastname("");
+        this.setEmail("");
+        this.setDni("");
     }
 }
