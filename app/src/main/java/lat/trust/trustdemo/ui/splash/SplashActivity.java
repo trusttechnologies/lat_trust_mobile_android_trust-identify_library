@@ -6,13 +6,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
 import com.karumi.dexter.Dexter;
+import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionDeniedResponse;
 import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import lat.trust.trustdemo.R;
 import lat.trust.trustdemo.ui.home.MainActivity;
@@ -24,6 +27,7 @@ import lat.trust.trusttrifles.ui.DialogInformation;
 import lat.trust.trusttrifles.ui.DialogPermission;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 
+import static android.Manifest.permission.BLUETOOTH;
 import static android.Manifest.permission.READ_PHONE_STATE;
 
 public class SplashActivity extends AppCompatActivity implements DialogPermission.DialogPermissionListener {
@@ -36,23 +40,15 @@ public class SplashActivity extends AppCompatActivity implements DialogPermissio
         TrustLogger.logo();
         trustid = findViewById(R.id.trustid);
 
-        Dexter.withActivity(this).withPermission(READ_PHONE_STATE).withListener(new PermissionListener() {
+        Dexter.withActivity(this).withPermissions(READ_PHONE_STATE, BLUETOOTH).withListener(new MultiplePermissionsListener() {
             @Override
-            public void onPermissionGranted(PermissionGrantedResponse response) {
+            public void onPermissionsChecked(MultiplePermissionsReport report) {
                 getTrustId();
-
-            }
-
-
-            @Override
-            public void onPermissionDenied(PermissionDeniedResponse response) {
-                TrustLogger.d("denied");
-
             }
 
             @Override
-            public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
-                TrustLogger.d("denied 2");
+            public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
+
             }
         }).check();
 
@@ -66,6 +62,7 @@ public class SplashActivity extends AppCompatActivity implements DialogPermissio
         dialogInformation.show();*/
 
     }
+
 
     private void getTrustId() {
         TrustClientLite.getTrustIDLite(SplashActivity.this, new TrustListener.OnResult<Audit>() {

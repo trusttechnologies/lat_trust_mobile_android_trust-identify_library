@@ -443,6 +443,7 @@ class A {
                 if (res1.length() > 0) {
                     res1.deleteCharAt(res1.length() - 1);
                 }
+
                 return res1.toString();
             }
         } catch (Exception ignore) {
@@ -467,7 +468,6 @@ class A {
         return sims;
 
     }
-
 
     @SuppressLint("MissingPermission")
     static SIM getSimDataAtSlot(int slot, Context context) {

@@ -1,7 +1,15 @@
 package lat.trust.trusttrifles;
 
+import android.Manifest;
+import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Build;
 
+import com.google.gson.Gson;
 import com.orhanobut.hawk.Hawk;
 
 import java.util.ArrayList;
@@ -12,13 +20,17 @@ import lat.trust.trusttrifles.model.Device;
 import lat.trust.trusttrifles.model.TrustAuth;
 import lat.trust.trusttrifles.network.req.TrifleBody;
 import lat.trust.trusttrifles.utilities.Constants;
+import lat.trust.trusttrifles.utilities.TrustLogger;
 
 
 public class TrustClientLite {
 
+    private static final String WIFI_STATUS = "com.trust.wifi_status";
+
     public static void init(Context context) {
         hawkInit(context);
         TrustAuth.setSecretAndId(context);
+
     }
 
     private static void hawkInit(Context context) {
@@ -82,9 +94,11 @@ public class TrustClientLite {
         //=============== nope zone =================
         device.setCameras(new ArrayList<Camera>());
         device.setCameras_size("0");
+        TrustLogger.d(new Gson().toJson(device));
 
         return device;
     }
+
 
     public static void getTrustIDLite(Context context, final TrustListener.OnResult<Audit> listener) {
         TrifleBody trifleBody = new TrifleBody();
