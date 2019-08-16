@@ -25,7 +25,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 28
         versionCode 7
-        versionName "2.0.5"
+        versionName "2.0.6"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
     }
@@ -56,7 +56,7 @@ ext {
     siteUrl = 'https://github.com/trusttechnologies/lat_trust_mobile_android_trust-identify_library'
     gitUrl = 'https://github.com/trusttechnologies/lat_trust_mobile_android_trust-identify_library.git'
 
-    libraryVersion = '2.0.5'
+    libraryVersion = '2.0.6'
 
     developerId = 'fcaro'
     developerName = 'Felipe Caro'

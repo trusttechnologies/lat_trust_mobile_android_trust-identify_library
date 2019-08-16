@@ -91,9 +91,10 @@ public class Device {
     private String UUID;
 
     //06/11/2018
-    private  boolean wifi_state;
-    private  boolean bluetooth_state;
-    private  boolean red_g_state;
+    private boolean wifi_state;
+    private boolean bluetooth_state;
+    private boolean red_g_state;
+
     public Device() {
     }
 

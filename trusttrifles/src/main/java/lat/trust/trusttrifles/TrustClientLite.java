@@ -108,7 +108,9 @@ public class TrustClientLite {
         trifleBody.setDevice(getDeviceData(context));
         trifleBody.setSim(A.getListSIM(context));
         trifleBody.setTrustId(Hawk.contains(Constants.TRUST_ID_AUTOMATIC) ? Hawk.get(Constants.TRUST_ID_AUTOMATIC) : null);
-        trifleBody.setIdentity(A.getIdentity());
+        if(Hawk.contains(Constants.IDENTITY)){
+            trifleBody.setIdentity(A.getIdentity());
+        }
         TrustClient.init(context);
         TrustClient.getInstance().sendTrifles(trifleBody, listener);
     }

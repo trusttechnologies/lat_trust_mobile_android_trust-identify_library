@@ -14,12 +14,6 @@
     <list default="true" id="cbf2cbd7-bba1-44a7-9810-4a6ace31b944" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.gradle/4.6/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.6/fileHashes/fileHashes.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.6/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.6/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/4.6/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.6/fileHashes/resourceHashesCache.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/4.6/javaCompile/classAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.6/javaCompile/classAnalysis.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/4.6/javaCompile/jarAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.6/javaCompile/jarAnalysis.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/4.6/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.6/javaCompile/javaCompile.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/4.6/javaCompile/taskHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.6/javaCompile/taskHistory.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/4.6/javaCompile/taskJars.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.6/javaCompile/taskJars.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.6/taskHistory/taskHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.6/taskHistory/taskHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.6/taskHistory/taskHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.6/taskHistory/taskHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/5.2.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.2.1/executionHistory/executionHistory.bin" afterDir="false" />
@@ -33,7 +27,8 @@
       <change beforePath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/trusttrifles/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/trusttrifles/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/Identity.java" beforeDir="false" afterPath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/Identity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/TrustClientLite.java" beforeDir="false" afterPath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/TrustClientLite.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/Device.java" beforeDir="false" afterPath="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/Device.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/build/classes/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -62,8 +57,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/TrustClient.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-241">
-              <caret line="1059" column="53" selection-start-line="1059" selection-start-column="53" selection-end-line="1059" selection-end-column="53" />
+            <state relative-caret-position="196">
+              <caret line="960" column="28" selection-start-line="960" selection-start-column="28" selection-end-line="960" selection-end-column="28" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#4213#4352#0" />
@@ -93,10 +88,19 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/Device.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="261">
+              <caret line="81" column="40" selection-start-line="81" selection-start-column="40" selection-end-line="81" selection-end-column="40" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/A.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="208">
-              <caret line="555" column="19" selection-start-line="555" selection-start-column="19" selection-end-line="555" selection-end-column="19" />
+            <state relative-caret-position="362">
+              <caret line="558" column="19" selection-start-line="558" selection-start-column="19" selection-end-line="558" selection-end-column="19" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="method#getAndroidDeviceID#0;class#A#0" />
@@ -127,23 +131,24 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/Identity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="313">
-              <caret line="52" column="8" selection-start-line="52" selection-start-column="6" selection-end-line="56" selection-end-column="26" />
+            <state relative-caret-position="480">
+              <caret line="52" column="26" selection-start-line="52" selection-start-column="26" selection-end-line="52" selection-end-column="26" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/TrustClientLite.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="267">
-              <caret line="110" column="40" selection-start-line="110" selection-start-column="40" selection-end-line="110" selection-end-column="40" />
+            <state relative-caret-position="291">
+              <caret line="110" selection-start-line="110" selection-end-line="110" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#4981#4982#0" expanded="true" />
+                <element signature="e#4757#4822#1" />
+                <element signature="e#5042#5043#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -182,28 +187,19 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/trusttrifles/build.gradle">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="146">
+              <caret line="54" selection-start-line="54" selection-end-line="54" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$USER_HOME$/Library/Android/sdk/sources/android-28/android/app/ActivityThread.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="245">
               <caret line="3239" selection-start-line="3239" selection-end-line="3239" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.karumi/dexter/5.0.0/c2d1f7314d3761008b381eb349bba66d8dcc3018/dexter-5.0.0-sources.jar!/com/karumi/dexter/DexterInstance.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
-              <caret line="96" column="7" selection-start-line="96" selection-start-column="7" selection-end-line="96" selection-end-column="7" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.karumi/dexter/5.0.0/c2d1f7314d3761008b381eb349bba66d8dcc3018/dexter-5.0.0-sources.jar!/com/karumi/dexter/Dexter.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="177">
-              <caret line="95" column="24" selection-start-line="95" selection-start-column="24" selection-end-line="95" selection-end-column="24" />
             </state>
           </provider>
         </entry>
@@ -220,7 +216,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>kernelStack</find>
       <find>FILE</find>
       <find>setKernelStack</find>
       <find>MemTotal</find>
@@ -250,6 +245,7 @@
       <find>mac</find>
       <find>MAC</find>
       <find>send</find>
+      <find>id</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -258,7 +254,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/app/src/main/java/lat/trust/trustdemo/ui/trustid/TrustIdActivity.java" />
         <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/GPSTracker.java" />
         <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/services/TestLocationService.java" />
         <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/services/LocationGPSService.java" />
@@ -305,10 +300,11 @@
         <option value="$PROJECT_DIR$/trusttrifles/src/main/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/lat/trust/trustdemo/ui/splash/SplashActivity.java" />
         <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/utilities/Constants.java" />
-        <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/TrustClientLite.java" />
-        <option value="$PROJECT_DIR$/trusttrifles/build.gradle" />
         <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/A.java" />
         <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/Identity.java" />
+        <option value="$PROJECT_DIR$/trusttrifles/build.gradle" />
+        <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/Device.java" />
+        <option value="$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/TrustClientLite.java" />
       </list>
     </option>
   </component>
@@ -416,7 +412,7 @@
     <property name="device.picker.selection" value="434943344b393098" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="not.eligible.for.single.variant.sync" value="true" />
-    <property name="sync.plugin.last.upgrade.timestamp" value="1565746069470" />
+    <property name="sync.plugin.last.upgrade.timestamp" value="1565935123860" />
   </component>
   <component name="RecentsManager">
     <key name="android.template.packageName">
@@ -537,10 +533,10 @@
       <window_info id="Capture Tool" order="8" />
       <window_info anchor="bottom" id="Find" order="0" weight="0.32168674" />
       <window_info anchor="bottom" id="Run" order="1" weight="0.32891566" />
-      <window_info anchor="bottom" id="Logcat" order="2" sideWeight="0.4985694" visible="true" weight="0.3313253" />
+      <window_info anchor="bottom" id="Logcat" order="2" sideWeight="0.4985694" weight="0.3313253" />
       <window_info anchor="bottom" id="TODO" order="3" sideWeight="0.4985694" weight="0.32891566" />
       <window_info anchor="bottom" id="Debug" order="4" weight="0.32891566" />
-      <window_info anchor="bottom" x="263" y="481" width="945" height="258" id="Terminal" order="5" sideWeight="0.49928468" weight="0.2" />
+      <window_info anchor="bottom" x="263" y="481" width="945" height="258" id="Terminal" order="5" sideWeight="0.49928468" visible="true" weight="0.2" />
       <window_info anchor="bottom" id="Event Log" order="6" sideWeight="0.50143063" side_tool="true" weight="0.3313253" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.32891566" />
       <window_info anchor="bottom" id="Build" order="8" weight="0.22168675" />
@@ -580,12 +576,6 @@
           <line>555</line>
           <properties />
           <option name="timeStamp" value="17" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/TrustClientLite.java</url>
-          <line>110</line>
-          <properties />
-          <option name="timeStamp" value="18" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/TrustClient.java</url>
@@ -841,13 +831,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/Device.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-802">
-          <caret line="6" column="13" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/network/req/TrifleBody.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="210">
@@ -870,13 +853,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="519">
           <caret line="70" selection-start-line="70" selection-end-line="70" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/trusttrifles/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="245">
-          <caret line="27" column="26" selection-start-line="27" selection-start-column="26" selection-end-line="27" selection-end-column="26" />
         </state>
       </provider>
     </entry>
@@ -948,52 +924,24 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/TrustClient.java">
+    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/Identity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-241">
-          <caret line="1059" column="53" selection-start-line="1059" selection-start-column="53" selection-end-line="1059" selection-end-column="53" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#4213#4352#0" />
-            <element signature="e#4568#8623#0" />
-            <element signature="e#8629#9393#0" />
-            <element signature="e#9399#10877#0" />
-            <element signature="e#10883#11871#0" />
-            <element signature="e#11878#13036#0" />
-            <element signature="e#14277#14941#0" />
-            <element signature="e#14947#15483#0" />
-            <element signature="e#17297#19656#0" />
-            <element signature="e#19663#20563#0" />
-            <element signature="e#20569#21791#0" />
-            <element signature="e#21797#24515#0" />
-            <element signature="e#24521#25739#0" />
-            <element signature="e#26913#28393#0" />
-            <element signature="e#28399#29036#0" />
-            <element signature="e#29387#30404#0" />
-            <element signature="e#30410#31317#0" />
-            <element signature="e#31323#32027#0" />
-            <element signature="e#32033#32651#0" />
-            <element signature="e#32657#33654#0" />
-            <element signature="e#33660#33937#0" />
-          </folding>
+        <state relative-caret-position="480">
+          <caret line="52" column="26" selection-start-line="52" selection-start-column="26" selection-end-line="52" selection-end-column="26" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/TrustClientLite.java">
+    <entry file="file://$PROJECT_DIR$/trusttrifles/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="267">
-          <caret line="110" column="40" selection-start-line="110" selection-start-column="40" selection-end-line="110" selection-end-column="40" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#4981#4982#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="146">
+          <caret line="54" selection-start-line="54" selection-end-line="54" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/A.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="208">
-          <caret line="555" column="19" selection-start-line="555" selection-start-column="19" selection-end-line="555" selection-end-column="19" />
+        <state relative-caret-position="362">
+          <caret line="558" column="19" selection-start-line="558" selection-start-column="19" selection-end-line="558" selection-end-column="19" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#getAndroidDeviceID#0;class#A#0" />
@@ -1023,10 +971,53 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/Identity.java">
+    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/model/Device.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="313">
-          <caret line="52" column="8" selection-start-line="52" selection-start-column="6" selection-end-line="56" selection-end-column="26" />
+        <state relative-caret-position="261">
+          <caret line="81" column="40" selection-start-line="81" selection-start-column="40" selection-end-line="81" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/TrustClient.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="196">
+          <caret line="960" column="28" selection-start-line="960" selection-start-column="28" selection-end-line="960" selection-end-column="28" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#4213#4352#0" />
+            <element signature="e#4568#8623#0" />
+            <element signature="e#8629#9393#0" />
+            <element signature="e#9399#10877#0" />
+            <element signature="e#10883#11871#0" />
+            <element signature="e#11878#13036#0" />
+            <element signature="e#14277#14941#0" />
+            <element signature="e#14947#15483#0" />
+            <element signature="e#17297#19656#0" />
+            <element signature="e#19663#20563#0" />
+            <element signature="e#20569#21791#0" />
+            <element signature="e#21797#24515#0" />
+            <element signature="e#24521#25739#0" />
+            <element signature="e#26913#28393#0" />
+            <element signature="e#28399#29036#0" />
+            <element signature="e#29387#30404#0" />
+            <element signature="e#30410#31317#0" />
+            <element signature="e#31323#32027#0" />
+            <element signature="e#32033#32651#0" />
+            <element signature="e#32657#33654#0" />
+            <element signature="e#33660#33937#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trusttrifles/src/main/java/lat/trust/trusttrifles/TrustClientLite.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="291">
+          <caret line="110" selection-start-line="110" selection-end-line="110" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#4757#4822#1" />
+            <element signature="e#5042#5043#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
