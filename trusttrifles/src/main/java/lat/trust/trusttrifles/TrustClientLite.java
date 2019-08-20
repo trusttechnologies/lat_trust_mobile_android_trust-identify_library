@@ -1,13 +1,6 @@
 package lat.trust.trusttrifles;
 
-import android.Manifest;
-import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.Build;
 
 import com.google.gson.Gson;
 import com.orhanobut.hawk.Hawk;
@@ -31,7 +24,11 @@ public class TrustClientLite {
     public static void init(Context context) {
         hawkInit(context);
         TrustAuth.setSecretAndId(context);
+        setEnvironment(context);
+    }
 
+    private static void setEnvironment(Context context) {
+        TrustIdentifyConfigurationService.setEnvironment(TrustIdentifyConfigurationService.ENVIRONMENT_PRODUCTION, context);
     }
 
     private static void hawkInit(Context context) {
@@ -42,77 +39,75 @@ public class TrustClientLite {
 
     private static Device getDeviceData(Context context) {
         Device device = new Device();
-        device.setAndroid_device_id(A.getAndroidDeviceID(context));
-        device.setBattery(A.getBatteryData(context));
-        device.setBattery_capacity(A.getBatteryCapacity(context) == 0 ? "Not Found" : String.valueOf(A.getBatteryCapacity(context)).concat(" mAh"));
-        device.setBattery_technology(A.getBatteryTechnology(context));
-        device.setBluetooth_state(A.getBluetoothState());
-        device.setBoard(A.getBoard());
-        device.setBrand(A.getBrand());
-        device.setDisplay(A.getDisplay());
-        device.setDevice(A.getDevice());
-        device.setSystemVersion(A.getSystemVersion());
-        device.setFingerprint(A.getFingerprint());
-        device.setHardware(A.getHardware());
-        device.setId(A.getId());
-        device.setHost(A.getHost());
-        device.setManufacturer(A.getManufacturer());
-        device.setModel(A.getModel());
-        device.setProduct(A.getProduct());
-        device.setSerial(A.getSerial());
-        device.setProcessorModelName(A.getDataCPUFile("Processor"));
-        device.setProcessorModelName(A.getDataCPUFile("model name"));
-        device.setProcessorBogomips(A.getDataCPUFile("BogoMIPS"));
-        device.setProcessorFeatures(A.getDataCPUFile("Features"));
-        device.setProcessorHardware(A.getDataCPUFile("Hardware"));
-        device.setProcessorRevision(A.getDataCPUFile("Revision"));
-        device.setProcessorSerial(A.getDataCPUFile("Serial"));
-        device.setProcessorDevice(A.getDataCPUFile("Device"));
-        device.setProcessorRadio(A.getDataCPUFile("Radio"));
-        device.setProcessorMsmHardware(A.getDataCPUFile("MSM Hardware"));
-        device.setCpuImplementer(A.getDataCPUFile("CPU implementer"));
-        device.setCpuArchitecture(A.getDataCPUFile("CPU architecture"));
-        device.setCpuVariant(A.getDataCPUFile("CPU variant"));
-        device.setCpuPart(A.getDataCPUFile("CPU part"));
-        device.setCpuRevision(A.getDataCPUFile("CPU revision"));
-        device.setKernelStack(A.getDataMEMFile(""));
-        device.setMemTotal(A.getDataMEMFile("MemTotal"));
+        device.setAndroid_device_id(DataUtil.getAndroidDeviceID(context));
+        device.setBattery(DataUtil.getBatteryData(context));
+        device.setBattery_capacity(DataUtil.getBatteryCapacity(context) == 0 ? "Not Found" : String.valueOf(DataUtil.getBatteryCapacity(context)).concat(" mAh"));
+        device.setBattery_technology(DataUtil.getBatteryTechnology(context));
+        device.setBluetooth_state(DataUtil.getBluetoothState());
+        device.setBoard(DataUtil.getBoard());
+        device.setBrand(DataUtil.getBrand());
+        device.setDisplay(DataUtil.getDisplay());
+        device.setDevice(DataUtil.getDevice());
+        device.setSystemVersion(DataUtil.getSystemVersion());
+        device.setFingerprint(DataUtil.getFingerprint());
+        device.setHardware(DataUtil.getHardware());
+        device.setId(DataUtil.getId());
+        device.setHost(DataUtil.getHost());
+        device.setManufacturer(DataUtil.getManufacturer());
+        device.setModel(DataUtil.getModel());
+        device.setProduct(DataUtil.getProduct());
+        device.setSerial(DataUtil.getSerial());
+        device.setProcessorModelName(DataUtil.getDataCPUFile("Processor"));
+        device.setProcessorModelName(DataUtil.getDataCPUFile("model name"));
+        device.setProcessorBogomips(DataUtil.getDataCPUFile("BogoMIPS"));
+        device.setProcessorFeatures(DataUtil.getDataCPUFile("Features"));
+        device.setProcessorHardware(DataUtil.getDataCPUFile("Hardware"));
+        device.setProcessorRevision(DataUtil.getDataCPUFile("Revision"));
+        device.setProcessorSerial(DataUtil.getDataCPUFile("Serial"));
+        device.setProcessorDevice(DataUtil.getDataCPUFile("Device"));
+        device.setProcessorRadio(DataUtil.getDataCPUFile("Radio"));
+        device.setProcessorMsmHardware(DataUtil.getDataCPUFile("MSM Hardware"));
+        device.setCpuImplementer(DataUtil.getDataCPUFile("CPU implementer"));
+        device.setCpuArchitecture(DataUtil.getDataCPUFile("CPU architecture"));
+        device.setCpuVariant(DataUtil.getDataCPUFile("CPU variant"));
+        device.setCpuPart(DataUtil.getDataCPUFile("CPU part"));
+        device.setCpuRevision(DataUtil.getDataCPUFile("CPU revision"));
+        device.setKernelStack(DataUtil.getDataMEMFile(""));
+        device.setMemTotal(DataUtil.getDataMEMFile("MemTotal"));
         device.setSwapTotal("SwapTotal");
-        device.setImei(A.getImei(context));
-        device.setSoftwareVersion(A.getSoftwareVersion(context));
-        device.setSystemName(A.getSystemName());
-        device.setRoot(A.getRooted(context));
-        device.setNfc(A.getNFCData(context));
-        device.setGoogle_service_framework_gsf(A.getGSFID(context));
-        device.setSensorData(A.getSensorsData(context));
-        device.setSensor_size(A.getSensorSize(context));
-        device.setWifi_state(A.getWifiState(context));
-        device.setRed_g_state(A.getRedGState(context));
-        device.setWlan0Mac(A.getMacAddress());
-        device.setBluetoothMac(A.getBluetoothMacAddress());
-        device.setProcessorQuantity(A.getProcessorQuantity());
-        device.setUUID(A.getUUID());
+        device.setImei(DataUtil.getImei(context));
+        device.setSoftwareVersion(DataUtil.getSoftwareVersion(context));
+        device.setSystemName(DataUtil.getSystemName());
+        device.setRoot(DataUtil.getRooted(context));
+        device.setNfc(DataUtil.getNFCData(context));
+        device.setGoogle_service_framework_gsf(DataUtil.getGSFID(context));
+        device.setSensorData(DataUtil.getSensorsData(context));
+        device.setSensor_size(DataUtil.getSensorSize(context));
+        device.setWifi_state(DataUtil.getWifiState(context));
+        device.setRed_g_state(DataUtil.getRedGState(context));
+        device.setWlan0Mac(DataUtil.getMacAddress());
+        device.setBluetoothMac(DataUtil.getBluetoothMacAddress());
+        device.setProcessorQuantity(DataUtil.getProcessorQuantity());
+        device.setUUID(DataUtil.getUUID());
         //=============== nope zone =================
         device.setCameras(new ArrayList<Camera>());
         device.setCameras_size("0");
 
 
         TrustLogger.d(new Gson().toJson(device));
-
+        DataUtil.getBundleId(context);
         return device;
     }
-
 
     public static void getTrustIDLite(Context context, final TrustListener.OnResult<Audit> listener) {
         TrifleBody trifleBody = new TrifleBody();
         trifleBody.setDevice(getDeviceData(context));
-        trifleBody.setSim(A.getListSIM(context));
+        trifleBody.setSim(DataUtil.getListSIM(context));
         trifleBody.setTrustId(Hawk.contains(Constants.TRUST_ID_AUTOMATIC) ? Hawk.get(Constants.TRUST_ID_AUTOMATIC) : null);
-        if(Hawk.contains(Constants.IDENTITY)){
-            trifleBody.setIdentity(A.getIdentity());
+        if (Hawk.contains(Constants.IDENTITY)) {
+            trifleBody.setIdentity(DataUtil.getIdentity());
         }
-        TrustClient.init(context);
-        TrustClient.getInstance().sendTrifles(trifleBody, listener);
+        SendTrifles.sendTriflesToken(trifleBody, context, listener);
     }
 
     public static void saveIdentity(Identity identity) {
@@ -124,5 +119,10 @@ public class TrustClientLite {
             Hawk.delete(Constants.IDENTITY);
         }
     }
+
+    public static String getBundleId(Context context) {
+        return DataUtil.getBundleId(context);
+    }
+
 
 }

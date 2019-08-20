@@ -10,7 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RestClientAccessToken {
     private static final String BASE_URL_PROD = "https://atenea.trust.lat/";
-    private static final String BASE_URL_TEMP = "https://atenea2.trust.lat/";
+    private static final String BASE_URL_TEMP = "https://atenea-tst.trust.lat/";
     private static final int CONNECT_TIMEOUT = 30 * 4;
     private static final int WRITE_TIMEOUT = 30 * 4;
     private static final int READ_TIMEOUT = 30 * 4;

@@ -70,4 +70,6 @@ public class Constants {
 
     public static final String IDENTITY = "com.trust.identity";
 
+    public static final String BUNDLE_ID_IDENTIFY = "bundle.id.identify";
+
 }

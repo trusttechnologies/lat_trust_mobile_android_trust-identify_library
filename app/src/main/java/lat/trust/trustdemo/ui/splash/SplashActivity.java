@@ -37,7 +37,6 @@ public class SplashActivity extends AppCompatActivity implements DialogPermissio
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        TrustLogger.logo();
         trustid = findViewById(R.id.trustid);
 
         Dexter.withActivity(this).withPermissions(READ_PHONE_STATE, BLUETOOTH).withListener(new MultiplePermissionsListener() {
@@ -52,14 +51,6 @@ public class SplashActivity extends AppCompatActivity implements DialogPermissio
             }
         }).check();
 
-        DialogInformation dialogInformation = new DialogInformation(this);
-       /* dialogInformation.configuration(
-                this,
-                getSupportFragmentManager(),
-                R.drawable.ic_ico_sim_tarjeta_historial,
-                "Trust Technologies",
-                true);
-        dialogInformation.show();*/
 
     }
 

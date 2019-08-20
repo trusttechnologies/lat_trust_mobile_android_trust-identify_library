@@ -23,13 +23,6 @@
         tools:ignore="ProtectedPermissions" />
 
     <application>
-        <!-- =================== SERVICES =================== -->
-        <!-- REMOTE AUDIT SERVICE -->
-        <service android:name=".services.LocationGPSService" />
-        <service android:name=".services.WifiService" /> <!-- WIFI STATE RECEIVER -->
-        <!-- LOCATION SERVICE -->
-        <!-- =================== RECEIVERS =================== -->
-
 
         <!-- SIM STATE RECEIVER -->
         <receiver

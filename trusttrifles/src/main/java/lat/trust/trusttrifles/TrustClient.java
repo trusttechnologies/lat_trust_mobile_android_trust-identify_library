@@ -56,10 +56,9 @@ import lat.trust.trusttrifles.model.Identity;
 import lat.trust.trusttrifles.model.SIM;
 import lat.trust.trusttrifles.model.SensorData;
 import lat.trust.trusttrifles.model.TrustAuth;
-import lat.trust.trusttrifles.network.RestClient;
+import lat.trust.trusttrifles.network.RestClientIdentify;
 import lat.trust.trusttrifles.network.TrifleResponse;
 import lat.trust.trusttrifles.network.req.TrifleBody;
-import lat.trust.trusttrifles.services.WifiService;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.SaveDeviceInfo;
 import lat.trust.trusttrifles.utilities.TrustLogger;
@@ -94,7 +93,7 @@ public class TrustClient {
 
 
     private TrustClient() {
-        TrustLogger.d("[TRUST CLIENT] : CREATE A INSTANCE");
+        TrustLogger.d("[TRUST CLIENT] : CREATE  INSTANCE");
         TrustPreferences.init(mContext);
         mPreferences = TrustPreferences.getInstance();
     }
@@ -116,7 +115,12 @@ public class TrustClient {
             TrustLogger.d("[TRUST CLIENT] : Hawk was build.. ");
         }
         TrustAuth.setSecretAndId(mContext);
+        setEnvironment(context);
         sentryInit(context);
+    }
+
+    private static void setEnvironment(Context context) {
+        TrustIdentifyConfigurationService.setEnvironment(TrustIdentifyConfigurationService.ENVIRONMENT_PRODUCTION, context);
     }
 
     private static void sentryInit(Context context) {
@@ -900,12 +904,7 @@ public class TrustClient {
 
     }
 
-    private void startWifiService() {
-        TrustLogger.d("[TRUST CLIENT] STARTING WIFI SERVICE...");
-        Intent intentWifi = new Intent(mContext, WifiService.class);
-        intentWifi.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        mContext.startService(intentWifi);
-    }
+
     //endregion
 
     //region Envio de minucias
@@ -1028,8 +1027,6 @@ public class TrustClient {
                     } else {
                         TrustLogger.d("[TRUST CLIENT] TOKEN NO EXIST ");
                     }
-
-                    startWifiService();
                     sendTrifles(mBody, listener);
                 }
             }
@@ -1056,9 +1053,9 @@ public class TrustClient {
      * @param mBody
      * @param listener envialo si quieres recuperar la respuesta desde tu aplicacion
      */
-    void sendTrifles(@NonNull final TrifleBody mBody, @Nullable final TrustListener.OnResult<Audit> listener) {
+   static void sendTrifles(@NonNull final TrifleBody mBody, @Nullable final TrustListener.OnResult<Audit> listener) {
         if (Hawk.contains(Constants.TOKEN_SERVICE)) {
-            Call<TrifleResponse> createTrifle = RestClient.get().trifle2(mBody, Hawk.get(Constants.TOKEN_SERVICE).toString());
+            Call<TrifleResponse> createTrifle = RestClientIdentify.get().trifle2(mBody, Hawk.get(Constants.TOKEN_SERVICE).toString());
             createTrifle.enqueue(new Callback<TrifleResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<TrifleResponse> call, @NonNull Response<TrifleResponse> response) {
@@ -1074,7 +1071,7 @@ public class TrustClient {
                         body.setAudit(audit);
 
                         Hawk.put(Constants.TRUST_ID_AUTOMATIC, audit.getTrustid());
-                        mPreferences.put(TRUST_ID, body.getAudit().getTrustid());
+                        //mPreferences.put(TRUST_ID, body.getAudit().getTrustid());
                         TrustLogger.d("[TRUST CLIENT] TRUST ID WAS CREATED: " + body.getTrustid());
 
                         restoreWIFIandBluetooth(true, true);
@@ -1116,7 +1113,7 @@ public class TrustClient {
     }
 
 
-    private void refreshSendTrifles(final TrifleBody mBody, @Nullable final TrustListener.OnResult<Audit> listener) {
+    private static void refreshSendTrifles(final TrifleBody mBody, @Nullable final TrustListener.OnResult<Audit> listener) {
         AuthToken.getAccessToken(new AuthTokenListener.Auth() {
             @Override
             public void onSuccessAccessToken(String token) {
@@ -1126,7 +1123,7 @@ public class TrustClient {
                     @Override
                     public void onSuccess(int code, Audit data) {
                         if (data != null) {
-                            mPreferences.put(TRUST_ID, data.getTrustid());
+                            //mPreferences.put(TRUST_ID, data.getTrustid());
                             Hawk.put(Constants.TRUST_ID_AUTOMATIC, data.getTrustid());
                             TrustLogger.d("[TRUST CLIENT] TRUST ID WAS CREATED: " + data.getTrustid());
                             restoreWIFIandBluetooth(true, true);
@@ -1283,7 +1280,7 @@ public class TrustClient {
      * @param forceBluetooth informs if you should restore the previous bluetooth status
      */
     @SuppressLint("MissingPermission")
-    private void restoreWIFIandBluetooth(boolean forceWifi, boolean forceBluetooth) {
+    private static void restoreWIFIandBluetooth(boolean forceWifi, boolean forceBluetooth) {
         try {
             TrustLogger.d("[TRUST CLIENT] : RESTORING STATE OF BLUETOOTH AND WI-FI:");
             TrustLogger.d("[TRUST CLIENT] : BEFORE STATE BLUETOOTH: " + Hawk.get(Constants.BLUETOOTH_STATUS));

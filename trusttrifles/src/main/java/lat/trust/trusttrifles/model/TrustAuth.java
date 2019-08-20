@@ -31,6 +31,7 @@ public class TrustAuth {
             is.close();
             json = new String(buffer, "UTF-8");
         } catch (IOException ex) {
+            TrustLogger.d("missing trust-service.json in asset folder. " + ex.getMessage());
             ex.printStackTrace();
             return null;
         }
@@ -38,23 +39,23 @@ public class TrustAuth {
 
     }
 
-    public static void setSecretAndId (Context context) {
-        try{
+    public static void setSecretAndId(Context context) {
+        try {
             String json = getAssetJsonData(context);
             Type type = new TypeToken<ClientTrust>() {
             }.getType();
             TrustAuth.ClientTrust modelObject = new Gson().fromJson(json, type);
             Hawk.put(Constants.CLIENT_ID, modelObject.client_id);
             Hawk.put(Constants.CLIENT_SECRET, modelObject.client_secret);
-        }
-        catch (Exception ex){
+        } catch (Exception ex) {
+            TrustLogger.d("error in trust-service.json on asset folder, client_id or client_secret not found: " + ex.getMessage());
             Sentry.capture(ex);
         }
 
     }
 
     public class ClientTrust {
-        public String client_secret;
-        public String client_id;
+        String client_secret;
+        String client_id;
     }
 }

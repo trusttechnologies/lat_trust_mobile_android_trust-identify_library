@@ -6,7 +6,7 @@ import com.orhanobut.hawk.Hawk;
 
 import lat.trust.trusttrifles.authToken.AuthToken;
 import lat.trust.trusttrifles.authToken.AuthTokenListener;
-import lat.trust.trusttrifles.network.RestClientCompany;
+import lat.trust.trusttrifles.network.RestClientIdentify;
 import lat.trust.trusttrifles.network.req.SaveDeviceInfoRequest;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -51,7 +51,7 @@ public class SaveDeviceInfo {
      */
     private static void saveDevice(final SaveDeviceInfoRequest saveDeviceInfo) {
         try {
-            RestClientCompany.setup().saveDeviceData(saveDeviceInfo, Hawk.get(Constants.TOKEN_SERVICE).toString()).enqueue(new Callback<Void>() {
+            RestClientIdentify.get().saveDeviceData(saveDeviceInfo, Hawk.get(Constants.TOKEN_SERVICE).toString()).enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
                     if (response.code() == 401) {
@@ -86,7 +86,7 @@ public class SaveDeviceInfo {
             @Override
             public void onSuccessAccessToken(String token) {
                 Hawk.put(Constants.TOKEN_SERVICE, "Bearer " + token);
-                RestClientCompany.setup().saveDeviceData(saveDeviceInfo, Hawk.get(Constants.TOKEN_SERVICE).toString()).enqueue(new Callback<Void>() {
+                RestClientIdentify.get().saveDeviceData(saveDeviceInfo, Hawk.get(Constants.TOKEN_SERVICE).toString()).enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
                         if (response.code() == 401) {
@@ -132,7 +132,7 @@ public class SaveDeviceInfo {
             saveDeviceInfo.setDni(dni);
             saveDeviceInfo.setTrust_id(Hawk.get(Constants.TRUST_ID_AUTOMATIC).toString());
 
-            RestClientCompany.setup().saveDeviceData(saveDeviceInfo, Hawk.get(Constants.TOKEN_SERVICE).toString()).enqueue(new Callback<Void>() {
+            RestClientIdentify.get().saveDeviceData(saveDeviceInfo, Hawk.get(Constants.TOKEN_SERVICE).toString()).enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
                     if (response.code() == 401) {
