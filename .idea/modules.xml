@@ -2,9 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/Trust-lat_trust_mobile_android_trust-identify_library.iml" filepath="$PROJECT_DIR$/Trust-lat_trust_mobile_android_trust-identify_library.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/lat_trust_mobile_android_trust-identify_library.iml" filepath="$PROJECT_DIR$/.idea/lat_trust_mobile_android_trust-identify_library.iml" />
-      <module fileurl="file://$PROJECT_DIR$/lat_trust_mobile_android_trust-identify_library.iml" filepath="$PROJECT_DIR$/lat_trust_mobile_android_trust-identify_library.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/lat_trust_mobile_android_trust-identify_library-app.iml" filepath="$PROJECT_DIR$/app/lat_trust_mobile_android_trust-identify_library-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/trusttrifles/lat_trust_mobile_android_trust-identify_library-trusttrifles.iml" filepath="$PROJECT_DIR$/trusttrifles/lat_trust_mobile_android_trust-identify_library-trusttrifles.iml" />
       <module fileurl="file://$PROJECT_DIR$/trusttrifles/trusttrifles.iml" filepath="$PROJECT_DIR$/trusttrifles/trusttrifles.iml" />
     </modules>
   </component>

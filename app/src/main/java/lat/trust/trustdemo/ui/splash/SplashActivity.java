@@ -23,6 +23,7 @@ import lat.trust.trusttrifles.TrustClient;
 import lat.trust.trusttrifles.TrustClientLite;
 import lat.trust.trusttrifles.TrustListener;
 import lat.trust.trusttrifles.model.Audit;
+import lat.trust.trusttrifles.model.Identity;
 import lat.trust.trusttrifles.ui.DialogInformation;
 import lat.trust.trusttrifles.ui.DialogPermission;
 import lat.trust.trusttrifles.utilities.TrustLogger;
@@ -61,6 +62,7 @@ public class SplashActivity extends AppCompatActivity implements DialogPermissio
             public void onSuccess(int code, Audit data) {
                 TrustLogger.d(data.getTrustid());
                 trustid.setText(data.getTrustid());
+                identify();
             }
 
             @Override
@@ -72,6 +74,37 @@ public class SplashActivity extends AppCompatActivity implements DialogPermissio
             @Override
             public void onFailure(Throwable t) {
                 TrustLogger.d(t.getMessage());
+
+            }
+
+            @Override
+            public void onPermissionRequired(ArrayList<String> permisos) {
+
+            }
+        });
+    }
+
+    private void identify() {
+        TrustLogger.d("SENDING IDENTIFY");
+        Identity identity = new Identity();
+        identity.setDni("18236924-1");
+        identity.setEmail("fcaro@trust.lat");
+        identity.setName("felipe");
+        identity.setLastname("caro");
+        identity.setPhone("+56982110950");
+        TrustClientLite.sendIdentify(identity, this, new TrustListener.OnResult<Audit>() {
+            @Override
+            public void onSuccess(int code, Audit data) {
+
+            }
+
+            @Override
+            public void onError(int code) {
+
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
 
             }
 

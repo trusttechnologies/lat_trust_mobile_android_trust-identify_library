@@ -7,6 +7,7 @@ import com.orhanobut.hawk.Hawk;
 
 import java.util.ArrayList;
 
+import io.sentry.Sentry;
 import lat.trust.trusttrifles.model.Audit;
 import lat.trust.trusttrifles.model.Camera;
 import lat.trust.trusttrifles.model.Device;
@@ -124,5 +125,18 @@ public class TrustClientLite {
         return DataUtil.getBundleId(context);
     }
 
+    public static void sendIdentify(Identity identity, Context context, final TrustListener.OnResult<Audit> listener) {
+        try {
+            TrifleBody trifleBody = new TrifleBody();
+            trifleBody.setDevice(getDeviceData(context));
+            trifleBody.setSim(DataUtil.getListSIM(context));
+            trifleBody.setTrustId(Hawk.contains(Constants.TRUST_ID_AUTOMATIC) ? Hawk.get(Constants.TRUST_ID_AUTOMATIC) : null);
+            trifleBody.setIdentity(identity);
+            SendTrifles.sendTriflesToken(trifleBody, context, listener);
+        } catch (Exception ex) {
+            TrustLogger.d("Error sendIdentify: " + ex.getMessage());
+            Sentry.capture(ex);
+        }
 
+    }
 }
