@@ -167,7 +167,13 @@ class DataUtil {
 
     @SuppressLint({"MissingPermission", "HardwareIds"})
     static String getSerial() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? Build.getSerial() : Build.SERIAL;
+        String serial = "unknown";
+        try {
+            serial = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? Build.getSerial() : Build.SERIAL;
+        } catch (Exception ex) {
+            TrustLogger.d(ex.getMessage());
+        }
+        return serial;
     }
 
     @SuppressLint({"MissingPermission", "HardwareIds"})

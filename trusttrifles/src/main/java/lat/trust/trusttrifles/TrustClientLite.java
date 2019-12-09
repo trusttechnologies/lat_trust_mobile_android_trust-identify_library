@@ -108,6 +108,8 @@ public class TrustClientLite {
         if (Hawk.contains(Constants.IDENTITY)) {
             trifleBody.setIdentity(DataUtil.getIdentity());
         }
+        TrustLogger.d("* * * * *" + new Gson().toJson(trifleBody));
+
         SendTrifles.sendTriflesToken(trifleBody, context, listener);
     }
 
