@@ -4,6 +4,8 @@ import android.content.Context;
 
 import com.orhanobut.hawk.Hawk;
 
+import javax.xml.transform.TransformerConfigurationException;
+
 import lat.trust.trusttrifles.authToken.AuthToken;
 import lat.trust.trusttrifles.authToken.AuthTokenListener;
 import lat.trust.trusttrifles.model.Audit;
@@ -33,22 +35,24 @@ public class SendTrifles {
         RestClientIdentify.get().trifle2(trifleBody, token).enqueue(new Callback<TrifleResponse>() {
             @Override
             public void onResponse(Call<TrifleResponse> call, Response<TrifleResponse> response) {
-                if (response.code() == 401) {
+
+                if (response.isSuccessful()) {
+                    TrifleResponse body = response.body();
+                    Audit audit = new Audit();
+                    audit.setMessage(body.getMessage());
+                    audit.setStatus(body.getStatus());
+                    audit.setTrustid(body.getTrustid());
+                    body.setAudit(audit);
+                    Hawk.put(Constants.TRUST_ID_AUTOMATIC, audit.getTrustid());
+                    TrustLogger.d("[TRUST CLIENT] TRUST ID WAS CREATED: " + body.getTrustid());
+                    saveDevice(context, audit.getTrustid());
+                    listener.onSuccess(response.code(), body.getAudit());
+                } else {
                     TrustLogger.d("token found but is invalid.");
                     refreshToken(trifleBody, context, listener);
-                    return;
+                    listener.onFailure(new Throwable(response.code() + "Error"));
                 }
-                TrifleResponse body = response.body();
-                Audit audit = new Audit();
-                audit.setMessage(body.getMessage());
-                audit.setStatus(body.getStatus());
-                audit.setTrustid(body.getTrustid());
-                body.setAudit(audit);
-                Hawk.put(Constants.TRUST_ID_AUTOMATIC, audit.getTrustid());
-                TrustLogger.d("[TRUST CLIENT] TRUST ID WAS CREATED: " + body.getTrustid());
-                saveDevice(context, audit.getTrustid());
 
-                listener.onSuccess(response.code(), body.getAudit());
 
             }
 
@@ -83,17 +87,22 @@ public class SendTrifles {
                     TrustLogger.d("error refresh token. ");
                     return;
                 }
-                TrifleResponse body = response.body();
-                Audit audit = new Audit();
-                audit.setMessage(body.getMessage());
-                audit.setStatus(body.getStatus());
-                audit.setTrustid(body.getTrustid());
-                body.setAudit(audit);
-                Hawk.put(Constants.TRUST_ID_AUTOMATIC, audit.getTrustid());
-                TrustLogger.d("[TRUST CLIENT] TRUST ID WAS CREATED: " + body.getTrustid());
-                saveDevice(context, audit.getTrustid());
+                if (response.isSuccessful()) {
+                    TrifleResponse body = response.body();
+                    Audit audit = new Audit();
+                    audit.setMessage(body.getMessage());
+                    audit.setStatus(body.getStatus());
+                    audit.setTrustid(body.getTrustid());
+                    body.setAudit(audit);
+                    Hawk.put(Constants.TRUST_ID_AUTOMATIC, audit.getTrustid());
+                    TrustLogger.d("[TRUST CLIENT] TRUST ID WAS CREATED: " + body.getTrustid());
+                    saveDevice(context, audit.getTrustid());
+                    listener.onSuccess(response.code(), body.getAudit());
+                } else {
+                    TrustLogger.d("error refresh token. ");
+                    listener.onFailure(new Throwable(response.code() + "error"));
+                }
 
-                listener.onSuccess(response.code(), body.getAudit());
             }
 
             @Override

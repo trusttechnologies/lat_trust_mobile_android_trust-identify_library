@@ -1053,16 +1053,13 @@ public class TrustClient {
      * @param mBody
      * @param listener envialo si quieres recuperar la respuesta desde tu aplicacion
      */
-   static void sendTrifles(@NonNull final TrifleBody mBody, @Nullable final TrustListener.OnResult<Audit> listener) {
+    static void sendTrifles(@NonNull final TrifleBody mBody, @Nullable final TrustListener.OnResult<Audit> listener) {
         if (Hawk.contains(Constants.TOKEN_SERVICE)) {
             Call<TrifleResponse> createTrifle = RestClientIdentify.get().trifle2(mBody, Hawk.get(Constants.TOKEN_SERVICE).toString());
             createTrifle.enqueue(new Callback<TrifleResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<TrifleResponse> call, @NonNull Response<TrifleResponse> response) {
-                    if (response.code() == 401) {
-                        refreshSendTrifles(mBody, listener);
-                        return;
-                    } else {
+                    if (response.isSuccessful()) {
                         TrifleResponse body = response.body();
                         Audit audit = new Audit();
                         audit.setMessage(body.getMessage());
@@ -1084,7 +1081,12 @@ public class TrustClient {
                         }
 
                         listener.onSuccess(response.code(), body.getAudit());
+                    } else {
+                        refreshSendTrifles(mBody, listener);
+                        listener.onFailure(new Throwable(response.code() + "error"));
                     }
+
+
                 }
 
                 @Override
@@ -1122,6 +1124,7 @@ public class TrustClient {
                 sendTrifles(mBody, new TrustListener.OnResult<Audit>() {
                     @Override
                     public void onSuccess(int code, Audit data) {
+
                         if (data != null) {
                             //mPreferences.put(TRUST_ID, data.getTrustid());
                             Hawk.put(Constants.TRUST_ID_AUTOMATIC, data.getTrustid());
