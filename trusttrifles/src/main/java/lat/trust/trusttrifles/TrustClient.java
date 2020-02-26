@@ -75,6 +75,7 @@ import static android.content.Context.SENSOR_SERVICE;
 import static android.content.Context.TELEPHONY_SERVICE;
 import static lat.trust.trusttrifles.utilities.Constants.CPU_FILE;
 import static lat.trust.trusttrifles.utilities.Constants.MEM_FILE;
+import static lat.trust.trusttrifles.utilities.Constants.SENTRY_STATE;
 import static lat.trust.trusttrifles.utilities.Constants.TRUST_ID;
 import static lat.trust.trusttrifles.utilities.Constants.TRUST_TRIFLES;
 import static lat.trust.trusttrifles.utilities.Utils.getKey;
@@ -92,6 +93,7 @@ public class TrustClient {
     private TrustPreferences mPreferences;
 
 
+    @Deprecated
     private TrustClient() {
         TrustLogger.d("[TRUST CLIENT] : CREATE  INSTANCE");
         TrustPreferences.init(mContext);
@@ -104,6 +106,7 @@ public class TrustClient {
      *
      * @param context the context
      */
+    @Deprecated
     public static void init(Context context) {
 
         TrustLogger.d("[TRUST CLIENT] : INIT ");
@@ -116,16 +119,13 @@ public class TrustClient {
         }
         TrustAuth.setSecretAndId(mContext);
         setEnvironment(context);
-        sentryInit(context);
+        SentryState.init(context);
     }
 
     private static void setEnvironment(Context context) {
         TrustIdentifyConfigurationService.setEnvironment(TrustIdentifyConfigurationService.ENVIRONMENT_PRODUCTION, context);
     }
 
-    private static void sentryInit(Context context) {
-        Sentry.init(Constants.SENTRY_DSN, new AndroidSentryClientFactory(context));
-    }
 
     /**
      * Gets instance.
@@ -225,7 +225,7 @@ public class TrustClient {
             }
             device.setCameras(cameras);
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantDefaultOrHigh()) Sentry.capture(e);
 
         }
 
@@ -249,7 +249,7 @@ public class TrustClient {
             } else
                 device.setNfc("NO");//
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
         }
 
     }
@@ -291,7 +291,7 @@ public class TrustClient {
             device.setBattery_technology(technology);
 
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
         }
 
     }
@@ -320,7 +320,7 @@ public class TrustClient {
                     .invoke(mPowerProfile);
 
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
             e.printStackTrace();
         }
 
@@ -355,7 +355,7 @@ public class TrustClient {
             device.setSensor_size(String.valueOf(msensorList.size()));
             device.setSensorData(sensorData);
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
         }
 
     }
@@ -389,7 +389,7 @@ public class TrustClient {
                 device.setSerial(Build.SERIAL);
             }
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
         }
 
     }
@@ -409,7 +409,7 @@ public class TrustClient {
                 device.setSoftwareVersion(tm.getDeviceSoftwareVersion());
             }
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
         }
 
     }
@@ -430,7 +430,7 @@ public class TrustClient {
                 return null;
             }
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
             return null;
         }
 
@@ -475,7 +475,7 @@ public class TrustClient {
 
             return sims;
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
             return new ArrayList<>();
         }
 
@@ -523,7 +523,7 @@ public class TrustClient {
                 }
             }
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
             e.printStackTrace();
 
         }
@@ -551,7 +551,7 @@ public class TrustClient {
                 }
             }
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
             e.printStackTrace();
         }
 
@@ -584,7 +584,7 @@ public class TrustClient {
                 result = ob_phone.toString();
             }
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
             e.printStackTrace();
         }
 
@@ -643,7 +643,7 @@ public class TrustClient {
             device.setProcessorQuantity(String.valueOf(processorsCount));
 
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
             e.printStackTrace();
         }
     }
@@ -677,7 +677,7 @@ public class TrustClient {
 
 
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
             e.printStackTrace();
         }
     }
@@ -709,8 +709,8 @@ public class TrustClient {
                 }
                 return res1.toString();
             }
-        } catch (Exception ignore) {
-            Sentry.capture(ignore);
+        } catch (Exception e) {
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
         }
         return "02:00:00:00:00:00";
     }
@@ -735,8 +735,8 @@ public class TrustClient {
                     if (btManagerService != null) {
                         bluetoothMacAddress = (String) btManagerService.getClass().getMethod("getAddress").invoke(btManagerService);
                     }
-                } catch (Exception ex) {
-                    Sentry.capture(ex);
+                } catch (Exception e) {
+                    if (SentryState.isImportantHigh()) Sentry.capture(e);
 
                 }
             } else {
@@ -764,7 +764,7 @@ public class TrustClient {
                 return androidId;
             else return "Not found";
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
             return "Not found";
         }
 
@@ -797,11 +797,11 @@ public class TrustClient {
             query.close();
             return toHexString.toUpperCase().trim();
         } catch (SecurityException e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
             e.printStackTrace();
             return null;
         } catch (Exception e2) {
-            Sentry.capture(e2);
+            if (SentryState.isImportantHigh()) Sentry.capture(e2);
             e2.printStackTrace();
             return null;
         }
@@ -826,7 +826,7 @@ public class TrustClient {
                 //we didn't find indication of root
             }
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
             return "No Rooted";
         }
 
@@ -848,7 +848,7 @@ public class TrustClient {
             } else return "UNKNOWN";
         } catch (Exception ex) {
             TrustLogger.d("[getSIMSerialID ] error " + ex.getMessage());
-            Sentry.capture(ex);
+            if (SentryState.isImportantHigh()) Sentry.capture(ex);
             return "";
         }
 
@@ -869,7 +869,7 @@ public class TrustClient {
                 return tm.getSimOperatorName();
             } else return "UNKNOWN";
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
             return "UNKNOWN";
         }
 
@@ -898,7 +898,7 @@ public class TrustClient {
                 }
             } else return "UNKNOWN";
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
             return "UNKNOWN";
         }
 
@@ -1187,7 +1187,7 @@ public class TrustClient {
             TrustLogger.d("[TRUST CLIENT] : WI-FI STATE: " + String.valueOf(state));
             device.setWifi_state(state);
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
         }
 
     }
@@ -1204,7 +1204,7 @@ public class TrustClient {
             TrustLogger.d("[TRUST CLIENT] : BLUETOOTH STATE: " + String.valueOf(state));
             device.setBluetooth_state(state);
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
         }
 
     }
@@ -1222,7 +1222,7 @@ public class TrustClient {
             TrustLogger.d("[TRUST CLIENT] : CURRENT STATE OF RED (3G,4G): " + String.valueOf(state));
             device.setRed_g_state(state);
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
         }
 
     }
@@ -1238,7 +1238,7 @@ public class TrustClient {
             BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
             return mBluetoothAdapter != null && mBluetoothAdapter.isEnabled();
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
             return false;
         }
 
@@ -1255,7 +1255,7 @@ public class TrustClient {
             @SuppressLint("MissingPermission") boolean state = wifiManager == null || wifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED;
             return state;
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
             return false;
         }
 
@@ -1268,11 +1268,8 @@ public class TrustClient {
         try {
             Hawk.put(Constants.WIFI_STATUS, getCurrentWifiStatus());
             Hawk.put(Constants.BLUETOOTH_STATUS, getCurrentBluetoothStatus());
-            TrustLogger.d("[TRUST CLIENT] : SAVING CURRENT STARE OF WIFI AND BLUETOOTH...");
-            TrustLogger.d("[TRUST CLIENT] : CURRENT STATE OF WI-FI: " + Hawk.get(Constants.WIFI_STATUS));
-            TrustLogger.d("[TRUST CLIENT] : CURRENT STATE OF BLUETOOTH: " + Hawk.get(Constants.BLUETOOTH_STATUS));
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
         }
     }
 
@@ -1312,7 +1309,7 @@ public class TrustClient {
             }
 
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
         }
 
     }
@@ -1337,7 +1334,7 @@ public class TrustClient {
                 mBluetoothAdapter.enable();
             }
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
         }
 
     }
@@ -1359,7 +1356,7 @@ public class TrustClient {
                 }
             }
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
             e.printStackTrace();
         }
         return false;

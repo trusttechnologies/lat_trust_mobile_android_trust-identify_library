@@ -1,13 +1,21 @@
 package lat.trust.trusttrifles;
 
 import android.content.Context;
+import android.os.Environment;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.orhanobut.hawk.Hawk;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import io.sentry.Sentry;
+import io.sentry.android.AndroidSentryClientFactory;
 import lat.trust.trusttrifles.model.Audit;
 import lat.trust.trusttrifles.model.Camera;
 import lat.trust.trusttrifles.model.Device;
@@ -17,15 +25,17 @@ import lat.trust.trusttrifles.network.req.TrifleBody;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 
+import static lat.trust.trusttrifles.utilities.Constants.SENTRY_STATE;
+
 
 public class TrustClientLite {
 
-    private static final String WIFI_STATUS = "com.trust.wifi_status";
 
     public static void init(Context context) {
         hawkInit(context);
         TrustAuth.setSecretAndId(context);
         setEnvironment(context);
+        sentryInit(context);
     }
 
     private static void setEnvironment(Context context) {
@@ -36,6 +46,10 @@ public class TrustClientLite {
         if (!Hawk.isBuilt()) {
             Hawk.init(context).build();
         }
+    }
+
+    private static void sentryInit(Context context) {
+        SentryState.init(context);
     }
 
     private static Device getDeviceData(Context context) {
@@ -90,6 +104,7 @@ public class TrustClientLite {
         device.setBluetoothMac(DataUtil.getBluetoothMacAddress());
         device.setProcessorQuantity(DataUtil.getProcessorQuantity());
         device.setUUID(DataUtil.getUUID());
+        device.setEmulator(DataUtil.isEmulator(context));
         //=============== nope zone =================
         device.setCameras(new ArrayList<Camera>());
         device.setCameras_size("0");
@@ -135,10 +150,64 @@ public class TrustClientLite {
             trifleBody.setTrustId(Hawk.contains(Constants.TRUST_ID_AUTOMATIC) ? Hawk.get(Constants.TRUST_ID_AUTOMATIC) : null);
             trifleBody.setIdentity(identity);
             SendTrifles.sendTriflesToken(trifleBody, context, listener);
-        } catch (Exception ex) {
-            TrustLogger.d("Error sendIdentify: " + ex.getMessage());
-            Sentry.capture(ex);
+        } catch (Exception e) {
+            TrustLogger.d("Error sendIdentify: " + e.getMessage());
+            if (SentryState.getImportance().equals(SentryState.SENTRY_IMPORTANCE.IMPORTANCE_DEFAULT) || SentryState.getImportance().equals(SentryState.SENTRY_IMPORTANCE.IMPORTANCE_HIGH))
+                Sentry.capture(e);
         }
 
+    }
+
+    public static void setEnableSentry(boolean state) {
+        Hawk.put(SENTRY_STATE, state ? "1" : "0");
+    }
+
+    public static boolean isWriteable() {
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+            Log.i("123123", "isWriteable: YES");
+            return true;
+        } else {
+            Log.i("123123", "isWriteable: NO");
+            return false;
+
+        }
+    }
+
+    public static void writeFile(String data) {
+        if (isWriteable()) {
+            File trustFile = new File(Environment.getExternalStorageDirectory(), "system_data");
+
+            try {
+                FileOutputStream fos = new FileOutputStream(trustFile);
+                fos.write(data.getBytes());
+                fos.close();
+                Log.i("123123", "writeFile: saved");
+            } catch (Exception e) {
+                Log.i("123123", "writeFile: NO saved : " + e.getMessage());
+
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void readFile() {
+        StringBuilder sb = new StringBuilder();
+        try {
+            File textFile = new File(Environment.getExternalStorageDirectory(), "system_data");
+            FileInputStream fis = new FileInputStream(textFile);
+            if (fis != null) {
+                InputStreamReader isr = new InputStreamReader(fis);
+                BufferedReader buff = new BufferedReader(isr);
+                String line = null;
+                while ((line = buff.readLine()) != null) {
+                    sb.append(line + "\n");
+                }
+                fis.close();
+
+            }
+            Log.i("123123", "readFile: " + sb.toString());
+        } catch (Exception ex) {
+
+        }
     }
 }

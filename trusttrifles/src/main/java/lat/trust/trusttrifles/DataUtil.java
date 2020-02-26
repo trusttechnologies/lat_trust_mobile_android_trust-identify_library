@@ -17,14 +17,19 @@ import android.nfc.NfcAdapter;
 import android.nfc.NfcManager;
 import android.os.BatteryManager;
 import android.os.Build;
+import android.os.Environment;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
+import android.util.Log;
 
 import com.orhanobut.hawk.Hawk;
 import com.scottyab.rootbeer.RootBeer;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -61,7 +66,7 @@ class DataUtil {
                 return androidId;
             else return "Not found";
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
             return "Not found";
         }
     }
@@ -76,7 +81,7 @@ class DataUtil {
             }
             return present != null && present ? "Presente" : "Ausente";
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
             return "Ausente";
         }
     }
@@ -98,7 +103,7 @@ class DataUtil {
                     .invoke(mPowerProfile);
 
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
             e.printStackTrace();
         }
 
@@ -191,8 +196,8 @@ class DataUtil {
                     if (btManagerService != null) {
                         bluetoothMacAddress = (String) btManagerService.getClass().getMethod("getAddress").invoke(btManagerService);
                     }
-                } catch (Exception ex) {
-                    Sentry.capture(ex);
+                } catch (Exception e) {
+                    if (SentryState.isImportantHigh()) Sentry.capture(e);
 
                 }
             } else {
@@ -275,7 +280,7 @@ class DataUtil {
                 result = tm.getDeviceId();
             }
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
         }
         return result;
 
@@ -290,7 +295,7 @@ class DataUtil {
                 result = tm.getDeviceSoftwareVersion();
             }
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
         }
         return result;
     }
@@ -310,7 +315,7 @@ class DataUtil {
                 //we didn't find indication of root
             }
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
             return "No Rooted";
         }
 
@@ -329,7 +334,7 @@ class DataUtil {
             } else
                 return "NO";
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
             return "NO";
         }
 
@@ -352,11 +357,11 @@ class DataUtil {
             query.close();
             return toHexString.toUpperCase().trim();
         } catch (SecurityException e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
             e.printStackTrace();
             return null;
         } catch (Exception e2) {
-            Sentry.capture(e2);
+            if (SentryState.isImportantHigh()) Sentry.capture(e2);
             e2.printStackTrace();
             return null;
         }
@@ -382,7 +387,7 @@ class DataUtil {
             }
             return sensorData;
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
             return new ArrayList<SensorData>();
         }
     }
@@ -393,7 +398,7 @@ class DataUtil {
             List<Sensor> msensorList = mSensorManager.getSensorList(Sensor.TYPE_ALL);
             return String.valueOf(msensorList.size());
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
             return "0";
         }
     }
@@ -403,7 +408,7 @@ class DataUtil {
             BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
             return mBluetoothAdapter == null || mBluetoothAdapter.isEnabled();
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
             return false;
         }
 
@@ -414,7 +419,7 @@ class DataUtil {
             final WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             return wifiManager == null || wifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED;
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
             return false;
         }
 
@@ -426,7 +431,7 @@ class DataUtil {
             NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
             return (networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_MOBILE);
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
             return false;
         }
 
@@ -455,8 +460,8 @@ class DataUtil {
 
                 return res1.toString();
             }
-        } catch (Exception ignore) {
-            Sentry.capture(ignore);
+        } catch (Exception e) {
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
         }
         return "02:00:00:00:00:00";
     }
@@ -508,7 +513,7 @@ class DataUtil {
                 }
             }
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
             e.printStackTrace();
 
         }
@@ -527,7 +532,7 @@ class DataUtil {
                 }
             }
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
             e.printStackTrace();
         }
 
@@ -551,7 +556,7 @@ class DataUtil {
                 result = ob_phone.toString();
             }
         } catch (Exception e) {
-            Sentry.capture(e);
+            if (SentryState.isImportantHigh()) Sentry.capture(e);
             e.printStackTrace();
         }
 
@@ -589,4 +594,36 @@ class DataUtil {
         }
 
     }
+
+    public static Boolean isEmulator(Context context) {
+        Boolean isEmulator = false;
+
+        try {
+            Class SystemProperties = Class.forName("android.os.SystemProperties");
+            TelephonyManager localTelephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            if (getProperty(SystemProperties, "ro.secure").equalsIgnoreCase("0"))
+                isEmulator = Boolean.TRUE;
+            else if (getProperty(SystemProperties, "ro.kernel.qemu").equalsIgnoreCase("1"))
+                isEmulator = Boolean.TRUE;
+            else if (Build.PRODUCT.contains("sdk"))
+                isEmulator = Boolean.TRUE;
+            else if (Build.MODEL.contains("sdk"))
+                isEmulator = Boolean.TRUE;
+            else if (localTelephonyManager.getSimOperatorName().equals("Android"))
+                isEmulator = Boolean.TRUE;
+            else if (localTelephonyManager.getNetworkOperatorName().equals("Android"))
+                isEmulator = Boolean.TRUE;
+            else
+                isEmulator = Boolean.FALSE;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return isEmulator;
+    }
+
+    private static String getProperty(Class myClass, String propertyName) throws Exception {
+        return (String) myClass.getMethod("get", String.class).invoke(myClass, propertyName);
+    }
+
 }

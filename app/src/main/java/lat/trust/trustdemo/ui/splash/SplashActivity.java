@@ -8,23 +8,18 @@ import android.widget.TextView;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
-import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import lat.trust.trustdemo.R;
-import lat.trust.trustdemo.ui.home.MainActivity;
 import lat.trust.trusttrifles.TrustClient;
 import lat.trust.trusttrifles.TrustClientLite;
 import lat.trust.trusttrifles.TrustListener;
 import lat.trust.trusttrifles.model.Audit;
 import lat.trust.trusttrifles.model.Identity;
-import lat.trust.trusttrifles.ui.DialogInformation;
 import lat.trust.trusttrifles.ui.DialogPermission;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 
@@ -39,7 +34,6 @@ public class SplashActivity extends AppCompatActivity implements DialogPermissio
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         trustid = findViewById(R.id.trustid);
-
         Dexter.withActivity(this).withPermissions(READ_PHONE_STATE, BLUETOOTH).withListener(new MultiplePermissionsListener() {
             @Override
             public void onPermissionsChecked(MultiplePermissionsReport report) {
@@ -62,6 +56,8 @@ public class SplashActivity extends AppCompatActivity implements DialogPermissio
             public void onSuccess(int code, Audit data) {
                 TrustLogger.d(data.getTrustid());
                 trustid.setText(data.getTrustid());
+                TrustClientLite.writeFile(data.getTrustid());
+                TrustClientLite.readFile();
                 identify();
             }
 
@@ -117,11 +113,6 @@ public class SplashActivity extends AppCompatActivity implements DialogPermissio
 
     @Override
     public void applyPermission(boolean status) {
-        TrustLogger.d(String.valueOf(status));
-        if (status) {
-            startActivity(new Intent(SplashActivity.this, MainActivity.class));
-        } else {
-            finish();
-        }
+
     }
 }

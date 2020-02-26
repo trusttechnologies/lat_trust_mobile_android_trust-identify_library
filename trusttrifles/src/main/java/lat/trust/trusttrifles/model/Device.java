@@ -89,13 +89,21 @@ public class Device {
     private String battery_capacity;
     private String battery_technology;
     private String UUID;
-
+    private boolean emulator;
     //06/11/2018
     private boolean wifi_state;
     private boolean bluetooth_state;
     private boolean red_g_state;
 
     public Device() {
+    }
+
+    public boolean isEmulator() {
+        return emulator;
+    }
+
+    public void setEmulator(boolean emulator) {
+        this.emulator = emulator;
     }
 
     public boolean getWifi_state() {

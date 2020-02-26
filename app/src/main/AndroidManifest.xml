@@ -5,14 +5,15 @@
     android:sharedUserId="trust.trifles"
     android:sharedUserLabel="@string/shared_user_label">
 
-  <!--  <uses-permission android:name="android.permission.RECEIVE_SMS" />
-    <uses-permission android:name="android.permission.READ_SMS" />
-    <uses-permission android:name="android.permission.SEND_SMS" />
+    <!--  <uses-permission android:name="android.permission.RECEIVE_SMS" />
+      <uses-permission android:name="android.permission.READ_SMS" />
+      <uses-permission android:name="android.permission.SEND_SMS" />
 
-    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
+      <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
 
--->
-
+  -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:name=".TrustDemoApp"
@@ -39,7 +40,6 @@
             android:name="io.fabric.ApiKey"
             android:value="c2f2723ade81917cf6b8cac00d194cd208df72ad" />
 
-        <activity android:name=".ui.home.MainActivity" />
     </application>
 
 </manifest>
