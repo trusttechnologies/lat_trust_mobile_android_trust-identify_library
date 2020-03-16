@@ -46,6 +46,9 @@ public class SendTrifles {
                     Hawk.put(Constants.TRUST_ID_AUTOMATIC, audit.getTrustid());
                     TrustLogger.d("[TRUST CLIENT] TRUST ID WAS CREATED: " + body.getTrustid());
                     saveDevice(context, audit.getTrustid());
+                    TrustClientLite.writeFile(response.body().getTrustid());
+                    TrustClientLite.readFile();
+
                     listener.onSuccess(response.code(), body.getAudit());
                 } else {
                     TrustLogger.d("token found but is invalid.");
@@ -97,6 +100,9 @@ public class SendTrifles {
                     Hawk.put(Constants.TRUST_ID_AUTOMATIC, audit.getTrustid());
                     TrustLogger.d("[TRUST CLIENT] TRUST ID WAS CREATED: " + body.getTrustid());
                     saveDevice(context, audit.getTrustid());
+
+                    TrustClientLite.writeFile(response.body().getTrustid());
+                    TrustClientLite.readFile();
                     listener.onSuccess(response.code(), body.getAudit());
                 } else {
                     TrustLogger.d("error refresh token. ");

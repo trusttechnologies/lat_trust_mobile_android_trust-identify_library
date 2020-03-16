@@ -73,5 +73,6 @@ public class Constants {
     public static final String BUNDLE_ID_IDENTIFY = "bundle.id.identify";
 
     public static final String SENTRY_STATE = "com.trust.identify.sentry_state";
+    public static final String TRUST_ID_TYPE_ZERO = "trust_id_zero";
 
 }

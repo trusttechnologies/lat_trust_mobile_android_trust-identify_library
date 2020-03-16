@@ -6,6 +6,7 @@ import com.orhanobut.hawk.Hawk;
 
 import lat.trust.trusttrifles.TrustClient;
 import lat.trust.trusttrifles.TrustClientLite;
+import lat.trust.trusttrifles.TrustClientZero;
 import lat.trust.trusttrifles.TrustIdentifyConfigurationService;
 
 public class TrustDemoApp extends Application {
@@ -13,8 +14,7 @@ public class TrustDemoApp extends Application {
     public void onCreate() {
         super.onCreate();
         Hawk.init(this).build();
-        TrustClientLite.init(this);
+        TrustClientZero.init(this);
         TrustIdentifyConfigurationService.setEnvironment(TrustIdentifyConfigurationService.ENVIRONMENT_MONKEY, this);
     }
-
 }

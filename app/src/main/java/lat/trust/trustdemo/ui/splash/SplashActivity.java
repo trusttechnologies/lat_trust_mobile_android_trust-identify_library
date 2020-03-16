@@ -1,8 +1,10 @@
 package lat.trust.trustdemo.ui.splash;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.karumi.dexter.Dexter;
@@ -17,6 +19,7 @@ import java.util.List;
 import lat.trust.trustdemo.R;
 import lat.trust.trusttrifles.TrustClient;
 import lat.trust.trusttrifles.TrustClientLite;
+import lat.trust.trusttrifles.TrustClientZero;
 import lat.trust.trusttrifles.TrustListener;
 import lat.trust.trusttrifles.model.Audit;
 import lat.trust.trusttrifles.model.Identity;
@@ -24,7 +27,9 @@ import lat.trust.trusttrifles.ui.DialogPermission;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 
 import static android.Manifest.permission.BLUETOOTH;
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.READ_PHONE_STATE;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class SplashActivity extends AppCompatActivity implements DialogPermission.DialogPermissionListener {
     private TextView trustid;
@@ -34,7 +39,11 @@ public class SplashActivity extends AppCompatActivity implements DialogPermissio
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         trustid = findViewById(R.id.trustid);
-        Dexter.withActivity(this).withPermissions(READ_PHONE_STATE, BLUETOOTH).withListener(new MultiplePermissionsListener() {
+      /*  Dexter.withActivity(this).withPermissions(
+                READ_PHONE_STATE,
+                READ_EXTERNAL_STORAGE,
+                WRITE_EXTERNAL_STORAGE,
+                BLUETOOTH).withListener(new MultiplePermissionsListener() {
             @Override
             public void onPermissionsChecked(MultiplePermissionsReport report) {
                 getTrustId();
@@ -44,9 +53,34 @@ public class SplashActivity extends AppCompatActivity implements DialogPermissio
             public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
 
             }
-        }).check();
+        }).check();*/
 
+        getTrustIdZer(this);
+    }
 
+    private void getTrustIdZer(Context context) {
+        TrustClientZero.getTrustIdZero(context, new TrustListener.OnResult<Audit>() {
+            @Override
+            public void onSuccess(int code, Audit data) {
+                trustid.setText(data.getTrustid());
+            }
+
+            @Override
+            public void onError(int code) {
+                trustid.setText(code + "");
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                trustid.setText(t.getMessage());
+
+            }
+
+            @Override
+            public void onPermissionRequired(ArrayList<String> permisos) {
+
+            }
+        });
     }
 
 
@@ -56,8 +90,7 @@ public class SplashActivity extends AppCompatActivity implements DialogPermissio
             public void onSuccess(int code, Audit data) {
                 TrustLogger.d(data.getTrustid());
                 trustid.setText(data.getTrustid());
-                TrustClientLite.writeFile(data.getTrustid());
-                TrustClientLite.readFile();
+
                 identify();
             }
 

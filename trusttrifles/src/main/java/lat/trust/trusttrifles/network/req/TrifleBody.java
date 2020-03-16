@@ -16,6 +16,16 @@ public class TrifleBody {
     private Identity identity;
     @SerializedName("trustid")
     private String trustId;
+    @SerializedName("trust_id_type")
+    private String trustIdType;
+
+    public String getTrustIdType() {
+        return trustIdType;
+    }
+
+    public void setTrustIdType(String trustIdType) {
+        this.trustIdType = trustIdType;
+    }
 
     public Identity getIdentity() {
         return identity;

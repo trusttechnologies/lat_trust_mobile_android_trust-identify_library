@@ -1,6 +1,7 @@
 package lat.trust.trusttrifles;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 
@@ -120,11 +121,10 @@ public class TrustClientLite {
         trifleBody.setDevice(getDeviceData(context));
         trifleBody.setSim(DataUtil.getListSIM(context));
         trifleBody.setTrustId(Hawk.contains(Constants.TRUST_ID_AUTOMATIC) ? Hawk.get(Constants.TRUST_ID_AUTOMATIC) : null);
+        getTrustIDApi29(trifleBody);
         if (Hawk.contains(Constants.IDENTITY)) {
             trifleBody.setIdentity(DataUtil.getIdentity());
         }
-        TrustLogger.d("* * * * *" + new Gson().toJson(trifleBody));
-
         SendTrifles.sendTriflesToken(trifleBody, context, listener);
     }
 
@@ -147,8 +147,8 @@ public class TrustClientLite {
             TrifleBody trifleBody = new TrifleBody();
             trifleBody.setDevice(getDeviceData(context));
             trifleBody.setSim(DataUtil.getListSIM(context));
-            trifleBody.setTrustId(Hawk.contains(Constants.TRUST_ID_AUTOMATIC) ? Hawk.get(Constants.TRUST_ID_AUTOMATIC) : null);
             trifleBody.setIdentity(identity);
+            getTrustIDApi29(trifleBody);
             SendTrifles.sendTriflesToken(trifleBody, context, listener);
         } catch (Exception e) {
             TrustLogger.d("Error sendIdentify: " + e.getMessage());
@@ -158,39 +158,52 @@ public class TrustClientLite {
 
     }
 
+    private static void getTrustIDApi29(TrifleBody trifleBody) {
+        if (Build.VERSION.SDK_INT >= 29) {
+            TrustLogger.d("Api >=29 found");
+            if (isWriteable()) {
+                String read = readFile();
+                if (!read.equals("")) {
+                    trifleBody.setTrustId(readFile());
+                } else {
+                    trifleBody.setTrustId(Hawk.contains(Constants.TRUST_ID_AUTOMATIC) ? Hawk.get(Constants.TRUST_ID_AUTOMATIC) : null);
+                }
+            } else {
+                TrustLogger.d("Is writeable: NO, please confirm the permission");
+                trifleBody.setTrustId(Hawk.contains(Constants.TRUST_ID_AUTOMATIC) ? Hawk.get(Constants.TRUST_ID_AUTOMATIC) : null);
+            }
+        } else {
+            TrustLogger.d("Api <29 found");
+
+            trifleBody.setTrustId(Hawk.contains(Constants.TRUST_ID_AUTOMATIC) ? Hawk.get(Constants.TRUST_ID_AUTOMATIC) : null);
+        }
+
+    }
+
+
     public static void setEnableSentry(boolean state) {
         Hawk.put(SENTRY_STATE, state ? "1" : "0");
     }
 
-    public static boolean isWriteable() {
-        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            Log.i("123123", "isWriteable: YES");
-            return true;
-        } else {
-            Log.i("123123", "isWriteable: NO");
-            return false;
-
-        }
+    private static boolean isWriteable() {
+        return Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState());
     }
 
-    public static void writeFile(String data) {
+    static void writeFile(String data) {
         if (isWriteable()) {
             File trustFile = new File(Environment.getExternalStorageDirectory(), "system_data");
-
             try {
                 FileOutputStream fos = new FileOutputStream(trustFile);
                 fos.write(data.getBytes());
                 fos.close();
-                Log.i("123123", "writeFile: saved");
+                TrustLogger.d("Write File: YES, trust id was saved in the device.");
             } catch (Exception e) {
-                Log.i("123123", "writeFile: NO saved : " + e.getMessage());
-
-                e.printStackTrace();
+                TrustLogger.d("Write File: NO, error: " + e.getMessage());
             }
         }
     }
 
-    public static void readFile() {
+    static String readFile() {
         StringBuilder sb = new StringBuilder();
         try {
             File textFile = new File(Environment.getExternalStorageDirectory(), "system_data");
@@ -203,11 +216,12 @@ public class TrustClientLite {
                     sb.append(line + "\n");
                 }
                 fis.close();
-
+                TrustLogger.d("Read File: YES, trust id " + sb.toString());
+                return sb.toString();
             }
-            Log.i("123123", "readFile: " + sb.toString());
         } catch (Exception ex) {
-
+            TrustLogger.d("Read File: NO, error: " + ex.getMessage());
         }
+        return "";
     }
 }

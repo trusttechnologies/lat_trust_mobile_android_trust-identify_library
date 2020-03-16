@@ -579,7 +579,7 @@ class DataUtil {
 
     }
 
-    public static String getBundleId(Context context) {
+    static String getBundleId(Context context) {
         try {
             if (!Hawk.isBuilt()) {
                 Hawk.init(context).build();
@@ -595,7 +595,7 @@ class DataUtil {
 
     }
 
-    public static Boolean isEmulator(Context context) {
+    static Boolean isEmulator(Context context) {
         Boolean isEmulator = false;
 
         try {

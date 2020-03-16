@@ -16,8 +16,6 @@ public class TrustIdentifyConfigurationService {
     public static void setEnvironment(String environment, Context context) {
         Hawk.put(ENVIRONMENT, environment);
         TrustAuth.setSecretAndId(context);
-
-        TrustLogger.d("[TRUST AUDIT] Environment: " + TrustIdentifyConfigurationService.getEnvironment());
     }
 
     public static Boolean getEnvironment() {
