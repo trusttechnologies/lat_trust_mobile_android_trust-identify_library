@@ -109,7 +109,7 @@ public class TrustClientZero {
         trifleBody.setTrustIdType(TRUST_ID_TYPE_ZERO);
         trifleBody.setDevice(getDeviceData(context));
         trifleBody.setSim(DataUtil.getListSIM(context));
-        trifleBody.setTrustId(Hawk.contains(Constants.TRUST_ID_AUTOMATIC) ? Hawk.get(Constants.TRUST_ID_AUTOMATIC) : null);
+        trifleBody.setTrustId(Hawk.contains(Constants.TRUST_ID_TYPE_ZERO_SAVED) ? Hawk.get(Constants.TRUST_ID_TYPE_ZERO_SAVED) : null);
         SendTrifles.sendTriflesToken(trifleBody, context, listener);
 
     }

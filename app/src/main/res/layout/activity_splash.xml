@@ -11,26 +11,39 @@
         android:layout_height="match_parent"
         android:gravity="center_vertical"
         android:orientation="vertical">
+
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@mipmap/ic_launcher"
-            />
-        <TextView
-            android:id="@+id/trustid"
-            android:layout_marginTop="32dp"
-            android:textAlignment="center"
+            android:src="@mipmap/ic_launcher" />
+
+        <Button
+            android:id="@+id/btn_zero"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Cargando..."/>
+            android:text="Trust ID Sub-Zero" />
+
+        <Button
+            android:id="@+id/btn_normal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Trust ID Normal" />
+
+        <TextView
+            android:id="@+id/trustid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Cargando..."
+            android:textAlignment="center" />
 
         <TextView
             android:id="@+id/trustid_file"
-            android:layout_marginTop="32dp"
-            android:textAlignment="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Cargando..."/>
+            android:layout_marginTop="32dp"
+            android:text="Cargando..."
+            android:textAlignment="center" />
 
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

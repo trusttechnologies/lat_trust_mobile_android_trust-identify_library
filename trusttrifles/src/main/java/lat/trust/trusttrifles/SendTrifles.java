@@ -19,6 +19,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static lat.trust.trusttrifles.utilities.Constants.TRUST_ID_TYPE_ZERO;
+import static lat.trust.trusttrifles.utilities.Constants.TRUST_ID_TYPE_ZERO_SAVED;
+
 public class SendTrifles {
 
 
@@ -37,8 +40,14 @@ public class SendTrifles {
             public void onResponse(Call<TrifleResponse> call, Response<TrifleResponse> response) {
 
                 if (response.isSuccessful()) {
+
                     TrifleResponse body = response.body();
                     Audit audit = new Audit();
+                    if (trifleBody.getTrustIdType() != null && trifleBody.getTrustIdType().equals(TRUST_ID_TYPE_ZERO)) {
+                        if (body != null) {
+                            Hawk.put(TRUST_ID_TYPE_ZERO_SAVED, body.getTrustid());
+                        }
+                    }
                     audit.setMessage(body.getMessage());
                     audit.setStatus(body.getStatus());
                     audit.setTrustid(body.getTrustid());
@@ -91,8 +100,14 @@ public class SendTrifles {
                     return;
                 }
                 if (response.isSuccessful()) {
+
                     TrifleResponse body = response.body();
                     Audit audit = new Audit();
+                    if (trifleBody.getTrustIdType() != null && trifleBody.getTrustIdType().equals(TRUST_ID_TYPE_ZERO)) {
+                        if (body != null) {
+                            Hawk.put(TRUST_ID_TYPE_ZERO_SAVED, body.getTrustid());
+                        }
+                    }
                     audit.setMessage(body.getMessage());
                     audit.setStatus(body.getStatus());
                     audit.setTrustid(body.getTrustid());

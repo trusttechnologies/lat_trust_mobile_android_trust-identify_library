@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.karumi.dexter.Dexter;
@@ -26,24 +28,43 @@ import lat.trust.trusttrifles.model.Identity;
 import lat.trust.trusttrifles.ui.DialogPermission;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 
-import static android.Manifest.permission.BLUETOOTH;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.READ_PHONE_STATE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class SplashActivity extends AppCompatActivity implements DialogPermission.DialogPermissionListener {
     private TextView trustid;
+    Button btnZero, btnNormal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         trustid = findViewById(R.id.trustid);
-      /*  Dexter.withActivity(this).withPermissions(
+        btnZero = findViewById(R.id.btn_zero);
+        btnNormal = findViewById(R.id.btn_normal);
+
+        btnZero.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getTrustIdZer(SplashActivity.this);
+            }
+        });
+        btnNormal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getTrustIdNormal(SplashActivity.this);
+            }
+        });
+        /*  */
+
+    }
+
+    private void getTrustIdNormal(SplashActivity splashActivity) {
+        Dexter.withActivity(this).withPermissions(
                 READ_PHONE_STATE,
                 READ_EXTERNAL_STORAGE,
-                WRITE_EXTERNAL_STORAGE,
-                BLUETOOTH).withListener(new MultiplePermissionsListener() {
+                WRITE_EXTERNAL_STORAGE).withListener(new MultiplePermissionsListener() {
             @Override
             public void onPermissionsChecked(MultiplePermissionsReport report) {
                 getTrustId();
@@ -53,9 +74,7 @@ public class SplashActivity extends AppCompatActivity implements DialogPermissio
             public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
 
             }
-        }).check();*/
-
-        getTrustIdZer(this);
+        }).check();
     }
 
     private void getTrustIdZer(Context context) {

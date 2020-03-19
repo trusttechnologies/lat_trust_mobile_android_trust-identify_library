@@ -18,6 +18,8 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
+        archivesBaseName = "Trust demo v$versionName c$versionCode"
+
     }
     buildTypes {
         release {
