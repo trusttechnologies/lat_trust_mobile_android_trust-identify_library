@@ -2,7 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/Jumpitt-lat_trust_mobile_android_trust-identify_library.iml" filepath="$PROJECT_DIR$/Jumpitt-lat_trust_mobile_android_trust-identify_library.iml" group="lat_trust_mobile_android_trust-identify_library" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="lat_trust_mobile_android_trust-identify_library/app" />
       <module fileurl="file://$PROJECT_DIR$/.idea/lat_trust_mobile_android_trust-identify_library.iml" filepath="$PROJECT_DIR$/.idea/lat_trust_mobile_android_trust-identify_library.iml" />
+      <module fileurl="file://$PROJECT_DIR$/trusttrifles/trusttrifles.iml" filepath="$PROJECT_DIR$/trusttrifles/trusttrifles.iml" group="lat_trust_mobile_android_trust-identify_library/trusttrifles" />
     </modules>
   </component>
 </project>
