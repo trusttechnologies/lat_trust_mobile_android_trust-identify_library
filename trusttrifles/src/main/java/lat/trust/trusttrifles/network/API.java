@@ -18,7 +18,7 @@ import retrofit2.http.POST;
 
 public interface API {
 
-    @POST("identification/api/v1/device")
+    @POST("v2/device")
     Call<TrifleResponse> trifle2(@Body TrifleBody body, @Header("Authorization") String token);
 
     @POST("notifications/device/register")
@@ -27,7 +27,7 @@ public interface API {
     @POST("oauth/token")
     Call<AuthTokenResponse> getAccessToken(@Body AuthTokenRequest tokenRequest);
 
-    @POST("company/api/v1/app/state")
+    @POST("v2/app/device")
     Call<Void> saveDeviceData(@Body SaveDeviceInfoRequest saveDeviceInfoRequest, @Header("Authorization") String token);
 
 }
