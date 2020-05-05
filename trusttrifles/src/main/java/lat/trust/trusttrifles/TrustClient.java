@@ -75,6 +75,7 @@ import static android.content.Context.SENSOR_SERVICE;
 import static android.content.Context.TELEPHONY_SERVICE;
 import static lat.trust.trusttrifles.utilities.Constants.CPU_FILE;
 import static lat.trust.trusttrifles.utilities.Constants.MEM_FILE;
+import static lat.trust.trusttrifles.utilities.Constants.SDK_IDENTIFY;
 import static lat.trust.trusttrifles.utilities.Constants.SENTRY_STATE;
 import static lat.trust.trusttrifles.utilities.Constants.TRUST_ID;
 import static lat.trust.trusttrifles.utilities.Constants.TRUST_TRIFLES;
@@ -120,6 +121,11 @@ public class TrustClient {
         TrustAuth.setSecretAndId(mContext);
         setEnvironment(context);
         SentryState.init(context);
+        setVersionName();
+    }
+
+    private static void setVersionName() {
+        Hawk.put(SDK_IDENTIFY, BuildConfig.VERSION_NAME);
     }
 
     private static void setEnvironment(Context context) {

@@ -26,6 +26,7 @@ import lat.trust.trusttrifles.network.req.TrifleBody;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 
+import static lat.trust.trusttrifles.utilities.Constants.SDK_IDENTIFY;
 import static lat.trust.trusttrifles.utilities.Constants.SENTRY_STATE;
 
 
@@ -37,8 +38,11 @@ public class TrustClientLite {
         TrustAuth.setSecretAndId(context);
         setEnvironment(context);
         sentryInit(context);
+        setVersionName();
     }
-
+    private static void setVersionName() {
+        Hawk.put(SDK_IDENTIFY, BuildConfig.VERSION_NAME);
+    }
     private static void setEnvironment(Context context) {
         TrustIdentifyConfigurationService.setEnvironment(TrustIdentifyConfigurationService.ENVIRONMENT_PRODUCTION, context);
     }

@@ -15,6 +15,7 @@ import lat.trust.trusttrifles.network.req.TrifleBody;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 
+import static lat.trust.trusttrifles.utilities.Constants.SDK_IDENTIFY;
 import static lat.trust.trusttrifles.utilities.Constants.TRUST_ID_TYPE_ZERO;
 
 public class TrustClientZero {
@@ -25,6 +26,11 @@ public class TrustClientZero {
         TrustAuth.setSecretAndId(context);
         setEnvironment(context);
         sentryInit(context);
+        setVersionName();
+    }
+
+    private static void setVersionName() {
+        Hawk.put(SDK_IDENTIFY, BuildConfig.VERSION_NAME);
     }
 
     private static void setEnvironment(Context context) {
@@ -111,6 +117,5 @@ public class TrustClientZero {
         trifleBody.setSim(DataUtil.getListSIM(context));
         trifleBody.setTrustId(Hawk.contains(Constants.TRUST_ID_TYPE_ZERO_SAVED) ? Hawk.get(Constants.TRUST_ID_TYPE_ZERO_SAVED) : null);
         SendTrifles.sendTriflesToken(trifleBody, context, listener);
-
     }
 }

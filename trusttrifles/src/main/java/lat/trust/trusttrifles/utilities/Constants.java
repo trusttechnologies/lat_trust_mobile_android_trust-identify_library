@@ -76,4 +76,7 @@ public class Constants {
     public static final String TRUST_ID_TYPE_ZERO = "trust_id_zero";
     public static final String TRUST_ID_TYPE_ZERO_SAVED = "trust_id_zero_saved";
 
+
+    public static final String SDK_IDENTIFY = "sdk_identify";
+
 }
