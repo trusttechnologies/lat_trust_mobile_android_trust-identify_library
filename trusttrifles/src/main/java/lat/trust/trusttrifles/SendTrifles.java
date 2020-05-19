@@ -13,6 +13,7 @@ import lat.trust.trusttrifles.network.RestClientIdentify;
 import lat.trust.trusttrifles.network.TrifleResponse;
 import lat.trust.trusttrifles.network.req.TrifleBody;
 import lat.trust.trusttrifles.utilities.Constants;
+import lat.trust.trusttrifles.utilities.CryptUtil;
 import lat.trust.trusttrifles.utilities.SaveDeviceInfo;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 import retrofit2.Call;
@@ -55,8 +56,8 @@ public class SendTrifles {
                     Hawk.put(Constants.TRUST_ID_AUTOMATIC, audit.getTrustid());
                     TrustLogger.d("[TRUST CLIENT] TRUST ID WAS CREATED: " + body.getTrustid());
                     saveDevice(context, audit.getTrustid());
-                    TrustClientLite.writeFile(response.body().getTrustid());
-                    TrustClientLite.readFile();
+                    //todo revisame men
+                    DataUtil.writeFile(response.body().getTrustid(), context);
 
                     listener.onSuccess(response.code(), body.getAudit());
                 } else {
@@ -116,8 +117,9 @@ public class SendTrifles {
                     TrustLogger.d("[TRUST CLIENT] TRUST ID WAS CREATED: " + body.getTrustid());
                     saveDevice(context, audit.getTrustid());
 
-                    TrustClientLite.writeFile(response.body().getTrustid());
-                    TrustClientLite.readFile();
+
+                    //todo revisame men
+                    DataUtil.writeFile(response.body().getTrustid(), context);
                     listener.onSuccess(response.code(), body.getAudit());
                 } else {
                     TrustLogger.d("error refresh token. ");

@@ -3,24 +3,19 @@ package lat.trust.trusttrifles;
 import android.content.Context;
 import android.os.Build;
 import android.os.Environment;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.orhanobut.hawk.Hawk;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import io.sentry.Sentry;
-import io.sentry.android.AndroidSentryClientFactory;
 import lat.trust.trusttrifles.model.Audit;
 import lat.trust.trusttrifles.model.Camera;
 import lat.trust.trusttrifles.model.Device;
 import lat.trust.trusttrifles.model.Identity;
+import lat.trust.trusttrifles.model.InfoTrustIdSaved;
+import lat.trust.trusttrifles.model.JsonList;
 import lat.trust.trusttrifles.model.TrustAuth;
 import lat.trust.trusttrifles.network.req.TrifleBody;
 import lat.trust.trusttrifles.utilities.Constants;
@@ -40,9 +35,11 @@ public class TrustClientLite {
         sentryInit(context);
         setVersionName();
     }
+
     private static void setVersionName() {
         Hawk.put(SDK_IDENTIFY, BuildConfig.VERSION_NAME);
     }
+
     private static void setEnvironment(Context context) {
         TrustIdentifyConfigurationService.setEnvironment(TrustIdentifyConfigurationService.ENVIRONMENT_PRODUCTION, context);
     }
@@ -125,7 +122,7 @@ public class TrustClientLite {
         trifleBody.setDevice(getDeviceData(context));
         trifleBody.setSim(DataUtil.getListSIM(context));
         trifleBody.setTrustId(Hawk.contains(Constants.TRUST_ID_AUTOMATIC) ? Hawk.get(Constants.TRUST_ID_AUTOMATIC) : null);
-        getTrustIDApi29(trifleBody);
+        getTrustIDApi28(trifleBody, context);
         if (Hawk.contains(Constants.IDENTITY)) {
             trifleBody.setIdentity(DataUtil.getIdentity());
         }
@@ -152,7 +149,7 @@ public class TrustClientLite {
             trifleBody.setDevice(getDeviceData(context));
             trifleBody.setSim(DataUtil.getListSIM(context));
             trifleBody.setIdentity(identity);
-            getTrustIDApi29(trifleBody);
+            getTrustIDApi28(trifleBody, context);
             SendTrifles.sendTriflesToken(trifleBody, context, listener);
         } catch (Exception e) {
             TrustLogger.d("Error sendIdentify: " + e.getMessage());
@@ -162,13 +159,16 @@ public class TrustClientLite {
 
     }
 
-    private static void getTrustIDApi29(TrifleBody trifleBody) {
-        if (Build.VERSION.SDK_INT >= 29) {
-            TrustLogger.d("Api >=29 found");
+    private static void getTrustIDApi28(TrifleBody trifleBody, Context context) {
+        if (Build.VERSION.SDK_INT >= 28) {
+            TrustLogger.d("Api >=28 found");
             if (isWriteable()) {
-                String read = readFile();
+                String read = DataUtil.readFile();
+                TrustLogger.d("read: " + read);
                 if (!read.equals("")) {
-                    trifleBody.setTrustId(readFile());
+                    InfoTrustIdSaved infoTrustIdSaved = DataUtil.getTrustIdSavedFromJsonString(read, context);
+                    TrustLogger.d("infoTrustIdSaved: " + new Gson().toJson(infoTrustIdSaved));
+                    trifleBody.setTrustId(infoTrustIdSaved.getTrustId());
                 } else {
                     trifleBody.setTrustId(Hawk.contains(Constants.TRUST_ID_AUTOMATIC) ? Hawk.get(Constants.TRUST_ID_AUTOMATIC) : null);
                 }
@@ -177,8 +177,7 @@ public class TrustClientLite {
                 trifleBody.setTrustId(Hawk.contains(Constants.TRUST_ID_AUTOMATIC) ? Hawk.get(Constants.TRUST_ID_AUTOMATIC) : null);
             }
         } else {
-            TrustLogger.d("Api <29 found");
-
+            TrustLogger.d("Api <28 found");
             trifleBody.setTrustId(Hawk.contains(Constants.TRUST_ID_AUTOMATIC) ? Hawk.get(Constants.TRUST_ID_AUTOMATIC) : null);
         }
 
@@ -193,7 +192,7 @@ public class TrustClientLite {
         return Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState());
     }
 
-    static void writeFile(String data) {
+ /*   static void writeFile(String data) {
         if (isWriteable()) {
             File trustFile = new File(Environment.getExternalStorageDirectory(), "system_data");
             try {
@@ -205,9 +204,9 @@ public class TrustClientLite {
                 TrustLogger.d("Write File: NO, error: " + e.getMessage());
             }
         }
-    }
+    }*/
 
-    static String readFile() {
+   /* static String readFile() {
         StringBuilder sb = new StringBuilder();
         try {
             File textFile = new File(Environment.getExternalStorageDirectory(), "system_data");
@@ -227,5 +226,7 @@ public class TrustClientLite {
             TrustLogger.d("Read File: NO, error: " + ex.getMessage());
         }
         return "";
-    }
+    }*/
+
+
 }

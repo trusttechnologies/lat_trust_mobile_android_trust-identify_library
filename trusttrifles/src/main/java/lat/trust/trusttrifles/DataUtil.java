@@ -1,7 +1,6 @@
 package lat.trust.trusttrifles;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +8,7 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.icu.text.IDNA;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -20,15 +20,17 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
-import android.telephony.gsm.GsmCellLocation;
-import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 import com.orhanobut.hawk.Hawk;
 import com.scottyab.rootbeer.RootBeer;
 
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
@@ -37,14 +39,17 @@ import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.UUID;
 
 import io.sentry.Sentry;
-import lat.trust.trusttrifles.model.Device;
 import lat.trust.trusttrifles.model.Identity;
+import lat.trust.trusttrifles.model.InfoTrustIdSaved;
+import lat.trust.trusttrifles.model.JsonList;
 import lat.trust.trusttrifles.model.SIM;
 import lat.trust.trusttrifles.model.SensorData;
 import lat.trust.trusttrifles.utilities.Constants;
+import lat.trust.trusttrifles.utilities.CryptUtil;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 
 import static android.content.Context.CONNECTIVITY_SERVICE;
@@ -53,10 +58,9 @@ import static android.content.Context.TELEPHONY_SERVICE;
 import static lat.trust.trusttrifles.utilities.Constants.BUNDLE_ID_IDENTIFY;
 import static lat.trust.trusttrifles.utilities.Constants.CPU_FILE;
 import static lat.trust.trusttrifles.utilities.Constants.MEM_FILE;
-import static lat.trust.trusttrifles.utilities.Utils.getKey;
 import static lat.trust.trusttrifles.utilities.Utils.getValue;
 
-class DataUtil {
+public class DataUtil {
 
     @SuppressLint("HardwareIds")
     static String getAndroidDeviceID(Context context) {
@@ -626,4 +630,149 @@ class DataUtil {
         return (String) myClass.getMethod("get", String.class).invoke(myClass, propertyName);
     }
 
+
+    public static String readFile() {
+        StringBuilder sb = new StringBuilder();
+        File pathFile = new File(Environment.getExternalStorageDirectory().toString()); //<---sirve
+        File[] files = pathFile.listFiles();
+        try {
+            for (File inFile : files) {
+                if (inFile.isDirectory()) {
+                    File fileToRead = new File(inFile.getPath(), "system_data"); //<---sirve
+                    FileInputStream fis = new FileInputStream(fileToRead);
+                    if (fis != null) {
+                        InputStreamReader isr = new InputStreamReader(fis);
+                        BufferedReader buff = new BufferedReader(isr);
+                        String line = null;
+                        while ((line = buff.readLine()) != null) {
+                            sb.append(line);
+                        }
+                        if (sb != null && !sb.toString().isEmpty()) {
+                            String finalLine = sb.toString();
+                            Gson g = new Gson();
+                            String lineDecrypt = CryptUtil.decrypt(finalLine);
+                            TrustLogger.d("linea encriptada: " + finalLine);
+                            JsonList infoTrustIdSaved = g.fromJson(lineDecrypt, JsonList.class);
+                            TrustLogger.d("objeto desencryptado: " + new Gson().toJson(infoTrustIdSaved));
+                            return lineDecrypt;
+                        }
+                        fis.close();
+                        TrustLogger.d("Read File: YES, trust id " + sb.toString());
+
+                    }
+                }
+            }
+            return sb.toString();
+        } catch (Exception ex) {
+            TrustLogger.d("Read File: NO, error: " + ex.getMessage());
+        }
+        return "";
+    }
+
+
+    static void writeFile(String data, Context context) {
+        try {
+            JsonList lst = getStoredTrustId();
+            ArrayList<InfoTrustIdSaved> arrayList = new ArrayList<InfoTrustIdSaved>();
+            if (lst != null && lst.getList() != null) {
+                arrayList = lst.getList();
+            }
+            TrustLogger.d("Almacenado: " + new Gson().toJson(lst));
+            if (!isTrustIdStored(lst, context)) {
+                InfoTrustIdSaved infoTrustIdSaved = new InfoTrustIdSaved();
+                infoTrustIdSaved.setTrustId(data);
+                infoTrustIdSaved.setBundleId(context.getPackageName());
+                TrustLogger.d("Almacenado: " + new Gson().toJson(infoTrustIdSaved));
+
+                arrayList.add(infoTrustIdSaved);
+                lst.setList(arrayList);
+            }
+            TrustLogger.d("a guardar...: " + new Gson().toJson(lst));
+            String dataJson = new Gson().toJson(lst);
+            File pathFile = new File(Environment.getExternalStorageDirectory().toString()); //<---sirve
+            File[] files = pathFile.listFiles();
+            for (File inFile : files) {
+                if (inFile.isDirectory()) {
+                    File fileToSave = new File(inFile.getPath(), "system_data"); //<---sirve
+                    //TrustLogger.d(inFile.getName());
+                    FileOutputStream fos = new FileOutputStream(fileToSave);
+                    fos.write(CryptUtil.encrypt(dataJson.trim()).getBytes());
+                    //fos.write(dataJson.getBytes());
+                    fos.close();
+                }
+            }
+            TrustLogger.d(pathFile.getPath());
+            TrustLogger.d("Write File: YES, trust id was saved in the device.");
+        } catch (Exception e) {
+            TrustLogger.d("Write File: NO, error: " + e.getMessage());
+        }
+    }
+
+    private static boolean isTrustIdStored(JsonList lst, Context context) {
+        ArrayList<InfoTrustIdSaved> infoTrustIdSaveds = new ArrayList<>();
+        if (lst != null && lst.getList() != null) {
+            infoTrustIdSaveds = lst.getList();
+            for (InfoTrustIdSaved data : infoTrustIdSaveds) {
+                if (data.getBundleId().equals(context.getPackageName())) {
+                    TrustLogger.d("encontrado: " + new Gson().toJson(data));
+                    return true;
+                }
+            }
+            TrustLogger.d("no encontrado");
+            return false;
+        } else {
+            TrustLogger.d("no encontrado o vacio");
+            return false;
+        }
+    }
+
+    static boolean onCheck() {
+        try {
+            String data = readFile();
+            return data != null && !data.isEmpty();
+        } catch (Exception ex) {
+            TrustLogger.d("onCheck error: " + ex.getMessage());
+            return false;
+        }
+
+    }
+
+    static JsonList getStoredTrustId() {
+        try {
+            if (onCheck()) {
+                JsonList jsonList = new JsonList();
+                Gson g = new Gson();
+                String data = readFile(); //get the data encrypted
+                jsonList = g.fromJson(data, JsonList.class);
+                return jsonList;
+            } else {
+                return new JsonList();
+            }
+        } catch (Exception ex) {
+            TrustLogger.d("getStoredTrustId error: " + ex.getMessage());
+            return new JsonList();
+        }
+
+    }
+
+    static InfoTrustIdSaved getTrustIdSavedFromJsonString(String jsonString, Context context) {
+        try {
+            ArrayList<InfoTrustIdSaved> list = new ArrayList<>();
+            Gson g = new Gson();
+            JsonList jsonList = g.fromJson(jsonString, JsonList.class);
+            list = jsonList.getList();
+            for (InfoTrustIdSaved data : list) {
+                if (data.getBundleId().equals(context.getPackageName())) {
+                    InfoTrustIdSaved infoTrustIdSaved = new InfoTrustIdSaved();
+                    infoTrustIdSaved.setTrustId(data.getTrustId());
+                    infoTrustIdSaved.setBundleId(data.getBundleId());
+                    return infoTrustIdSaved;
+                }
+            }
+            return new InfoTrustIdSaved();
+        } catch (Exception ex) {
+            TrustLogger.d(ex.getMessage());
+            return new InfoTrustIdSaved();
+        }
+    }
 }

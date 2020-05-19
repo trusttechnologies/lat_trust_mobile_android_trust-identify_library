@@ -24,6 +24,13 @@
             android:text="Trust ID Sub-Zero" />
 
         <Button
+            android:id="@+id/btn_save_data"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Save File" />
+
+
+        <Button
             android:id="@+id/btn_normal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -45,5 +52,20 @@
             android:text="Cargando..."
             android:textAlignment="center" />
 
+        <TextView
+            android:id="@+id/trustid_encrypt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Cargando..."
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/trustid_decrypt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Cargando..."
+            android:textAlignment="center" />
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>
