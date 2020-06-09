@@ -14,7 +14,19 @@ Trust is a platform that allows building trust and security between people and t
   
 **Trust-device-info** allows you to obtain a unique universal ID for each device from a set of characteristics of this device. It also allows the monitoring of device status changes, to have knowledge of the device status at all times.  
   
+# trust-service.json file
+    
+All our services are protected by access tokens, which is why in order to generate a trust id or an notification it is necessary to add a .json file called trust-service inside the assets folder of your android studio project. In order to obtain this file it is necessary to send the following data of your application: **bundle_id**, **app_name** and **redirect_uri** (ex: bundle_id: //auth.id) these data must be sent to app@trust.lat 
   
+    
+the structure of the trust-service.json file should be as follows
+```json  
+ { 
+	 "client_id": "your_client_id",
+	 "client_secret": "yout_client_secret" 
+ }
+
+``` 
 # Implementation  
   
 ```java  
