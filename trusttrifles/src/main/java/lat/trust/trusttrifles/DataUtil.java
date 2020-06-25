@@ -648,19 +648,19 @@ public class DataUtil {
                         while ((line = buff.readLine()) != null) {
                             sb.append(line);
                         }
-                        if (sb.toString().length()<40){
+                        if (sb.toString().length() < 40) {
                             return sb.toString();
-                        }else{
-                        if (sb != null && !sb.toString().isEmpty()) {
-                            String finalLine = sb.toString();
-                            Gson g = new Gson();
-                            String lineDecrypt = CryptUtil.decrypt(finalLine);
-                            TrustLogger.d("linea encriptada: " + finalLine);
-                            JsonList infoTrustIdSaved = g.fromJson(lineDecrypt, JsonList.class);
-                            TrustLogger.d("objeto desencryptado: " + new Gson().toJson(infoTrustIdSaved));
-                            Log.e("esta es la linea encrip", lineDecrypt);
-                            return lineDecrypt;
-                        }
+                        } else {
+                            if (sb != null && !sb.toString().isEmpty()) {
+                                String finalLine = sb.toString();
+                                Gson g = new Gson();
+                                String lineDecrypt = CryptUtil.decrypt(finalLine);
+                                TrustLogger.d("linea encriptada: " + finalLine);
+                                JsonList infoTrustIdSaved = g.fromJson(lineDecrypt, JsonList.class);
+                                TrustLogger.d("objeto desencryptado: " + new Gson().toJson(infoTrustIdSaved));
+                                Log.e("esta es la linea encrip", lineDecrypt);
+                                return lineDecrypt;
+                            }
                         }
 
                         fis.close();
@@ -766,12 +766,13 @@ public class DataUtil {
         try {
             ArrayList<InfoTrustIdSaved> list = new ArrayList<>();
             Gson g = new Gson();
-            if (jsonString.length() < 40){
+            if (jsonString.length() < 40) {
                 InfoTrustIdSaved infoTrustIdSaved = new InfoTrustIdSaved();
                 infoTrustIdSaved.setTrustId(jsonString);
                 infoTrustIdSaved.setBundleId(context.getPackageName());
+                TrustLogger.d("Viejo trust_id" + infoTrustIdSaved.toString());
                 return infoTrustIdSaved;
-            }else{
+            } else {
                 JsonList jsonList = g.fromJson(jsonString, JsonList.class);
                 list = jsonList.getList();
                 for (InfoTrustIdSaved data : list) {
@@ -779,6 +780,7 @@ public class DataUtil {
                         InfoTrustIdSaved infoTrustIdSaved = new InfoTrustIdSaved();
                         infoTrustIdSaved.setTrustId(data.getTrustId());
                         infoTrustIdSaved.setBundleId(data.getBundleId());
+                        TrustLogger.d("Nuevo trust_id" + infoTrustIdSaved.toString());
                         return infoTrustIdSaved;
                     }
                 }
