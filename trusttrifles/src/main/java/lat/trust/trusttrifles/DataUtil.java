@@ -20,6 +20,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
@@ -647,6 +648,9 @@ public class DataUtil {
                         while ((line = buff.readLine()) != null) {
                             sb.append(line);
                         }
+                        if (sb.toString().length()<40){
+                            return sb.toString();
+                        }else{
                         if (sb != null && !sb.toString().isEmpty()) {
                             String finalLine = sb.toString();
                             Gson g = new Gson();
@@ -654,8 +658,11 @@ public class DataUtil {
                             TrustLogger.d("linea encriptada: " + finalLine);
                             JsonList infoTrustIdSaved = g.fromJson(lineDecrypt, JsonList.class);
                             TrustLogger.d("objeto desencryptado: " + new Gson().toJson(infoTrustIdSaved));
+                            Log.e("esta es la linea encrip", lineDecrypt);
                             return lineDecrypt;
                         }
+                        }
+
                         fis.close();
                         TrustLogger.d("Read File: YES, trust id " + sb.toString());
 
@@ -759,17 +766,25 @@ public class DataUtil {
         try {
             ArrayList<InfoTrustIdSaved> list = new ArrayList<>();
             Gson g = new Gson();
-            JsonList jsonList = g.fromJson(jsonString, JsonList.class);
-            list = jsonList.getList();
-            for (InfoTrustIdSaved data : list) {
-                if (data.getBundleId().equals(context.getPackageName())) {
-                    InfoTrustIdSaved infoTrustIdSaved = new InfoTrustIdSaved();
-                    infoTrustIdSaved.setTrustId(data.getTrustId());
-                    infoTrustIdSaved.setBundleId(data.getBundleId());
-                    return infoTrustIdSaved;
+            if (jsonString.length() < 40){
+                InfoTrustIdSaved infoTrustIdSaved = new InfoTrustIdSaved();
+                infoTrustIdSaved.setTrustId(jsonString);
+                infoTrustIdSaved.setBundleId(context.getPackageName());
+                return infoTrustIdSaved;
+            }else{
+                JsonList jsonList = g.fromJson(jsonString, JsonList.class);
+                list = jsonList.getList();
+                for (InfoTrustIdSaved data : list) {
+                    if (data.getBundleId().equals(context.getPackageName())) {
+                        InfoTrustIdSaved infoTrustIdSaved = new InfoTrustIdSaved();
+                        infoTrustIdSaved.setTrustId(data.getTrustId());
+                        infoTrustIdSaved.setBundleId(data.getBundleId());
+                        return infoTrustIdSaved;
+                    }
                 }
+                return new InfoTrustIdSaved();
             }
-            return new InfoTrustIdSaved();
+
         } catch (Exception ex) {
             TrustLogger.d(ex.getMessage());
             return new InfoTrustIdSaved();
