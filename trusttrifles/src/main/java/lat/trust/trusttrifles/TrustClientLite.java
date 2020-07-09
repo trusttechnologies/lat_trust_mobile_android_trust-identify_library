@@ -3,6 +3,7 @@ package lat.trust.trusttrifles;
 import android.content.Context;
 import android.os.Build;
 import android.os.Environment;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.orhanobut.hawk.Hawk;
@@ -122,12 +123,29 @@ public class TrustClientLite {
         trifleBody.setDevice(getDeviceData(context));
         trifleBody.setSim(DataUtil.getListSIM(context));
         trifleBody.setTrustId(Hawk.contains(Constants.TRUST_ID_AUTOMATIC) ? Hawk.get(Constants.TRUST_ID_AUTOMATIC) : null);
+        Log.e("ACA", trifleBody.getTrustId());
         getTrustIDApi28(trifleBody, context);
         if (Hawk.contains(Constants.IDENTITY)) {
             trifleBody.setIdentity(DataUtil.getIdentity());
         }
         SendTrifles.sendTriflesToken(trifleBody, context, listener);
     }
+
+    public static void overWriteTrust(String trustId) {
+        if (Hawk.contains(Constants.TRUST_ID_AUTOMATIC)) {
+            Hawk.put(Constants.TRUST_ID_AUTOMATIC, trustId);
+        }
+
+        if (Hawk.contains(Constants.TRUST_ID)) {
+            Hawk.put(Constants.TRUST_ID, trustId);
+        }
+
+        if (Hawk.contains(Constants.AUDIT_TRUST_ID)) {
+            Hawk.put(Constants.AUDIT_TRUST_ID, trustId);
+        }
+
+    }
+
 
     public static void saveIdentity(Identity identity) {
         Hawk.put(Constants.IDENTITY, identity);
@@ -191,6 +209,8 @@ public class TrustClientLite {
     private static boolean isWriteable() {
         return Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState());
     }
+
+
 
  /*   static void writeFile(String data) {
         if (isWriteable()) {

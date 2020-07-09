@@ -59,6 +59,7 @@ public class SplashActivity extends AppCompatActivity implements DialogPermissio
             @Override
             public void onClick(View view) {
                 getTrustIdNormal(SplashActivity.this);
+
             }
         });
         btnSaveData.setOnClickListener(new View.OnClickListener() {
@@ -69,6 +70,7 @@ public class SplashActivity extends AppCompatActivity implements DialogPermissio
             }
         });
     }
+
 
 
     private void getTrustIdNormal(SplashActivity splashActivity) {
