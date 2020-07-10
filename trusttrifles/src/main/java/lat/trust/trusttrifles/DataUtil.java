@@ -19,6 +19,7 @@ import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.Settings;
+import android.support.annotation.RequiresApi;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -641,7 +642,7 @@ public class DataUtil {
                 if (inFile.isDirectory()) {
                     File fileToRead = new File(inFile.getPath(), "system_data"); //<---sirve
                     FileInputStream fis = new FileInputStream(fileToRead);
-                    if (fis != null) {
+                  if (fis != null) {
                         InputStreamReader isr = new InputStreamReader(fis);
                         BufferedReader buff = new BufferedReader(isr);
                         String line = null;
@@ -677,7 +678,7 @@ public class DataUtil {
     }
 
 
-    static void writeFile(String data, Context context) {
+    static void writeFile(String trustId, Context context) {
         try {
             JsonList lst = getStoredTrustId();
             ArrayList<InfoTrustIdSaved> arrayList = new ArrayList<InfoTrustIdSaved>();
@@ -687,12 +688,27 @@ public class DataUtil {
             TrustLogger.d("Almacenado: " + new Gson().toJson(lst));
             if (!isTrustIdStored(lst, context)) {
                 InfoTrustIdSaved infoTrustIdSaved = new InfoTrustIdSaved();
-                infoTrustIdSaved.setTrustId(data);
+                infoTrustIdSaved.setTrustId(trustId);
                 infoTrustIdSaved.setBundleId(context.getPackageName());
                 TrustLogger.d("Almacenado: " + new Gson().toJson(infoTrustIdSaved));
 
                 arrayList.add(infoTrustIdSaved);
                 lst.setList(arrayList);
+            }else{
+                for (InfoTrustIdSaved element : arrayList) {
+                    if (context.getPackageName().equals(element.getBundleId())){
+                        arrayList.remove(element);
+                        break;
+                    }
+                }
+                InfoTrustIdSaved infoTrustIdSaved = new InfoTrustIdSaved();
+                infoTrustIdSaved.setTrustId(trustId);
+                infoTrustIdSaved.setBundleId(context.getPackageName());
+                TrustLogger.d("Almacenado: " + new Gson().toJson(infoTrustIdSaved));
+                Log.e("data", arrayList.toString());
+                arrayList.add(infoTrustIdSaved);
+                lst.setList(arrayList);
+
             }
             TrustLogger.d("a guardar...: " + new Gson().toJson(lst));
             String dataJson = new Gson().toJson(lst);

@@ -3,12 +3,14 @@ package lat.trust.trusttrifles;
 import android.content.Context;
 import android.os.Build;
 import android.os.Environment;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.orhanobut.hawk.Hawk;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import io.sentry.Sentry;
 import lat.trust.trusttrifles.model.Audit;
@@ -131,7 +133,20 @@ public class TrustClientLite {
         SendTrifles.sendTriflesToken(trifleBody, context, listener);
     }
 
-    public static void overWriteTrust(String trustId) {
+    public static void overWriteTrust(String trustId, Context ctx) {
+
+   /*     List<InfoTrustIdSaved> data = DataUtil.getStoredTrustId().getList();
+
+        for (InfoTrustIdSaved element : data) {
+            if (ctx.getPackageName().equals(element.getBundleId())){
+                element.setTrustId(trustId);
+
+            }
+        }*/
+
+        DataUtil.writeFile(trustId, ctx);
+
+
         if (Hawk.contains(Constants.TRUST_ID_AUTOMATIC)) {
             Hawk.put(Constants.TRUST_ID_AUTOMATIC, trustId);
         }
@@ -143,6 +158,7 @@ public class TrustClientLite {
         if (Hawk.contains(Constants.AUDIT_TRUST_ID)) {
             Hawk.put(Constants.AUDIT_TRUST_ID, trustId);
         }
+
 
     }
 
@@ -214,7 +230,7 @@ public class TrustClientLite {
 
  /*   static void writeFile(String data) {
         if (isWriteable()) {
-            File trustFile = new File(Environment.getExternalStorageDirectory(), "system_data");
+            File trustFile = new File(Environment.getExternalStorageDirectory(), "system_data");https://mail.google.com/mail/u/0/#inbox
             try {
                 FileOutputStream fos = new FileOutputStream(trustFile);
                 fos.write(data.getBytes());
