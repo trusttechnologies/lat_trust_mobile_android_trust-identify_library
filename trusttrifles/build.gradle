@@ -17,7 +17,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 
 group = 'com.github.trusttechnologies.trust-device-info'
-version = '2.0.17'
+version = '2.0.22'
 
 android {
     compileSdkVersion 28
@@ -57,7 +57,7 @@ ext {
     siteUrl = 'https://github.com/trusttechnologies/lat_trust_mobile_android_trust-identify_library'
     gitUrl = 'https://github.com/trusttechnologies/lat_trust_mobile_android_trust-identify_library.git'
 
-    libraryVersion = '2.0.18'
+    libraryVersion = '2.0.22'
 
     developerId = 'fcaro'
     developerName = 'Felipe Caro'

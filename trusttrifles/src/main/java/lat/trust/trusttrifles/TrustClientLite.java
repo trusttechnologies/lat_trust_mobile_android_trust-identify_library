@@ -24,6 +24,7 @@ import lat.trust.trusttrifles.network.req.TrifleBody;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 
+import static lat.trust.trusttrifles.utilities.Constants.OPERATION;
 import static lat.trust.trusttrifles.utilities.Constants.SDK_IDENTIFY;
 import static lat.trust.trusttrifles.utilities.Constants.SENTRY_STATE;
 
@@ -125,7 +126,7 @@ public class TrustClientLite {
         trifleBody.setDevice(getDeviceData(context));
         trifleBody.setSim(DataUtil.getListSIM(context));
         trifleBody.setTrustId(Hawk.contains(Constants.TRUST_ID_AUTOMATIC) ? Hawk.get(Constants.TRUST_ID_AUTOMATIC) : null);
-        Log.e("ACA", trifleBody.getTrustId());
+        //Log.e("ACA", trifleBody.getTrustId());
         getTrustIDApi28(trifleBody, context);
         if (Hawk.contains(Constants.IDENTITY)) {
             trifleBody.setIdentity(DataUtil.getIdentity());
@@ -133,16 +134,15 @@ public class TrustClientLite {
         SendTrifles.sendTriflesToken(trifleBody, context, listener);
     }
 
-    public static void overWriteTrust(String trustId, Context ctx) {
+    public static void overWriteTrust(String trustId,String wrongTrustId, Context ctx) {
 
        //  DataUtil.writeFile(trustId, ctx);
 
         TrifleBody trifleBody = new TrifleBody();
         trifleBody.setDevice(getDeviceData(ctx));
         trifleBody.setSim(DataUtil.getListSIM(ctx));
-        if (Hawk.contains(Constants.TRUST_ID_AUTOMATIC))
-        trifleBody.setWrong_trustId(Hawk.get(Constants.TRUST_ID_AUTOMATIC));
-        trifleBody.setOperation("overwrite");
+        trifleBody.setWrong_trustId(wrongTrustId);
+        trifleBody.setOperation(OPERATION);
         trifleBody.setTrustId(trustId);
 
         if (Hawk.contains(Constants.TRUST_ID_AUTOMATIC)) {

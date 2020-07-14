@@ -17,6 +17,7 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import lat.trust.trustdemo.R;
 import lat.trust.trusttrifles.DataUtil;
