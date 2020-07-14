@@ -77,7 +77,7 @@ public class TrifleBody {
         this.operation = operation;
     }
 
-    public void setWrong_trustId(String wrong_trustId) {
-        this.wrong_trust_id = wrong_trust_id;
+    public void setWrong_trustId(String wrong_trust_d) {
+        this.wrong_trust_id = wrong_trust_d;
     }
 }
