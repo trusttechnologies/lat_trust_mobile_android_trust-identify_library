@@ -59,7 +59,7 @@ public class SplashActivity extends AppCompatActivity implements DialogPermissio
             @Override
             public void onClick(View view) {
                 getTrustIdNormal(SplashActivity.this);
-              //TrustClientLite.overWriteTrust("e276e18a-6a63-4488-b60b-cf61eeed171f", SplashActivity.this);
+                //TrustClientLite.overWriteTrust("80d6b863-0577-40e2-94c2-1b399ec4991d", SplashActivity.this);
 
             }
         });

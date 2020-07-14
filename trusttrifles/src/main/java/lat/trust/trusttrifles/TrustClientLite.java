@@ -135,17 +135,15 @@ public class TrustClientLite {
 
     public static void overWriteTrust(String trustId, Context ctx) {
 
-   /*     List<InfoTrustIdSaved> data = DataUtil.getStoredTrustId().getList();
+       //  DataUtil.writeFile(trustId, ctx);
 
-        for (InfoTrustIdSaved element : data) {
-            if (ctx.getPackageName().equals(element.getBundleId())){
-                element.setTrustId(trustId);
-
-            }
-        }*/
-
-        DataUtil.writeFile(trustId, ctx);
-
+        TrifleBody trifleBody = new TrifleBody();
+        trifleBody.setDevice(getDeviceData(ctx));
+        trifleBody.setSim(DataUtil.getListSIM(ctx));
+        if (Hawk.contains(Constants.TRUST_ID_AUTOMATIC))
+        trifleBody.setWrong_trustId(Hawk.get(Constants.TRUST_ID_AUTOMATIC));
+        trifleBody.setOperation("overwrite");
+        trifleBody.setTrustId(trustId);
 
         if (Hawk.contains(Constants.TRUST_ID_AUTOMATIC)) {
             Hawk.put(Constants.TRUST_ID_AUTOMATIC, trustId);
@@ -158,6 +156,9 @@ public class TrustClientLite {
         if (Hawk.contains(Constants.AUDIT_TRUST_ID)) {
             Hawk.put(Constants.AUDIT_TRUST_ID, trustId);
         }
+
+
+        SendTrifles.sendTriflesToken(trifleBody, ctx);
 
 
     }

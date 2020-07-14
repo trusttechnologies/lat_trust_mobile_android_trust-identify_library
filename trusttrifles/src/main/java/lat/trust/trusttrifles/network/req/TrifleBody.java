@@ -14,10 +14,14 @@ public class TrifleBody {
     private Device device;
     private List<SIM> sim;
     private Identity identity;
-    @SerializedName("trustid")
+    @SerializedName("trust_id")
     private String trustId;
     @SerializedName("trust_id_type")
     private String trustIdType;
+
+    private String operation;
+    @SerializedName("wrong_trust_id")
+    private String wrong_trust_id;
 
     public String getTrustIdType() {
         return trustIdType;
@@ -67,5 +71,13 @@ public class TrifleBody {
 
     public void setTrustId(String trustId) {
         this.trustId = trustId;
+    }
+
+    public void setOperation(String operation) {
+        this.operation = operation;
+    }
+
+    public void setWrong_trustId(String wrong_trustId) {
+        this.wrong_trust_id = wrong_trust_id;
     }
 }
