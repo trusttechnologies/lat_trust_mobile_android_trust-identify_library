@@ -17,6 +17,7 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import lat.trust.trustdemo.R;
 import lat.trust.trusttrifles.DataUtil;
@@ -59,6 +60,8 @@ public class SplashActivity extends AppCompatActivity implements DialogPermissio
             @Override
             public void onClick(View view) {
                 getTrustIdNormal(SplashActivity.this);
+                //TrustClientLite.overWriteTrust("80d6b863-0577-40e2-94c2-1b399ec4991d", SplashActivity.this);
+
             }
         });
         btnSaveData.setOnClickListener(new View.OnClickListener() {

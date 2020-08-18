@@ -3,11 +3,14 @@ package lat.trust.trusttrifles;
 import android.content.Context;
 import android.os.Build;
 import android.os.Environment;
+import android.support.annotation.RequiresApi;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.orhanobut.hawk.Hawk;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import io.sentry.Sentry;
 import lat.trust.trusttrifles.model.Audit;
@@ -21,6 +24,7 @@ import lat.trust.trusttrifles.network.req.TrifleBody;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 
+import static lat.trust.trusttrifles.utilities.Constants.OPERATION;
 import static lat.trust.trusttrifles.utilities.Constants.SDK_IDENTIFY;
 import static lat.trust.trusttrifles.utilities.Constants.SENTRY_STATE;
 
@@ -122,12 +126,43 @@ public class TrustClientLite {
         trifleBody.setDevice(getDeviceData(context));
         trifleBody.setSim(DataUtil.getListSIM(context));
         trifleBody.setTrustId(Hawk.contains(Constants.TRUST_ID_AUTOMATIC) ? Hawk.get(Constants.TRUST_ID_AUTOMATIC) : null);
+        //Log.e("ACA", trifleBody.getTrustId());
         getTrustIDApi28(trifleBody, context);
         if (Hawk.contains(Constants.IDENTITY)) {
             trifleBody.setIdentity(DataUtil.getIdentity());
         }
         SendTrifles.sendTriflesToken(trifleBody, context, listener);
     }
+
+    public static void overWriteTrust(String trustId,String wrongTrustId, Context ctx) {
+
+       //  DataUtil.writeFile(trustId, ctx);
+
+        TrifleBody trifleBody = new TrifleBody();
+        trifleBody.setDevice(getDeviceData(ctx));
+        trifleBody.setSim(DataUtil.getListSIM(ctx));
+        trifleBody.setWrong_trustId(wrongTrustId);
+        trifleBody.setOperation(OPERATION);
+        trifleBody.setTrustId(trustId);
+
+        if (Hawk.contains(Constants.TRUST_ID_AUTOMATIC)) {
+            Hawk.put(Constants.TRUST_ID_AUTOMATIC, trustId);
+        }
+
+        if (Hawk.contains(Constants.TRUST_ID)) {
+            Hawk.put(Constants.TRUST_ID, trustId);
+        }
+
+        if (Hawk.contains(Constants.AUDIT_TRUST_ID)) {
+            Hawk.put(Constants.AUDIT_TRUST_ID, trustId);
+        }
+
+
+        SendTrifles.sendTriflesToken(trifleBody, ctx);
+
+
+    }
+
 
     public static void saveIdentity(Identity identity) {
         Hawk.put(Constants.IDENTITY, identity);
@@ -192,9 +227,11 @@ public class TrustClientLite {
         return Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState());
     }
 
+
+
  /*   static void writeFile(String data) {
         if (isWriteable()) {
-            File trustFile = new File(Environment.getExternalStorageDirectory(), "system_data");
+            File trustFile = new File(Environment.getExternalStorageDirectory(), "system_data");https://mail.google.com/mail/u/0/#inbox
             try {
                 FileOutputStream fos = new FileOutputStream(trustFile);
                 fos.write(data.getBytes());

@@ -75,8 +75,9 @@ public class Constants {
     public static final String SENTRY_STATE = "com.trust.identify.sentry_state";
     public static final String TRUST_ID_TYPE_ZERO = "trust_id_zero";
     public static final String TRUST_ID_TYPE_ZERO_SAVED = "trust_id_zero_saved";
+    public static final String AUDIT_TRUST_ID = "audit_trust_id";
 
 
     public static final String SDK_IDENTIFY = "sdk_identify";
-
+    public static final String OPERATION  = "overwrite";
 }
