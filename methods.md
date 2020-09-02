@@ -17,7 +17,7 @@ Get the minutiae of the Device. If requestTrustId is True, they will be sent to 
 
 TrustClient.getInstance().getTrifles(true, new  TrustListener.OnResult<Audit>() {
 	@Override
-	public  void  onSuccess(int  i, Audit  audit) {/**/}
+	public  void  onSuccess(int  i, Audit  trust) {/**/}
 	@Override
 	public  void  onError(int  i) {/**/}
 	@Override
@@ -352,7 +352,7 @@ TrustClient.getInstance().sendTrifles(mBody,listener){
    ## notifyEvent()
   
   
-This method is used to report a change in the device to the server use the trust id that the user obtained do not expect audit in the response
+This method is used to report a change in the device to the server use the trust id that the user obtained do not expect trust in the response
 
 *14/11/2018: Currently this method returns error code 404 in its onFailure method* 
 
@@ -382,7 +382,7 @@ TrustClient.getInstance().notifyEvent(trustId,packageName,eventType,eventValue,l
   
   
   
-This method is used to report a change in the device to the server. Use the trust id stored by the library. Do not expect audit in the response
+This method is used to report a change in the device to the server. Use the trust id stored by the library. Do not expect trust in the response
 
 *14/11/2018: Currently this method returns error code 404 in its onFailure method* 
 
@@ -407,7 +407,7 @@ TrustClient.getInstance().notifyEvent(packageName, eventType, eventValue, lat, l
   
   
   
-Method used to report a change in the device to the server expect an audit in the response.
+Method used to report a change in the device to the server expect an trust in the response.
 
 *14/11/2018: Currently this method returns error code 500 in its onFailure method* 
 
@@ -436,7 +436,7 @@ TrustClient.getInstance().remoteEvent(trustId,packageName,eventType,eventValue,l
    ## remoteEvent2()
   
   
-RemoteEvent clone method, try to try another Body to send information. Use sending by String for SIM info (use prior to the creation of SIM Class). Expect an audit in the response
+RemoteEvent clone method, try to try another Body to send information. Use sending by String for SIM info (use prior to the creation of SIM Class). Expect an trust in the response
 
 *14/11/2018: Currently this method returns error code 500 in its onFailure method* 
 

@@ -47,10 +47,9 @@ import java.util.Set;
 import java.util.UUID;
 
 import io.sentry.Sentry;
-import io.sentry.android.AndroidSentryClientFactory;
 import lat.trust.trusttrifles.authToken.AuthToken;
 import lat.trust.trusttrifles.authToken.AuthTokenListener;
-import lat.trust.trusttrifles.model.Audit;
+import lat.trust.trusttrifles.model.Trust;
 import lat.trust.trusttrifles.model.Device;
 import lat.trust.trusttrifles.model.Identity;
 import lat.trust.trusttrifles.model.SIM;
@@ -76,7 +75,6 @@ import static android.content.Context.TELEPHONY_SERVICE;
 import static lat.trust.trusttrifles.utilities.Constants.CPU_FILE;
 import static lat.trust.trusttrifles.utilities.Constants.MEM_FILE;
 import static lat.trust.trusttrifles.utilities.Constants.SDK_IDENTIFY;
-import static lat.trust.trusttrifles.utilities.Constants.SENTRY_STATE;
 import static lat.trust.trusttrifles.utilities.Constants.TRUST_ID;
 import static lat.trust.trusttrifles.utilities.Constants.TRUST_TRIFLES;
 import static lat.trust.trusttrifles.utilities.Utils.getKey;
@@ -928,10 +926,10 @@ public class TrustClient {
      */
 
     @SuppressLint("MissingPermission")
-    public void getTrifles(final boolean requestTrustId, final boolean required_permits, final boolean forceWifi, final boolean forceBluetooth, @NonNull final TrustListener.OnResult<Audit> listener) {
+    public void getTrifles(final boolean requestTrustId, final boolean required_permits, final boolean forceWifi, final boolean forceBluetooth, @NonNull final TrustListener.OnResult<Trust> listener) {
         saveBluetoothWifiStatus();
         if (Hawk.contains(Constants.TRUST_ID_AUTOMATIC)) {
-            Audit data = new Audit();
+            Trust data = new Trust();
             data.setTrustid(Hawk.get(Constants.TRUST_ID_AUTOMATIC).toString());
             data.setStatus(true);
             data.setMessage("The device was identified, it already exists in our records.");
@@ -1048,7 +1046,7 @@ public class TrustClient {
      * @param requestTrustId si se requiere enviar las minucias al servicio
      * @param listener       para comunicar el resultado de la request
      */
-    public void getTrifles(final boolean requestTrustId, @NonNull final TrustListener.OnResult<Audit> listener) {
+    public void getTrifles(final boolean requestTrustId, @NonNull final TrustListener.OnResult<Trust> listener) {
         getTrifles(requestTrustId, true, true, true, listener);
     }
 
@@ -1059,7 +1057,7 @@ public class TrustClient {
      * @param mBody
      * @param listener envialo si quieres recuperar la respuesta desde tu aplicacion
      */
-    static void sendTrifles(@NonNull final TrifleBody mBody, @Nullable final TrustListener.OnResult<Audit> listener) {
+    static void sendTrifles(@NonNull final TrifleBody mBody, @Nullable final TrustListener.OnResult<Trust> listener) {
         if (Hawk.contains(Constants.TOKEN_SERVICE)) {
             Call<TrifleResponse> createTrifle = RestClientIdentify.get().trifle2(mBody, Hawk.get(Constants.TOKEN_SERVICE).toString());
             createTrifle.enqueue(new Callback<TrifleResponse>() {
@@ -1067,26 +1065,26 @@ public class TrustClient {
                 public void onResponse(@NonNull Call<TrifleResponse> call, @NonNull Response<TrifleResponse> response) {
                     if (response.isSuccessful()) {
                         TrifleResponse body = response.body();
-                        Audit audit = new Audit();
-                        audit.setMessage(body.getMessage());
-                        audit.setStatus(body.getStatus());
-                        audit.setTrustid(body.getTrustid());
-                        body.setAudit(audit);
+                        Trust trust = new Trust();
+                        trust.setMessage(body.getMessage());
+                        trust.setStatus(body.getStatus());
+                        trust.setTrustid(body.getTrustid());
+                        body.setTrust(trust);
 
-                        Hawk.put(Constants.TRUST_ID_AUTOMATIC, audit.getTrustid());
+                        Hawk.put(Constants.TRUST_ID_AUTOMATIC, trust.getTrustid());
                         //mPreferences.put(TRUST_ID, body.getAudit().getTrustid());
                         TrustLogger.d("[TRUST CLIENT] TRUST ID WAS CREATED: " + body.getTrustid());
 
                         restoreWIFIandBluetooth(true, true);
                         if (Hawk.contains(Constants.DNI_USER)) {
                             TrustLogger.d("[TRUST CLIENT] Save Device Info Company: first time with DNI");
-                            SaveDeviceInfo.saveDeviceInfo(Hawk.get(Constants.DNI_USER).toString(), mContext.getPackageName(), audit.getTrustid());
+                            SaveDeviceInfo.saveDeviceInfo(Hawk.get(Constants.DNI_USER).toString(), mContext.getPackageName(), trust.getTrustid());
                         } else {
                             TrustLogger.d("[TRUST CLIENT] Save Device Info Company: first time no DNI");
-                            SaveDeviceInfo.saveDeviceInfo(mContext.getPackageName(), audit.getTrustid());
+                            SaveDeviceInfo.saveDeviceInfo(mContext.getPackageName(), trust.getTrustid());
                         }
 
-                        listener.onSuccess(response.code(), body.getAudit());
+                        listener.onSuccess(response.code(), body.getTrust());
                     } else {
                         refreshSendTrifles(mBody, listener);
                         listener.onFailure(new Throwable(response.code() + "error"));
@@ -1121,15 +1119,15 @@ public class TrustClient {
     }
 
 
-    private static void refreshSendTrifles(final TrifleBody mBody, @Nullable final TrustListener.OnResult<Audit> listener) {
+    private static void refreshSendTrifles(final TrifleBody mBody, @Nullable final TrustListener.OnResult<Trust> listener) {
         AuthToken.getAccessToken(new AuthTokenListener.Auth() {
             @Override
             public void onSuccessAccessToken(String token) {
                 TrustLogger.d("[TRUST CLIENT] SUCCESS REFRESH TOKEN");
                 Hawk.put(Constants.TOKEN_SERVICE, "Bearer " + token);
-                sendTrifles(mBody, new TrustListener.OnResult<Audit>() {
+                sendTrifles(mBody, new TrustListener.OnResult<Trust>() {
                     @Override
-                    public void onSuccess(int code, Audit data) {
+                    public void onSuccess(int code, Trust data) {
 
                         if (data != null) {
                             //mPreferences.put(TRUST_ID, data.getTrustid());

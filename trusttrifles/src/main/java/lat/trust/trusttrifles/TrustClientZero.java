@@ -1,13 +1,18 @@
 package lat.trust.trusttrifles;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 
 import com.google.gson.Gson;
 import com.orhanobut.hawk.Hawk;
 
 import java.util.ArrayList;
 
-import lat.trust.trusttrifles.model.Audit;
+import lat.trust.trusttrifles.model.InfoTrustIdSaved;
+import lat.trust.trusttrifles.model.Trust;
 import lat.trust.trusttrifles.model.Camera;
 import lat.trust.trusttrifles.model.Device;
 import lat.trust.trusttrifles.model.TrustAuth;
@@ -110,12 +115,24 @@ public class TrustClientZero {
         return device;
     }
 
-    public static void getTrustIdZero(Context context, final TrustListener.OnResult<Audit> listener) {
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public static void getTrustIdZero(Context context, final TrustListener.OnResult<Trust> listener) {
         TrifleBody trifleBody = new TrifleBody();
+        if (context.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                && context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            trifleBody.setTrustId(Hawk.contains(Constants.TRUST_ID_TYPE_ZERO_SAVED) ? Hawk.get(Constants.TRUST_ID_TYPE_ZERO_SAVED) : null);
+
+        } else {
+            String read = DataUtil.readFile();
+            InfoTrustIdSaved infoTrustIdSaved = DataUtil.getTrustIdSavedFromJsonString(read, context);
+            trifleBody.setTrustId(infoTrustIdSaved.getTrustId());
+        }
         trifleBody.setTrustIdType(TRUST_ID_TYPE_ZERO);
         trifleBody.setDevice(getDeviceData(context));
         trifleBody.setSim(DataUtil.getListSIM(context));
-        trifleBody.setTrustId(Hawk.contains(Constants.TRUST_ID_TYPE_ZERO_SAVED) ? Hawk.get(Constants.TRUST_ID_TYPE_ZERO_SAVED) : null);
         SendTrifles.sendTriflesToken(trifleBody, context, listener);
     }
+
+
+
 }

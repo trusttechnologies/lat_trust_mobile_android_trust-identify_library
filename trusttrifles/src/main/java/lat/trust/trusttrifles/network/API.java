@@ -1,5 +1,6 @@
 package lat.trust.trusttrifles.network;
 
+import lat.trust.trusttrifles.model.gateway.DeviceBody;
 import lat.trust.trusttrifles.network.req.AuthTokenRequest;
 import lat.trust.trusttrifles.network.req.SaveDeviceInfoRequest;
 import lat.trust.trusttrifles.network.req.SaveDeviceNotificationRequest;
@@ -21,6 +22,8 @@ public interface API {
     @POST("identification/api/v1/device")
     Call<TrifleResponse> trifle2(@Body TrifleBody body, @Header("Authorization") String token);
 
+
+    @Deprecated
     @POST("notifications/device/register")
     Call<String> registerDeviceNofitication(@Body SaveDeviceNotificationRequest saveDevice, @Header("Authorization") String token);
 
@@ -29,5 +32,14 @@ public interface API {
 
     @POST("company/api/v1/app/state")
     Call<Void> saveDeviceData(@Body SaveDeviceInfoRequest saveDeviceInfoRequest, @Header("Authorization") String token);
+
+
+
+
+    @POST("v2/device")
+    Call<TrifleResponse> getTrustId(@Body DeviceBody body, @Header("Authorization") String token);
+
+    @POST("v2/device/{trustid}/sim")
+    Call<Void> sendSIM( @Header("Authorization") String token);
 
 }

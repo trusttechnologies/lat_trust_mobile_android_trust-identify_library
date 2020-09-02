@@ -6,8 +6,6 @@ public interface AuthTokenListener {
 
         void onSuccessAccessToken(String token);
 
-
-
         void onErrorAccessToken(String error);
 
     }

@@ -12,7 +12,7 @@ public class TrustIdentifyConfigurationService {
     private static final String ENVIRONMENT = "environment_identify";
     public static final String ENVIRONMENT_MONKEY = "environment_monkey";
     public static final String ENVIRONMENT_PRODUCTION = "environment_production";
-
+    public static final String ENVIRONMENT_GATEWAY = "environment_gateway";
     public static void setEnvironment(String environment, Context context) {
         Hawk.put(ENVIRONMENT, environment);
         TrustAuth.setSecretAndId(context);

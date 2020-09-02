@@ -1,8 +1,6 @@
 package lat.trust.trustdemo.ui.splash;
 
-import android.app.ActionBar;
 import android.content.Context;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -17,14 +15,13 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import lat.trust.trustdemo.R;
 import lat.trust.trusttrifles.DataUtil;
 import lat.trust.trusttrifles.TrustClientLite;
 import lat.trust.trusttrifles.TrustClientZero;
 import lat.trust.trusttrifles.TrustListener;
-import lat.trust.trusttrifles.model.Audit;
+import lat.trust.trusttrifles.model.Trust;
 import lat.trust.trusttrifles.model.Identity;
 import lat.trust.trusttrifles.ui.DialogPermission;
 import lat.trust.trusttrifles.utilities.CryptUtil;
@@ -92,9 +89,9 @@ public class SplashActivity extends AppCompatActivity implements DialogPermissio
     }
 
     private void getTrustIdZer(Context context) {
-        TrustClientZero.getTrustIdZero(context, new TrustListener.OnResult<Audit>() {
+        TrustClientZero.getTrustIdZero(context, new TrustListener.OnResult<Trust>() {
             @Override
-            public void onSuccess(int code, Audit data) {
+            public void onSuccess(int code, Trust data) {
                 try {
                     trustid.setText(data.getTrustid());
                     String encrypt = CryptUtil.encrypt(data.getTrustid());
@@ -128,9 +125,9 @@ public class SplashActivity extends AppCompatActivity implements DialogPermissio
 
 
     private void getTrustId() {
-        TrustClientLite.getTrustIDLite(SplashActivity.this, new TrustListener.OnResult<Audit>() {
+        TrustClientLite.getTrustIDLite(SplashActivity.this, new TrustListener.OnResult<Trust>() {
             @Override
-            public void onSuccess(int code, Audit data) {
+            public void onSuccess(int code, Trust data) {
                 try {
                     //TrustLogger.d(data.getTrustid());
                     trustid.setText(data.getTrustid());
@@ -179,9 +176,9 @@ public class SplashActivity extends AppCompatActivity implements DialogPermissio
         identity.setName("felipe");
         identity.setLastname("caro");
         identity.setPhone("+56982110950");
-        TrustClientLite.sendIdentify(identity, this, new TrustListener.OnResult<Audit>() {
+        TrustClientLite.sendIdentify(identity, this, new TrustListener.OnResult<Trust>() {
             @Override
-            public void onSuccess(int code, Audit data) {
+            public void onSuccess(int code, Trust data) {
 
             }
 

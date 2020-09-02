@@ -474,18 +474,23 @@ public class DataUtil {
 
     static List<SIM> getListSIM(Context context) {
         List<SIM> sims = new ArrayList<>();
-        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(TELEPHONY_SERVICE);
-        int simCount = 2;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (telephonyManager != null)
-                //Desde API 22 se puede obtener el numero de SIMs disponibles
-                simCount = telephonyManager.getPhoneCount();
+        try{
+            TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(TELEPHONY_SERVICE);
+            int simCount = 2;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (telephonyManager != null)
+                    //Desde API 22 se puede obtener el numero de SIMs disponibles
+                    simCount = telephonyManager.getPhoneCount();
+            }
+            for (int i = 0; i < simCount; i++) {
+                SIM sim = getSimDataAtSlot(i, context);
+                if (sim != null) sims.add(sim);
+            }
+            return sims;
+        }catch (Exception ex){
+            return sims;
         }
-        for (int i = 0; i < simCount; i++) {
-            SIM sim = getSimDataAtSlot(i, context);
-            if (sim != null) sims.add(sim);
-        }
-        return sims;
+
 
     }
 

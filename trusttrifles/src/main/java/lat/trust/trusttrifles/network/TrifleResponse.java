@@ -1,22 +1,20 @@
 package lat.trust.trusttrifles.network;
 
-import com.google.gson.annotations.SerializedName;
-
-import lat.trust.trusttrifles.model.Audit;
+import lat.trust.trusttrifles.model.Trust;
 
 public class TrifleResponse {
     private Boolean status;
     private String message;
     private String trustid;
 
-    private Audit audit;
+    private Trust trust;
 
-    public Audit getAudit() {
-        return audit;
+    public Trust getTrust() {
+        return trust;
     }
 
-    public void setAudit(Audit audit) {
-        this.audit = audit;
+    public void setTrust(Trust trust) {
+        this.trust = trust;
     }
 
     public TrifleResponse() {

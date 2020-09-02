@@ -12,6 +12,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RestClientIdentify {
     private static final String URL_PROD = "https://api.trust.lat/";
     private static final String URL_DEV = "https://api-tst.trust.lat/";
+    private static final String URL_GATEWAY = "https://api-tst.trust.lat/sdk-gateway/";
+
     private static final int CONNECT_TIMEOUT = 30 * 4;
     private static final int WRITE_TIMEOUT = 30 * 4;
     private static final int READ_TIMEOUT = 30 * 4;

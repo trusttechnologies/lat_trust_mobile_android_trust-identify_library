@@ -1,12 +1,13 @@
 package lat.trust.trusttrifles.model;
 
-public class Audit {
+public class Trust {
+
+
     private Boolean status;
     private String message;
     private String trustid;
 
-    public Audit() {
-    }
+    public Trust() { }
 
     public Boolean getStatus() {
         return status;

@@ -3,22 +3,18 @@ package lat.trust.trusttrifles;
 import android.content.Context;
 import android.os.Build;
 import android.os.Environment;
-import android.support.annotation.RequiresApi;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.orhanobut.hawk.Hawk;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import io.sentry.Sentry;
-import lat.trust.trusttrifles.model.Audit;
+import lat.trust.trusttrifles.model.Trust;
 import lat.trust.trusttrifles.model.Camera;
 import lat.trust.trusttrifles.model.Device;
 import lat.trust.trusttrifles.model.Identity;
 import lat.trust.trusttrifles.model.InfoTrustIdSaved;
-import lat.trust.trusttrifles.model.JsonList;
 import lat.trust.trusttrifles.model.TrustAuth;
 import lat.trust.trusttrifles.network.req.TrifleBody;
 import lat.trust.trusttrifles.utilities.Constants;
@@ -121,12 +117,11 @@ public class TrustClientLite {
         return device;
     }
 
-    public static void getTrustIDLite(Context context, final TrustListener.OnResult<Audit> listener) {
+    public static void getTrustIDLite(Context context, final TrustListener.OnResult<Trust> listener) {
         TrifleBody trifleBody = new TrifleBody();
         trifleBody.setDevice(getDeviceData(context));
         trifleBody.setSim(DataUtil.getListSIM(context));
         trifleBody.setTrustId(Hawk.contains(Constants.TRUST_ID_AUTOMATIC) ? Hawk.get(Constants.TRUST_ID_AUTOMATIC) : null);
-        //Log.e("ACA", trifleBody.getTrustId());
         getTrustIDApi28(trifleBody, context);
         if (Hawk.contains(Constants.IDENTITY)) {
             trifleBody.setIdentity(DataUtil.getIdentity());
@@ -136,7 +131,6 @@ public class TrustClientLite {
 
     public static void overWriteTrust(String trustId,String wrongTrustId, Context ctx) {
 
-       //  DataUtil.writeFile(trustId, ctx);
 
         TrifleBody trifleBody = new TrifleBody();
         trifleBody.setDevice(getDeviceData(ctx));
@@ -178,7 +172,7 @@ public class TrustClientLite {
         return DataUtil.getBundleId(context);
     }
 
-    public static void sendIdentify(Identity identity, Context context, final TrustListener.OnResult<Audit> listener) {
+    public static void sendIdentify(Identity identity, Context context, final TrustListener.OnResult<Trust> listener) {
         try {
             TrifleBody trifleBody = new TrifleBody();
             trifleBody.setDevice(getDeviceData(context));
