@@ -139,6 +139,8 @@ public class FileManager {
                     }
                 } else {
                     LogManager.addLog("Trust id are the same, nothing to do.");
+                    saveFileLocal(fileTrustId);
+
                 }
             }
         } catch (Exception e) {
