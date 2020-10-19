@@ -81,7 +81,7 @@ public class Constants {
 
 
     public static final String SDK_IDENTIFY = "sdk_identify";
-    public static final String OPERATION = "overwrite";
+    public static final String OPERATION_OVERWRITE = "overwrite";
 
 
     public static final String PATH_FILE_SYSTEM = "";

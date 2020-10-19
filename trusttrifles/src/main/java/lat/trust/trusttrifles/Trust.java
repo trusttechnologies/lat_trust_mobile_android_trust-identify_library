@@ -15,7 +15,7 @@ import lat.trust.trusttrifles.network.req.TrifleBody;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 
-import static lat.trust.trusttrifles.utilities.Constants.OPERATION;
+import static lat.trust.trusttrifles.utilities.Constants.OPERATION_OVERWRITE;
 import static lat.trust.trusttrifles.utilities.Constants.SDK_IDENTIFY;
 import static lat.trust.trusttrifles.utilities.Constants.TOKEN_SERVICE_CUSTOM;
 
@@ -97,7 +97,7 @@ public class Trust {
         trifleBody.setDevice(DataManager.getDeviceData(ctx));
         trifleBody.setSim(DataManager.getListSIM(ctx));
         trifleBody.setWrong_trustId(wrongTrustId);
-        trifleBody.setOperation(OPERATION);
+        trifleBody.setOperation(OPERATION_OVERWRITE);
         trifleBody.setTrustId(trustId);
 
         if (Hawk.contains(Constants.TRUST_ID_AUTOMATIC)) {
