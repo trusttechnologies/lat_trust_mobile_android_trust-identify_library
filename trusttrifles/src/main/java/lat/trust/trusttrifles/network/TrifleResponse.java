@@ -1,23 +1,46 @@
 package lat.trust.trusttrifles.network;
 
-import lat.trust.trusttrifles.model.Trust;
+import com.google.gson.annotations.SerializedName;
+
+import lat.trust.trusttrifles.model.TrustResponse;
 
 public class TrifleResponse {
     private Boolean status;
     private String message;
     private String trustid;
+    @SerializedName("score_v1")
+    private String score;
+    @SerializedName("trust_id_type")
+    private String trustIdType;
 
-    private Trust trust;
 
-    public Trust getTrust() {
-        return trust;
+    public String getTrustIdType() {
+        return trustIdType;
     }
 
-    public void setTrust(Trust trust) {
-        this.trust = trust;
+    public void setTrustIdType(String trustIdType) {
+        this.trustIdType = trustIdType;
+    }
+
+    private TrustResponse trustResponse;
+
+    public TrustResponse getTrustResponse() {
+        return trustResponse;
+    }
+
+    public void setTrustResponse(TrustResponse trustResponse) {
+        this.trustResponse = trustResponse;
     }
 
     public TrifleResponse() {
+    }
+
+    public String getScore() {
+        return score;
+    }
+
+    public void setScore(String score) {
+        this.score = score;
     }
 
     public Boolean getStatus() {

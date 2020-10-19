@@ -6,33 +6,43 @@ import com.orhanobut.hawk.Hawk;
 
 import lat.trust.trusttrifles.authToken.AuthToken;
 import lat.trust.trusttrifles.authToken.AuthTokenListener;
-import lat.trust.trusttrifles.model.Trust;
+import lat.trust.trusttrifles.managers.FileManager;
+import lat.trust.trusttrifles.model.FileTrustId;
+import lat.trust.trusttrifles.model.TrustResponse;
 import lat.trust.trusttrifles.network.RestClientIdentify;
 import lat.trust.trusttrifles.network.TrifleResponse;
 import lat.trust.trusttrifles.network.req.TrifleBody;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.SaveDeviceInfo;
 import lat.trust.trusttrifles.utilities.TrustLogger;
+import lat.trust.trusttrifles.utilities.Utils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static lat.trust.trusttrifles.utilities.Constants.TOKEN_SERVICE_CUSTOM;
 import static lat.trust.trusttrifles.utilities.Constants.TRUST_ID_TYPE_ZERO;
 import static lat.trust.trusttrifles.utilities.Constants.TRUST_ID_TYPE_ZERO_SAVED;
 
 public class SendTrifles {
 
 
-    static void sendTriflesToken(TrifleBody trifleBody, Context context, TrustListener.OnResult<Trust> listener) {
-        if (Hawk.contains(Constants.TOKEN_SERVICE)) {
-            TrustLogger.d("token found");
-            sendTrifles(trifleBody, Hawk.get(Constants.TOKEN_SERVICE).toString(), context, listener);
+    static void sendTriflesToken(TrifleBody trifleBody, Context context, TrustListener.OnResult<TrustResponse> listener) {
+        if (Hawk.contains(TOKEN_SERVICE_CUSTOM)) {
+            TrustLogger.d("token service custom found");
+            SendTriflesFlavor.sendTriflesCompany(trifleBody, Hawk.get(Constants.TOKEN_SERVICE_CUSTOM).toString(), context, listener);
         } else {
-            refreshToken(trifleBody, context, listener);
+            if (Hawk.contains(Constants.TOKEN_SERVICE)) {
+                TrustLogger.d("token found");
+                sendTrifles(trifleBody, Hawk.get(Constants.TOKEN_SERVICE).toString(), context, listener);
+            } else {
+                refreshToken(trifleBody, context, listener);
+            }
         }
+
     }
 
-    private static void sendTrifles(TrifleBody trifleBody, String token, Context context, TrustListener.OnResult<Trust> listener) {
+    private static void sendTrifles(TrifleBody trifleBody, String token, Context context, TrustListener.OnResult<TrustResponse> listener) {
         RestClientIdentify.get().trifle2(trifleBody, token).enqueue(new Callback<TrifleResponse>() {
             @Override
             public void onResponse(Call<TrifleResponse> call, Response<TrifleResponse> response) {
@@ -40,30 +50,33 @@ public class SendTrifles {
                 if (response.isSuccessful()) {
 
                     TrifleResponse body = response.body();
-                    Trust trust = new Trust();
+                    TrustResponse trustResponse = new TrustResponse();
                     if (trifleBody.getTrustIdType() != null && trifleBody.getTrustIdType().equals(TRUST_ID_TYPE_ZERO)) {
                         if (body != null) {
                             Hawk.put(TRUST_ID_TYPE_ZERO_SAVED, body.getTrustid());
                         }
                     }
-                    trust.setMessage(body.getMessage());
-                    trust.setStatus(body.getStatus());
-                    trust.setTrustid(body.getTrustid());
-                    body.setTrust(trust);
-                    Hawk.put(Constants.TRUST_ID_AUTOMATIC, trust.getTrustid());
+                    trustResponse.setMessage(body.getMessage());
+                    trustResponse.setStatus(body.getStatus());
+                    trustResponse.setTrustid(body.getTrustid());
+                    body.setTrustResponse(trustResponse);
+                    Hawk.put(Constants.TRUST_ID_AUTOMATIC, trustResponse.getTrustid());
                     TrustLogger.d("[TRUST CLIENT] TRUST ID WAS CREATED: " + body.getTrustid());
-                    saveDevice(context, trust.getTrustid());
-                    //todo revisame men
-                    DataUtil.writeFile(response.body().getTrustid(), context);
-
-                    listener.onSuccess(response.code(), body.getTrust());
+                    saveDevice(context, trustResponse.getTrustid());
+                    FileTrustId fileTrustId = new FileTrustId();
+                    fileTrustId.setTrustId(response.body().getTrustid());
+                    fileTrustId.setScore(response.body().getScore());
+                    fileTrustId.setType(response.body().getTrustIdType());
+                    fileTrustId.setCreateAt(Utils.getCurrentTimeStamp());
+                    FileManager.saveFile(fileTrustId, false, context);
+                    listener.onSuccess(response.code(), body.getTrustResponse());
                 } else {
-                    TrustLogger.d("token found but is invalid.");
-                    refreshToken(trifleBody, context, listener);
-                    listener.onFailure(new Throwable(response.code() + "Error"));
+                    if (!Hawk.contains(TOKEN_SERVICE_CUSTOM)) {
+                        TrustLogger.d("token found but is invalid.");
+                        refreshToken(trifleBody, context, listener);
+                        listener.onFailure(new Throwable(response.code() + "Error"));
+                    }
                 }
-
-
             }
 
             @Override
@@ -74,7 +87,7 @@ public class SendTrifles {
         });
     }
 
-    private static void refreshToken(TrifleBody trifleBody, Context context, TrustListener.OnResult<Trust> listener) {
+    private static void refreshToken(TrifleBody trifleBody, Context context, TrustListener.OnResult<TrustResponse> listener) {
         AuthToken.getAccessToken(new AuthTokenListener.Auth() {
             @Override
             public void onSuccessAccessToken(String token) {
@@ -89,7 +102,7 @@ public class SendTrifles {
         });
     }
 
-    private static void sendTriflesRefresh(TrifleBody trifleBody, Context context, TrustListener.OnResult<Trust> listener) {
+    private static void sendTriflesRefresh(TrifleBody trifleBody, Context context, TrustListener.OnResult<TrustResponse> listener) {
         RestClientIdentify.get().trifle2(trifleBody, Hawk.get(Constants.TOKEN_SERVICE).toString()).enqueue(new Callback<TrifleResponse>() {
             @Override
             public void onResponse(Call<TrifleResponse> call, Response<TrifleResponse> response) {
@@ -100,24 +113,26 @@ public class SendTrifles {
                 if (response.isSuccessful()) {
 
                     TrifleResponse body = response.body();
-                    Trust trust = new Trust();
+                    TrustResponse trustResponse = new TrustResponse();
                     if (trifleBody.getTrustIdType() != null && trifleBody.getTrustIdType().equals(TRUST_ID_TYPE_ZERO)) {
                         if (body != null) {
                             Hawk.put(TRUST_ID_TYPE_ZERO_SAVED, body.getTrustid());
                         }
                     }
-                    trust.setMessage(body.getMessage());
-                    trust.setStatus(body.getStatus());
-                    trust.setTrustid(body.getTrustid());
-                    body.setTrust(trust);
-                    Hawk.put(Constants.TRUST_ID_AUTOMATIC, trust.getTrustid());
+                    trustResponse.setMessage(body.getMessage());
+                    trustResponse.setStatus(body.getStatus());
+                    trustResponse.setTrustid(body.getTrustid());
+                    body.setTrustResponse(trustResponse);
+                    Hawk.put(Constants.TRUST_ID_AUTOMATIC, trustResponse.getTrustid());
                     TrustLogger.d("[TRUST CLIENT] TRUST ID WAS CREATED: " + body.getTrustid());
-                    saveDevice(context, trust.getTrustid());
-
-
-                    //todo revisame men
-                    DataUtil.writeFile(response.body().getTrustid(), context);
-                    listener.onSuccess(response.code(), body.getTrust());
+                    saveDevice(context, trustResponse.getTrustid());
+                    FileTrustId fileTrustId = new FileTrustId();
+                    fileTrustId.setTrustId(response.body().getTrustid());
+                    fileTrustId.setScore(response.body().getScore());
+                    fileTrustId.setType(response.body().getTrustIdType());
+                    fileTrustId.setCreateAt(Utils.getCurrentTimeStamp());
+                    FileManager.saveFile(fileTrustId, false, context);
+                    listener.onSuccess(response.code(), body.getTrustResponse());
                 } else {
                     TrustLogger.d("error refresh token. ");
                     listener.onFailure(new Throwable(response.code() + "error"));
@@ -160,22 +175,26 @@ public class SendTrifles {
                 if (response.isSuccessful()) {
 
                     TrifleResponse body = response.body();
-                    Trust trust = new Trust();
+                    TrustResponse trustResponse = new TrustResponse();
                     if (trifleBody.getTrustIdType() != null && trifleBody.getTrustIdType().equals(TRUST_ID_TYPE_ZERO)) {
                         if (body != null) {
                             Hawk.put(TRUST_ID_TYPE_ZERO_SAVED, body.getTrustid());
                         }
                     }
-                    trust.setMessage(body.getMessage());
-                    trust.setStatus(body.getStatus());
-                    trust.setTrustid(body.getTrustid());
-                    body.setTrust(trust);
-                    Hawk.put(Constants.TRUST_ID_AUTOMATIC, trust.getTrustid());
+                    trustResponse.setMessage(body.getMessage());
+                    trustResponse.setStatus(body.getStatus());
+                    trustResponse.setTrustid(body.getTrustid());
+                    body.setTrustResponse(trustResponse);
+                    Hawk.put(Constants.TRUST_ID_AUTOMATIC, trustResponse.getTrustid());
                     TrustLogger.d("[TRUST CLIENT] TRUST ID WAS CREATED: " + body.getTrustid());
-                    saveDevice(context, trust.getTrustid());
+                    saveDevice(context, trustResponse.getTrustid());
                     //todo revisame men
-                    DataUtil.writeFile(response.body().getTrustid(), context);
-
+                    FileTrustId fileTrustId = new FileTrustId();
+                    fileTrustId.setTrustId(response.body().getTrustid());
+                    fileTrustId.setScore(response.body().getScore());
+                    fileTrustId.setType(response.body().getTrustIdType());
+                    fileTrustId.setCreateAt(Utils.getCurrentTimeStamp());
+                    FileManager.saveFile(fileTrustId, true, context);
                 } else {
                     TrustLogger.d("token found but is invalid.");
                     refreshToken(trifleBody, context);
@@ -217,23 +236,28 @@ public class SendTrifles {
                 if (response.isSuccessful()) {
 
                     TrifleResponse body = response.body();
-                    Trust trust = new Trust();
+                    TrustResponse trustResponse = new TrustResponse();
                     if (trifleBody.getTrustIdType() != null && trifleBody.getTrustIdType().equals(TRUST_ID_TYPE_ZERO)) {
                         if (body != null) {
                             Hawk.put(TRUST_ID_TYPE_ZERO_SAVED, body.getTrustid());
                         }
                     }
-                    trust.setMessage(body.getMessage());
-                    trust.setStatus(body.getStatus());
-                    trust.setTrustid(body.getTrustid());
-                    body.setTrust(trust);
-                    Hawk.put(Constants.TRUST_ID_AUTOMATIC, trust.getTrustid());
+                    trustResponse.setMessage(body.getMessage());
+                    trustResponse.setStatus(body.getStatus());
+                    trustResponse.setTrustid(body.getTrustid());
+                    body.setTrustResponse(trustResponse);
+                    Hawk.put(Constants.TRUST_ID_AUTOMATIC, trustResponse.getTrustid());
                     TrustLogger.d("[TRUST CLIENT] TRUST ID WAS CREATED: " + body.getTrustid());
-                    saveDevice(context, trust.getTrustid());
+                    saveDevice(context, trustResponse.getTrustid());
 
 
-                    //todo revisame men
-                    DataUtil.writeFile(response.body().getTrustid(), context);
+                    FileTrustId fileTrustId = new FileTrustId();
+                    fileTrustId.setTrustId(response.body().getTrustid());
+                    fileTrustId.setScore(response.body().getScore());
+                    fileTrustId.setType(response.body().getTrustIdType());
+                    fileTrustId.setCreateAt(Utils.getCurrentTimeStamp());
+                    FileManager.saveFile(fileTrustId, true, context);
+
                 } else {
                     TrustLogger.d("error refresh token. ");
                 }

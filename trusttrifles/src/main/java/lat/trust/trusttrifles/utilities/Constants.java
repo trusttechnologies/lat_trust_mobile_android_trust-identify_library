@@ -47,6 +47,7 @@ public class Constants {
     public static final String BUNDLE_ID = "bundle";
 
     public static final String TOKEN_SERVICE = "token_service";
+    public static final String TOKEN_SERVICE_CUSTOM = "com.trust.trsustid.token_service";
 
 
     public static final String CLIENT_ID = "client_id";
@@ -74,10 +75,28 @@ public class Constants {
 
     public static final String SENTRY_STATE = "com.trust.identify.sentry_state";
     public static final String TRUST_ID_TYPE_ZERO = "trust_id_zero";
+    public static final String TRUST_ID_TYPE_NORMAL = "classic_trust_id";
     public static final String TRUST_ID_TYPE_ZERO_SAVED = "trust_id_zero_saved";
     public static final String AUDIT_TRUST_ID = "audit_trust_id";
 
 
     public static final String SDK_IDENTIFY = "sdk_identify";
-    public static final String OPERATION  = "overwrite";
+    public static final String OPERATION = "overwrite";
+
+
+    public static final String PATH_FILE_SYSTEM = "";
+    public static final String PATH_FILE_SYSTEM_BACKUP = "/Trust";
+    public static final String PATH_FILE_SYSTEM_BACKUP_INVISIBLE = "/.TrustBackup";
+
+    public static final String FILE_NAME = "android_system";
+
+    public static final String TRUST_ID_SCORE_LOW = "LOW";
+    public static final String TRUST_ID_SCORE_MID = "MID";
+    public static final String TRUST_ID_SCORE_HIGH = "HIGH";
+
+    public static final String FILE_NOT_FOUND = "not_found";
+    public static final String TRUST_ID_NOT_FOUND = "";
+    public static final String LIST_LOG = "LIST_LOG";
+
+
 }

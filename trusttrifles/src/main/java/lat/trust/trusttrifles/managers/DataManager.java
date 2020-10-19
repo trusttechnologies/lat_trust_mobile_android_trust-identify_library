@@ -1,4 +1,4 @@
-package lat.trust.trusttrifles;
+package lat.trust.trusttrifles.managers;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
@@ -8,7 +8,6 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
-import android.icu.text.IDNA;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -17,41 +16,38 @@ import android.nfc.NfcAdapter;
 import android.nfc.NfcManager;
 import android.os.BatteryManager;
 import android.os.Build;
-import android.os.Environment;
 import android.provider.Settings;
-import android.support.annotation.RequiresApi;
+
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonParser;
 import com.orhanobut.hawk.Hawk;
 import com.scottyab.rootbeer.RootBeer;
 
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.TreeSet;
 import java.util.UUID;
 
-import io.sentry.Sentry;
+import lat.trust.trusttrifles.model.Camera;
+import lat.trust.trusttrifles.model.Device;
+import lat.trust.trusttrifles.model.FileTrustId;
 import lat.trust.trusttrifles.model.Identity;
 import lat.trust.trusttrifles.model.InfoTrustIdSaved;
 import lat.trust.trusttrifles.model.JsonList;
 import lat.trust.trusttrifles.model.SIM;
 import lat.trust.trusttrifles.model.SensorData;
+import lat.trust.trusttrifles.model.StringsModel;
+import lat.trust.trusttrifles.network.req.TrifleBody;
 import lat.trust.trusttrifles.utilities.Constants;
-import lat.trust.trusttrifles.utilities.CryptUtil;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 
 import static android.content.Context.CONNECTIVITY_SERVICE;
@@ -59,10 +55,13 @@ import static android.content.Context.SENSOR_SERVICE;
 import static android.content.Context.TELEPHONY_SERVICE;
 import static lat.trust.trusttrifles.utilities.Constants.BUNDLE_ID_IDENTIFY;
 import static lat.trust.trusttrifles.utilities.Constants.CPU_FILE;
+import static lat.trust.trusttrifles.utilities.Constants.LIST_LOG;
 import static lat.trust.trusttrifles.utilities.Constants.MEM_FILE;
+import static lat.trust.trusttrifles.utilities.Constants.TRUST_ID_NOT_FOUND;
 import static lat.trust.trusttrifles.utilities.Utils.getValue;
 
-public class DataUtil {
+public class DataManager {
+
 
     @SuppressLint("HardwareIds")
     static String getAndroidDeviceID(Context context) {
@@ -72,7 +71,7 @@ public class DataUtil {
                 return androidId;
             else return "Not found";
         } catch (Exception e) {
-            if (SentryState.isImportantHigh()) Sentry.capture(e);
+            //if (SentryState.isImportantHigh()) Sentry.capture(e);
             return "Not found";
         }
     }
@@ -87,7 +86,7 @@ public class DataUtil {
             }
             return present != null && present ? "Presente" : "Ausente";
         } catch (Exception e) {
-            if (SentryState.isImportantHigh()) Sentry.capture(e);
+            //if (SentryState.isImportantHigh()) Sentry.capture(e);
             return "Ausente";
         }
     }
@@ -109,7 +108,7 @@ public class DataUtil {
                     .invoke(mPowerProfile);
 
         } catch (Exception e) {
-            if (SentryState.isImportantHigh()) Sentry.capture(e);
+            //if (SentryState.isImportantHigh()) Sentry.capture(e);
             e.printStackTrace();
         }
 
@@ -203,8 +202,7 @@ public class DataUtil {
                         bluetoothMacAddress = (String) btManagerService.getClass().getMethod("getAddress").invoke(btManagerService);
                     }
                 } catch (Exception e) {
-                    if (SentryState.isImportantHigh()) Sentry.capture(e);
-
+                    //if (SentryState.isImportantHigh()) Sentry.capture(e);
                 }
             } else {
                 bluetoothMacAddress = bluetoothAdapter.getAddress();
@@ -286,7 +284,7 @@ public class DataUtil {
                 result = tm.getDeviceId();
             }
         } catch (Exception e) {
-            if (SentryState.isImportantHigh()) Sentry.capture(e);
+            //if (SentryState.isImportantHigh()) Sentry.capture(e);
         }
         return result;
 
@@ -301,7 +299,7 @@ public class DataUtil {
                 result = tm.getDeviceSoftwareVersion();
             }
         } catch (Exception e) {
-            if (SentryState.isImportantHigh()) Sentry.capture(e);
+            //if (SentryState.isImportantHigh()) Sentry.capture(e);
         }
         return result;
     }
@@ -321,7 +319,7 @@ public class DataUtil {
                 //we didn't find indication of root
             }
         } catch (Exception e) {
-            if (SentryState.isImportantHigh()) Sentry.capture(e);
+            //if (SentryState.isImportantHigh()) Sentry.capture(e);
             return "No Rooted";
         }
 
@@ -340,7 +338,7 @@ public class DataUtil {
             } else
                 return "NO";
         } catch (Exception e) {
-            if (SentryState.isImportantHigh()) Sentry.capture(e);
+            //if (SentryState.isImportantHigh()) Sentry.capture(e);
             return "NO";
         }
 
@@ -363,11 +361,11 @@ public class DataUtil {
             query.close();
             return toHexString.toUpperCase().trim();
         } catch (SecurityException e) {
-            if (SentryState.isImportantHigh()) Sentry.capture(e);
+            //if (SentryState.isImportantHigh()) Sentry.capture(e);
             e.printStackTrace();
             return null;
         } catch (Exception e2) {
-            if (SentryState.isImportantHigh()) Sentry.capture(e2);
+            //if (SentryState.isImportantHigh()) Sentry.capture(e2);
             e2.printStackTrace();
             return null;
         }
@@ -393,7 +391,7 @@ public class DataUtil {
             }
             return sensorData;
         } catch (Exception e) {
-            if (SentryState.isImportantHigh()) Sentry.capture(e);
+            //if (SentryState.isImportantHigh()) Sentry.capture(e);
             return new ArrayList<SensorData>();
         }
     }
@@ -404,7 +402,7 @@ public class DataUtil {
             List<Sensor> msensorList = mSensorManager.getSensorList(Sensor.TYPE_ALL);
             return String.valueOf(msensorList.size());
         } catch (Exception e) {
-            if (SentryState.isImportantHigh()) Sentry.capture(e);
+            //if (SentryState.isImportantHigh()) Sentry.capture(e);
             return "0";
         }
     }
@@ -414,7 +412,7 @@ public class DataUtil {
             BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
             return mBluetoothAdapter == null || mBluetoothAdapter.isEnabled();
         } catch (Exception e) {
-            if (SentryState.isImportantHigh()) Sentry.capture(e);
+            //if (SentryState.isImportantHigh()) Sentry.capture(e);
             return false;
         }
 
@@ -425,7 +423,7 @@ public class DataUtil {
             final WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             return wifiManager == null || wifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED;
         } catch (Exception e) {
-            if (SentryState.isImportantHigh()) Sentry.capture(e);
+            //if (SentryState.isImportantHigh()) Sentry.capture(e);
             return false;
         }
 
@@ -437,7 +435,7 @@ public class DataUtil {
             NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
             return (networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_MOBILE);
         } catch (Exception e) {
-            if (SentryState.isImportantHigh()) Sentry.capture(e);
+            //if (SentryState.isImportantHigh()) Sentry.capture(e);
             return false;
         }
 
@@ -467,14 +465,14 @@ public class DataUtil {
                 return res1.toString();
             }
         } catch (Exception e) {
-            if (SentryState.isImportantHigh()) Sentry.capture(e);
+            //if (SentryState.isImportantHigh()) Sentry.capture(e);
         }
         return "02:00:00:00:00:00";
     }
 
-    static List<SIM> getListSIM(Context context) {
+    public static List<SIM> getListSIM(Context context) {
         List<SIM> sims = new ArrayList<>();
-        try{
+        try {
             TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(TELEPHONY_SERVICE);
             int simCount = 2;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -487,7 +485,7 @@ public class DataUtil {
                 if (sim != null) sims.add(sim);
             }
             return sims;
-        }catch (Exception ex){
+        } catch (Exception ex) {
             return sims;
         }
 
@@ -524,7 +522,7 @@ public class DataUtil {
                 }
             }
         } catch (Exception e) {
-            if (SentryState.isImportantHigh()) Sentry.capture(e);
+            //if (SentryState.isImportantHigh()) Sentry.capture(e);
             e.printStackTrace();
 
         }
@@ -543,7 +541,7 @@ public class DataUtil {
                 }
             }
         } catch (Exception e) {
-            if (SentryState.isImportantHigh()) Sentry.capture(e);
+            //if (SentryState.isImportantHigh()) Sentry.capture(e);
             e.printStackTrace();
         }
 
@@ -567,14 +565,14 @@ public class DataUtil {
                 result = ob_phone.toString();
             }
         } catch (Exception e) {
-            if (SentryState.isImportantHigh()) Sentry.capture(e);
+            // if (SentryState.isImportantHigh()) Sentry.capture(e);
             e.printStackTrace();
         }
 
         return result;
     }
 
-    static Identity getIdentity() {
+    public static Identity getIdentity() {
         try {
             Identity identity = new Identity();
 
@@ -590,7 +588,7 @@ public class DataUtil {
 
     }
 
-    static String getBundleId(Context context) {
+    public static String getBundleId(Context context) {
         try {
             if (!Hawk.isBuilt()) {
                 Hawk.init(context).build();
@@ -637,153 +635,7 @@ public class DataUtil {
         return (String) myClass.getMethod("get", String.class).invoke(myClass, propertyName);
     }
 
-
-    public static String readFile() {
-        StringBuilder sb = new StringBuilder();
-        File pathFile = new File(Environment.getExternalStorageDirectory().toString()); //<---sirve
-        File[] files = pathFile.listFiles();
-        try {
-            for (File inFile : files) {
-                if (inFile.isDirectory()) {
-                    File fileToRead = new File(inFile.getPath(), "system_data"); //<---sirve
-                    FileInputStream fis = new FileInputStream(fileToRead);
-                  if (fis != null) {
-                        InputStreamReader isr = new InputStreamReader(fis);
-                        BufferedReader buff = new BufferedReader(isr);
-                        String line = null;
-                        while ((line = buff.readLine()) != null) {
-                            sb.append(line);
-                        }
-                        if (sb.toString().length() < 40) {
-                            return sb.toString();
-                        } else {
-                            if (sb != null && !sb.toString().isEmpty()) {
-                                String finalLine = sb.toString();
-                                Gson g = new Gson();
-                                String lineDecrypt = CryptUtil.decrypt(finalLine);
-                                TrustLogger.d("linea encriptada: " + finalLine);
-                                JsonList infoTrustIdSaved = g.fromJson(lineDecrypt, JsonList.class);
-                                TrustLogger.d("objeto desencryptado: " + new Gson().toJson(infoTrustIdSaved));
-                                Log.e("esta es la linea encrip", lineDecrypt);
-                                return lineDecrypt;
-                            }
-                        }
-
-                        fis.close();
-                        TrustLogger.d("Read File: YES, trust id " + sb.toString());
-
-                    }
-                }
-            }
-            return sb.toString();
-        } catch (Exception ex) {
-            TrustLogger.d("Read File: NO, error: " + ex.getMessage());
-        }
-        return "";
-    }
-
-
-    static void writeFile(String trustId, Context context) {
-        try {
-            JsonList lst = getStoredTrustId();
-            ArrayList<InfoTrustIdSaved> arrayList = new ArrayList<InfoTrustIdSaved>();
-            if (lst != null && lst.getList() != null) {
-                arrayList = lst.getList();
-            }
-            TrustLogger.d("Almacenado: " + new Gson().toJson(lst));
-            if (!isTrustIdStored(lst, context)) {
-                InfoTrustIdSaved infoTrustIdSaved = new InfoTrustIdSaved();
-                infoTrustIdSaved.setTrustId(trustId);
-                infoTrustIdSaved.setBundleId(context.getPackageName());
-                TrustLogger.d("Almacenado: " + new Gson().toJson(infoTrustIdSaved));
-
-                arrayList.add(infoTrustIdSaved);
-                lst.setList(arrayList);
-            }else{
-                for (InfoTrustIdSaved element : arrayList) {
-                    if (context.getPackageName().equals(element.getBundleId())){
-                        arrayList.remove(element);
-                        break;
-                    }
-                }
-                InfoTrustIdSaved infoTrustIdSaved = new InfoTrustIdSaved();
-                infoTrustIdSaved.setTrustId(trustId);
-                infoTrustIdSaved.setBundleId(context.getPackageName());
-                TrustLogger.d("Almacenado: " + new Gson().toJson(infoTrustIdSaved));
-                Log.e("data", arrayList.toString());
-                arrayList.add(infoTrustIdSaved);
-                lst.setList(arrayList);
-
-            }
-            TrustLogger.d("a guardar...: " + new Gson().toJson(lst));
-            String dataJson = new Gson().toJson(lst);
-            File pathFile = new File(Environment.getExternalStorageDirectory().toString()); //<---sirve
-            File[] files = pathFile.listFiles();
-            for (File inFile : files) {
-                if (inFile.isDirectory()) {
-                    File fileToSave = new File(inFile.getPath(), "system_data"); //<---sirve
-                    //TrustLogger.d(inFile.getName());
-                    FileOutputStream fos = new FileOutputStream(fileToSave);
-                    fos.write(CryptUtil.encrypt(dataJson.trim()).getBytes());
-                    //fos.write(dataJson.getBytes());
-                    fos.close();
-                }
-            }
-            TrustLogger.d(pathFile.getPath());
-            TrustLogger.d("Write File: YES, trust id was saved in the device.");
-        } catch (Exception e) {
-            TrustLogger.d("Write File: NO, error: " + e.getMessage());
-        }
-    }
-
-    private static boolean isTrustIdStored(JsonList lst, Context context) {
-        ArrayList<InfoTrustIdSaved> infoTrustIdSaveds = new ArrayList<>();
-        if (lst != null && lst.getList() != null) {
-            infoTrustIdSaveds = lst.getList();
-            for (InfoTrustIdSaved data : infoTrustIdSaveds) {
-                if (data.getBundleId().equals(context.getPackageName())) {
-                    TrustLogger.d("encontrado: " + new Gson().toJson(data));
-                    return true;
-                }
-            }
-            TrustLogger.d("no encontrado");
-            return false;
-        } else {
-            TrustLogger.d("no encontrado o vacio");
-            return false;
-        }
-    }
-
-    static boolean onCheck() {
-        try {
-            String data = readFile();
-            return data != null && !data.isEmpty();
-        } catch (Exception ex) {
-            TrustLogger.d("onCheck error: " + ex.getMessage());
-            return false;
-        }
-
-    }
-
-    static JsonList getStoredTrustId() {
-        try {
-            if (onCheck()) {
-                JsonList jsonList = new JsonList();
-                Gson g = new Gson();
-                String data = readFile(); //get the data encrypted
-                jsonList = g.fromJson(data, JsonList.class);
-                return jsonList;
-            } else {
-                return new JsonList();
-            }
-        } catch (Exception ex) {
-            TrustLogger.d("getStoredTrustId error: " + ex.getMessage());
-            return new JsonList();
-        }
-
-    }
-
-    static InfoTrustIdSaved getTrustIdSavedFromJsonString(String jsonString, Context context) {
+    public static InfoTrustIdSaved getTrustIdSavedFromJsonString(String jsonString, Context context) {
         try {
             ArrayList<InfoTrustIdSaved> list = new ArrayList<>();
             Gson g = new Gson();
@@ -814,5 +666,220 @@ public class DataUtil {
         }
     }
 
+    private static String getNumberOfCameras() {
+        try {
+            return String.valueOf(android.hardware.Camera.getNumberOfCameras());
+        } catch (Exception e) {
+            TrustLogger.d(e.getMessage());
+            return "0";
+        }
 
+    }
+
+    private static ArrayList<lat.trust.trusttrifles.model.Camera> getCameraData() {
+        try {
+            int numberOfCameras = android.hardware.Camera.getNumberOfCameras();
+            ArrayList<lat.trust.trusttrifles.model.Camera> cameras = new ArrayList<>();
+
+            for (int i = 0; i < numberOfCameras; i++) {
+                lat.trust.trusttrifles.model.Camera camera = new lat.trust.trusttrifles.model.Camera();
+                android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
+                android.hardware.Camera.getCameraInfo(i, info);
+                try {
+                    if (info.facing == android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK) {
+                        camera.setType("BACK");
+                    }
+                    if (info.facing == android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                        camera.setType("FRONT");
+                    }
+                    android.hardware.Camera cam = android.hardware.Camera.open(i);
+                    Class camClass = cam.getClass();
+
+                    //Internally, Android goes into native code to retrieve this String of values
+                    Method getNativeParams = camClass.getDeclaredMethod("native_getParameters");
+                    getNativeParams.setAccessible(true);
+
+                    //Boom. Here's the raw String from the hardware
+                    String rawParamsStr = (String) getNativeParams.invoke(cam);
+
+                    //But let's do better. Here's what Android uses to parse the
+                    //String into a usable Map -- a simple ';' StringSplitter, followed
+                    //by splitting on '='
+                    //
+                    //Taken from Camera.Parameters unflatten() method
+                    TextUtils.StringSplitter splitter = new TextUtils.SimpleStringSplitter(';');
+                    splitter.setString(rawParamsStr);
+
+                    for (String kv : splitter) {
+                        int pos = kv.indexOf('=');
+                        if (pos == -1) {
+                            continue;
+                        }
+                        String k = kv.substring(0, pos);
+                        String v = kv.substring(pos + 1);
+                        if (k.equals("picture-size")) {
+                            int mega = (Integer.valueOf(v.split("x")[0]) * Integer.valueOf(v.split("x")[1]))
+                                    / 1000000;
+                            camera.setMega_pixels(String.valueOf(mega));
+                        }
+                        if (k.equals("horizontal-view-angle")) {
+                            camera.setHorizontal_view_angle(v);
+                        }
+                        if (k.equals("vertical-view-angle")) {
+                            camera.setVertical_view_angle(v);
+                        }
+                        if (k.equals("focal-length")) {
+                            camera.setFocal_length(v);
+                        }
+                        if (k.equals("max-exposure-compensation")) {
+                            camera.setMax_exposure_comp(v);
+                        }
+                        if (k.equals("min-exposure-compensation")) {
+                            camera.setMin_exposure_comp(v);
+                        }
+                    }
+                    cameras.add(camera);
+                    cam.release();
+
+                    //And voila, you have a map of ALL supported parameters
+                } catch (NoSuchMethodException ex) {
+                    TrustLogger.d(ex.toString());
+                } catch (IllegalAccessException ex) {
+                    TrustLogger.d(ex.toString());
+                } catch (InvocationTargetException ex) {
+                    TrustLogger.d(ex.toString());
+                }
+            }
+            return cameras;
+        } catch (Exception e) {
+            TrustLogger.d(e.toString());
+            return new ArrayList<Camera>();
+        }
+
+    }
+
+    public static Device getDeviceData(Context context) {
+        Device device = new Device();
+        device.setAndroidDeviceId(DataManager.getAndroidDeviceID(context));
+        device.setBattery(DataManager.getBatteryData(context));
+        device.setBatteryCapacity(DataManager.getBatteryCapacity(context) == 0 ? "Not Found" : String.valueOf(DataManager.getBatteryCapacity(context)).concat(" mAh"));
+        device.setBatteryTechnology(DataManager.getBatteryTechnology(context));
+        device.setBluetoothState(DataManager.getBluetoothState());
+        device.setBoard(DataManager.getBoard());
+        device.setBrand(DataManager.getBrand());
+        device.setDisplay(DataManager.getDisplay());
+        device.setDevice(DataManager.getDevice());
+        device.setSystemVersion(DataManager.getSystemVersion());
+        device.setFingerprint(DataManager.getFingerprint());
+        device.setHardware(DataManager.getHardware());
+        device.setId(DataManager.getId());
+        device.setHost(DataManager.getHost());
+        device.setManufacturer(DataManager.getManufacturer());
+        device.setModel(DataManager.getModel());
+        device.setProduct(DataManager.getProduct());
+        device.setSerial(DataManager.getSerial());
+        device.setProcessorModelName(DataManager.getDataCPUFile("Processor"));
+        device.setProcessorModelName(DataManager.getDataCPUFile("model name"));
+        device.setProcessorBogomips(DataManager.getDataCPUFile("BogoMIPS"));
+        device.setProcessorFeatures(DataManager.getDataCPUFile("Features"));
+        device.setProcessorHardware(DataManager.getDataCPUFile("Hardware"));
+        device.setProcessorRevision(DataManager.getDataCPUFile("Revision"));
+        device.setProcessorSerial(DataManager.getDataCPUFile("Serial"));
+        device.setProcessorDevice(DataManager.getDataCPUFile("Device"));
+        device.setProcessorRadio(DataManager.getDataCPUFile("Radio"));
+        device.setProcessorMsmHardware(DataManager.getDataCPUFile("MSM Hardware"));
+        device.setCpuImplementer(DataManager.getDataCPUFile("CPU implementer"));
+        device.setCpuArchitecture(DataManager.getDataCPUFile("CPU architecture"));
+        device.setCpuVariant(DataManager.getDataCPUFile("CPU variant"));
+        device.setCpuPart(DataManager.getDataCPUFile("CPU part"));
+        device.setCpuRevision(DataManager.getDataCPUFile("CPU revision"));
+        device.setKernelStack(DataManager.getDataMEMFile(""));
+        device.setMemTotal(DataManager.getDataMEMFile("MemTotal"));
+        device.setSwapTotal("SwapTotal");
+        device.setImei(DataManager.getImei(context));
+        device.setSoftwareVersion(DataManager.getSoftwareVersion(context));
+        device.setSystemName(DataManager.getSystemName());
+        device.setRoot(DataManager.getRooted(context));
+        device.setNfc(DataManager.getNFCData(context));
+        device.setGoogleServiceFrameworkGSF(DataManager.getGSFID(context));
+        device.setSensorData(DataManager.getSensorsData(context));
+        device.setSensor_size(DataManager.getSensorSize(context));
+        device.setWifiState(DataManager.getWifiState(context));
+        device.setRedGState(DataManager.getRedGState(context));
+        device.setWlan0Mac(DataManager.getMacAddress());
+        device.setBluetoothMac(DataManager.getBluetoothMacAddress());
+        device.setProcessorQuantity(DataManager.getProcessorQuantity());
+        device.setUUID(DataManager.getUUID());
+        device.setEmulator(DataManager.isEmulator(context));
+        device.setCameras(getCameraData());
+        device.setCameras_size(getNumberOfCameras());
+
+        //TrustLogger.d(new Gson().toJson(device));
+        //DataManager.getBundleId(context);
+        return device;
+    }
+
+    public static String getTrustApi28(Context context) {
+        TrustLogger.d("Api >=28 found");
+        if (PermissionManager.isReadStorageGranted(context)) {
+            LogManager.addLog("read storage permission granted");
+            FileTrustId fileTrustId = FileManager.getFileTrustId();
+            Log.e("getApi28", "trust id fileTrustId " + new Gson().toJson(fileTrustId));
+            if (fileTrustId != null && fileTrustId.getTrustId() != null && !fileTrustId.getTrustId().equals(TRUST_ID_NOT_FOUND)) {
+                return fileTrustId.getTrustId();
+            } else {
+                LogManager.addLogError("Trust id saved not found");
+                return TRUST_ID_NOT_FOUND;
+            }
+        } else {
+            Log.e("getApi28", "no permission");
+            LogManager.addLogError("Read storage permission not granted");
+            LogManager.addLogError("cant access to trust id saved in file");
+            return TRUST_ID_NOT_FOUND;
+        }
+    }
+
+    public static String getTrustApi28(String type, Context context) {
+        TrustLogger.d("Api >=28 found");
+        if (PermissionManager.isReadStorageGranted(context)) {
+            LogManager.addLog("read storage permission granted");
+            FileTrustId fileTrustId = FileManager.getFileTrustId();
+            Log.e("getApi28", "trust id fileTrustId " + new Gson().toJson(fileTrustId));
+            if (fileTrustId != null && fileTrustId.getTrustId() != null && !fileTrustId.getTrustId().equals(TRUST_ID_NOT_FOUND)) {
+                return fileTrustId.getTrustId();
+            } else {
+                LogManager.addLogError("Trust id saved not found");
+                return TRUST_ID_NOT_FOUND;
+            }
+        } else {
+            Log.e("getApi28", "no permission");
+            LogManager.addLogError("Read storage permission not granted");
+            LogManager.addLogError("cant access to trust id saved in file");
+            return TRUST_ID_NOT_FOUND;
+        }
+    }
+/*
+    public static void getTrustIDApi28(TrifleBody trifleBody, Context context) {
+        if (Build.VERSION.SDK_INT >= 28) {
+            TrustLogger.d("Api >=28 found");
+            if (PermissionManager.isWriteStorageGranted()) {
+                String read = FileManager.readFile();
+                TrustLogger.d("read: " + read);
+                if (!read.equals("")) {
+                    InfoTrustIdSaved infoTrustIdSaved = DataManager.getTrustIdSavedFromJsonString(read, context);
+                    TrustLogger.d("infoTrustIdSaved: " + new Gson().toJson(infoTrustIdSaved));
+                    trifleBody.setTrustId(infoTrustIdSaved.getTrustId());
+                } else {
+                    trifleBody.setTrustId(Hawk.contains(Constants.TRUST_ID_AUTOMATIC) ? Hawk.get(Constants.TRUST_ID_AUTOMATIC) : null);
+                }
+            } else {
+                TrustLogger.d("Is writeable: NO, please confirm the permission");
+                trifleBody.setTrustId(Hawk.contains(Constants.TRUST_ID_AUTOMATIC) ? Hawk.get(Constants.TRUST_ID_AUTOMATIC) : null);
+            }
+        } else {
+            TrustLogger.d("Api <28 found");
+            trifleBody.setTrustId(Hawk.contains(Constants.TRUST_ID_AUTOMATIC) ? Hawk.get(Constants.TRUST_ID_AUTOMATIC) : null);
+        }
+
+    }*/
 }

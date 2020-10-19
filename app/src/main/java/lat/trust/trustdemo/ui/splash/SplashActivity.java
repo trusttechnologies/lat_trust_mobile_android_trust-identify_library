@@ -1,12 +1,14 @@
 package lat.trust.trustdemo.ui.splash;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.button.MaterialButton;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
@@ -17,68 +19,102 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lat.trust.trustdemo.R;
-import lat.trust.trusttrifles.DataUtil;
-import lat.trust.trusttrifles.TrustClientLite;
-import lat.trust.trusttrifles.TrustClientZero;
-import lat.trust.trusttrifles.TrustListener;
-import lat.trust.trusttrifles.model.Trust;
-import lat.trust.trusttrifles.model.Identity;
-import lat.trust.trusttrifles.ui.DialogPermission;
-import lat.trust.trusttrifles.utilities.CryptUtil;
-import lat.trust.trusttrifles.utilities.TrustLogger;
+import lat.trust.trustdemo.ui.splash.adapter.ItemClickListener;
+import lat.trust.trustdemo.ui.splash.adapter.SplashAdapter;
+import lat.trust.trusttrifles.Trust;
+import lat.trust.trusttrifles.model.StringsModel;
+import lat.trust.trusttrifles.model.TrustResponse;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.READ_PHONE_STATE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
-public class SplashActivity extends AppCompatActivity implements DialogPermission.DialogPermissionListener {
-    private TextView trustid, txtEncryp, txtDecryp;
-    Button btnZero, btnNormal, btnSaveData;
-    String dataEncryp;
+public class SplashActivity extends AppCompatActivity implements SplashContract.View {
+    private SplashContract.Presenter mPresenter;
+
+    MaterialButton btnNormal, btnZero, btnLitle, btnCreateToken, btnRemoveToken, btnClearlog, btnOverwrite;
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        trustid = findViewById(R.id.trustid);
-        btnZero = findViewById(R.id.btn_zero);
-        btnNormal = findViewById(R.id.btn_normal);
-        btnSaveData = findViewById(R.id.btn_save_data);
-        txtEncryp = findViewById(R.id.trustid_encrypt);
-        txtDecryp = findViewById(R.id.trustid_decrypt);
+        mPresenter = new SplashPresenter(this);
 
+        btnCreateToken = findViewById(R.id.setToken);
+        btnLitle = findViewById(R.id.trustIdLitle);
+        btnNormal = findViewById(R.id.trustIdNormal);
+        btnRemoveToken = findViewById(R.id.removeToken);
+        btnOverwrite = findViewById(R.id.btnOverWrite);
+        btnZero = findViewById(R.id.trustIdZero);
+        btnClearlog = findViewById(R.id.clearRecycler);
+        recyclerView = findViewById(R.id.recyclerLog);
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        mPresenter.onCreate();
+
+        btnOverwrite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Trust.overWriteTrust(
+                        "fd6462f6-f53f-4d1d-bd04-28187189494e",
+                      "e6dbf005-cd77-4d74-a546-27f459a14295",
+                        SplashActivity.this);
+            }
+        });
+
+        btnClearlog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mPresenter.clearLog();
+            }
+        });
         btnZero.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getTrustIdZer(SplashActivity.this);
+                mPresenter.requestTrustIdZero(SplashActivity.this);
             }
         });
+
+        btnLitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mPresenter.requestTrustIdLite(SplashActivity.this);
+            }
+        });
+
         btnNormal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getTrustIdNormal(SplashActivity.this);
-                //TrustClientLite.overWriteTrust("80d6b863-0577-40e2-94c2-1b399ec4991d", SplashActivity.this);
-
+                mPresenter.requestTrustIdNormal(SplashActivity.this);
             }
         });
-        btnSaveData.setOnClickListener(new View.OnClickListener() {
+        btnCreateToken.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                txtDecryp.setText(CryptUtil.decrypt(DataUtil.readFile()));
-                txtEncryp.setText(DataUtil.readFile());
+                mPresenter.requestCustomToken("Bearer 9r23ukvUgg7mb-XCbRChKcdSpH5Rcc3idkOREUwt1Dw");
+            }
+        });
+        btnRemoveToken.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mPresenter.requestDeleteToken();
             }
         });
     }
 
 
-    private void getTrustIdNormal(SplashActivity splashActivity) {
+    @Override
+    public void requestPermissions() {
         Dexter.withActivity(this).withPermissions(
                 READ_PHONE_STATE,
                 READ_EXTERNAL_STORAGE,
                 WRITE_EXTERNAL_STORAGE).withListener(new MultiplePermissionsListener() {
             @Override
             public void onPermissionsChecked(MultiplePermissionsReport report) {
-                getTrustId();
+                mPresenter.initView();
             }
 
             @Override
@@ -88,119 +124,17 @@ public class SplashActivity extends AppCompatActivity implements DialogPermissio
         }).check();
     }
 
-    private void getTrustIdZer(Context context) {
-        TrustClientZero.getTrustIdZero(context, new TrustListener.OnResult<Trust>() {
-            @Override
-            public void onSuccess(int code, Trust data) {
-                try {
-                    trustid.setText(data.getTrustid());
-                    String encrypt = CryptUtil.encrypt(data.getTrustid());
-                    String decrypt = CryptUtil.decrypt(encrypt);
-                    txtDecryp.setText(decrypt);
-                    txtEncryp.setText(encrypt);
-                    dataEncryp = encrypt;
-                } catch (Exception ex) {
-                    TrustLogger.d(ex.getMessage());
-                }
-
-            }
-
-            @Override
-            public void onError(int code) {
-                trustid.setText(code + "");
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                trustid.setText(t.getMessage());
-
-            }
-
-            @Override
-            public void onPermissionRequired(ArrayList<String> permisos) {
-
-            }
-        });
-    }
-
-
-    private void getTrustId() {
-        TrustClientLite.getTrustIDLite(SplashActivity.this, new TrustListener.OnResult<Trust>() {
-            @Override
-            public void onSuccess(int code, Trust data) {
-                try {
-                    //TrustLogger.d(data.getTrustid());
-                    trustid.setText(data.getTrustid());
-                    String encrypt = CryptUtil.encrypt(data.getTrustid());
-                    TrustLogger.d(encrypt);
-
-                    String decrypt = CryptUtil.decrypt(data.getTrustid());
-                    // TrustLogger.d(decrypt);
-
-
-                    txtDecryp.setText(decrypt);
-                    txtEncryp.setText(encrypt);
-                    dataEncryp = encrypt;
-                    identify();
-                } catch (Exception ex) {
-                    TrustLogger.d("error: " + ex.getMessage());
-
-                }
-
-            }
-
-            @Override
-            public void onError(int code) {
-                TrustLogger.d(code + "");
-
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                TrustLogger.d(t.getMessage());
-
-            }
-
-            @Override
-            public void onPermissionRequired(ArrayList<String> permisos) {
-
-            }
-        });
-    }
-
-    private void identify() {
-        TrustLogger.d("SENDING IDENTIFY");
-        Identity identity = new Identity();
-        identity.setDni("18236924-1");
-        identity.setEmail("fcaro@trust.lat");
-        identity.setName("felipe");
-        identity.setLastname("caro");
-        identity.setPhone("+56982110950");
-        TrustClientLite.sendIdentify(identity, this, new TrustListener.OnResult<Trust>() {
-            @Override
-            public void onSuccess(int code, Trust data) {
-
-            }
-
-            @Override
-            public void onError(int code) {
-
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-
-            }
-
-            @Override
-            public void onPermissionRequired(ArrayList<String> permisos) {
-
-            }
-        });
+    @Override
+    public void reloadData(ArrayList<StringsModel> lst) {
+        mAdapter = new SplashAdapter(lst);
+        recyclerView.setAdapter(mAdapter);
     }
 
     @Override
-    public void applyPermission(boolean status) {
-
+    public void setDataRecyclerView(ArrayList<StringsModel> lst) {
+        mAdapter = new SplashAdapter(lst);
+        recyclerView.setAdapter(mAdapter);
     }
+
+
 }

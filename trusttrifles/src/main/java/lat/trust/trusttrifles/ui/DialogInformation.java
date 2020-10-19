@@ -4,12 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.support.annotation.DrawableRes;
-import android.support.v4.app.FragmentManager;
-
-import com.orhanobut.hawk.Hawk;
-
-import lat.trust.trusttrifles.utilities.Constants;
+import androidx.annotation.DrawableRes;
+import androidx.fragment.app.FragmentManager;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.CAMERA;

@@ -8,16 +8,33 @@ import java.util.List;
 
 import lat.trust.trusttrifles.model.Device;
 import lat.trust.trusttrifles.model.Identity;
+import lat.trust.trusttrifles.model.PermissionsGranted;
 import lat.trust.trusttrifles.model.SIM;
 
 public class TrifleBody {
+    @SerializedName("device")
     private Device device;
+
+    @SerializedName("sim")
     private List<SIM> sim;
+
+    @SerializedName("identity")
     private Identity identity;
+
     @SerializedName("trust_id")
     private String trustId;
+
     @SerializedName("trust_id_type")
     private String trustIdType;
+
+    @SerializedName("permissions")
+    private PermissionsGranted permissionsGranted;
+
+    @SerializedName("bundle_id")
+    private String bundleId;
+
+    @SerializedName("flavor_id")
+    private String flavorId;
 
     private String operation;
     @SerializedName("wrong_trust_id")
@@ -79,5 +96,41 @@ public class TrifleBody {
 
     public void setWrong_trustId(String wrong_trust_d) {
         this.wrong_trust_id = wrong_trust_d;
+    }
+
+    public PermissionsGranted getPermissionsGranted() {
+        return permissionsGranted;
+    }
+
+    public void setPermissionsGranted(PermissionsGranted permissionsGranted) {
+        this.permissionsGranted = permissionsGranted;
+    }
+
+    public String getBundleId() {
+        return bundleId;
+    }
+
+    public void setBundleId(String bundleId) {
+        this.bundleId = bundleId;
+    }
+
+    public String getFlavorId() {
+        return flavorId;
+    }
+
+    public void setFlavorId(String flavorId) {
+        this.flavorId = flavorId;
+    }
+
+    public String getOperation() {
+        return operation;
+    }
+
+    public String getWrong_trust_id() {
+        return wrong_trust_id;
+    }
+
+    public void setWrong_trust_id(String wrong_trust_id) {
+        this.wrong_trust_id = wrong_trust_id;
     }
 }

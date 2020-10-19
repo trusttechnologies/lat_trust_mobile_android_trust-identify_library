@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.orhanobut.hawk.Hawk;
 
+import lat.trust.trusttrifles.Trust;
 import lat.trust.trusttrifles.TrustClientZero;
 import lat.trust.trusttrifles.TrustIdentifyConfigurationService;
 
@@ -12,7 +13,7 @@ public class TrustDemoApp extends Application {
     public void onCreate() {
         super.onCreate();
         Hawk.init(this).build();
-        TrustClientZero.init(this);
+        Trust.init(this);
         TrustIdentifyConfigurationService.setEnvironment(TrustIdentifyConfigurationService.ENVIRONMENT_PRODUCTION, this);
     }
 }

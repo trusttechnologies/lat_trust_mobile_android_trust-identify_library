@@ -1,5 +1,7 @@
 package lat.trust.trusttrifles.network;
 
+import lat.trust.trusttrifles.model.ResponseCompanyFlavors;
+import lat.trust.trusttrifles.model.SaveDeviceInfoFlavor;
 import lat.trust.trusttrifles.model.gateway.DeviceBody;
 import lat.trust.trusttrifles.network.req.AuthTokenRequest;
 import lat.trust.trusttrifles.network.req.SaveDeviceInfoRequest;
@@ -34,12 +36,14 @@ public interface API {
     Call<Void> saveDeviceData(@Body SaveDeviceInfoRequest saveDeviceInfoRequest, @Header("Authorization") String token);
 
 
+    @POST("company/api/v1/app/list_flavors")
+    Call<ResponseCompanyFlavors> saveDeviceDataFavlor(@Body SaveDeviceInfoFlavor saveDeviceInfoRequest, @Header("Authorization") String token);
 
 
     @POST("v2/device")
     Call<TrifleResponse> getTrustId(@Body DeviceBody body, @Header("Authorization") String token);
 
     @POST("v2/device/{trustid}/sim")
-    Call<Void> sendSIM( @Header("Authorization") String token);
+    Call<Void> sendSIM(@Header("Authorization") String token);
 
 }

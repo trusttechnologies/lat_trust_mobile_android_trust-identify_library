@@ -1,13 +1,24 @@
 package lat.trust.trusttrifles.model;
 
-public class Trust {
+import java.util.ArrayList;
+
+public class TrustResponse {
 
 
     private Boolean status;
     private String message;
     private String trustid;
+    private ArrayList<AppFlavor> apps;
 
-    public Trust() { }
+    public TrustResponse() { }
+
+    public ArrayList<AppFlavor> getApp() {
+        return apps;
+    }
+
+    public void setApp(ArrayList<AppFlavor> app) {
+        this.apps = app;
+    }
 
     public Boolean getStatus() {
         return status;

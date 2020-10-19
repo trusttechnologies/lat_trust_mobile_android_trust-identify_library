@@ -1,7 +1,6 @@
 package lat.trust.trusttrifles.utilities;
 
 
-
 public class Utils {
     /**
      * Este metodo extrae informacion de un string del tipo "key: value type"
@@ -29,6 +28,11 @@ public class Utils {
             return segs[0];
         }
         return null;
+    }
+
+    public static String getCurrentTimeStamp() {
+        long time = System.currentTimeMillis() / 1000;
+        return Long.toString(time);
     }
 
 

@@ -14,7 +14,8 @@ public class SentryState {
     public enum SENTRY_IMPORTANCE {
         IMPORTANCE_DEFAULT,
         IMPORTANCE_NONE,
-        IMPORTANCE_HIGH
+        IMPORTANCE_HIGH,
+        DEBUG_APP
     }
 
     static void init(Context context) {
@@ -34,6 +35,10 @@ public class SentryState {
             }
             case IMPORTANCE_DEFAULT: {
                 Hawk.put(SENTRY_STATE, SENTRY_IMPORTANCE.IMPORTANCE_DEFAULT);
+                break;
+            }
+            case DEBUG_APP: {
+                Hawk.put(SENTRY_STATE, SENTRY_IMPORTANCE.DEBUG_APP);
                 break;
             }
             default: {
@@ -59,6 +64,10 @@ public class SentryState {
 
     public static boolean isImportantNone() {
         return Hawk.contains(SENTRY_STATE) && Hawk.get(SENTRY_STATE).equals(SENTRY_IMPORTANCE.IMPORTANCE_NONE);
+    }
+
+    public static boolean isDebugApp() {
+        return Hawk.contains(SENTRY_STATE) && Hawk.get(SENTRY_STATE).equals(SENTRY_IMPORTANCE.DEBUG_APP);
     }
 
     public static boolean isImportantDefaultOrHigh() {

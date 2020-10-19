@@ -10,16 +10,16 @@
    
 # Description  
   
-Trust is a platform that allows building trust and security between people and technology.  
+Trust is a platform that allows building trustResponse and security between people and technology.
   
 **Trust-device-info** allows you to obtain a unique universal ID for each device from a set of characteristics of this device. It also allows the monitoring of device status changes, to have knowledge of the device status at all times.  
   
-# trust-service.json file
+# trustResponse-service.json file
     
-All our services are protected by access tokens, which is why in order to generate a trust id or an notification it is necessary to add a .json file called trust-service inside the assets folder of your android studio project. In order to obtain this file it is necessary to send the following data of your application: **bundle_id**, **app_name** and **redirect_uri** (ex: bundle_id: //auth.id) these data must be sent to app@trust.lat 
+All our services are protected by access tokens, which is why in order to generate a trustResponse id or an notification it is necessary to add a .json file called trustResponse-service inside the assets folder of your android studio project. In order to obtain this file it is necessary to send the following data of your application: **bundle_id**, **app_name** and **redirect_uri** (ex: bundle_id: //auth.id) these data must be sent to app@trustResponse.lat
   
     
-the structure of the trust-service.json file should be as follows
+the structure of the trustResponse-service.json file should be as follows
 ```json  
  { 
 	 "client_id": "your_client_id",
@@ -31,11 +31,11 @@ the structure of the trust-service.json file should be as follows
   
 ```java  
 dependencies {  
- implementation 'lat.trust.trustdemo:trusttrifles:2.0.12'
+ implementation 'lat.trustResponse.trustdemo:trusttrifles:2.0.12'
  }  
   
 ```  
-> See the actual version [here](https://bintray.com/fcarotrust/trust/trustidentify).  
+> See the actual version [here](https://bintray.com/fcarotrust/trustResponse/trustidentify).
   
 # Initialize  - TrustClient
     
@@ -112,23 +112,23 @@ These are the permissions that the library currently uses:
 <uses-permission android:name="android.permission.READ_PHONE_STATE" /> 
 ```  
 # Minimum Api Lvl 15  
-The trust library works from API LEVEL 15 because Google Play services and Firebase for Android will support API level 15 at minimum.  
+The trustResponse library works from API LEVEL 15 because Google Play services and Firebase for Android will support API level 15 at minimum.
      
 See more information  [here](https://android-developers.googleblog.com/2016/11/google-play-services-and-firebase-for-android-will-support-api-level-14-at-minimum.html). 
 >  For more information visit the documentation in Firebase console [here](https://firebase.google.com/docs/?hl=es)
 >  
 # Methods  
   
-This section describes the methods that the library has to get the trust id.
+This section describes the methods that the library has to get the trustResponse id.
 ## Get Trust Id Zero  
   
-With this method you get a trust id lite version
+With this method you get a trustResponse id lite version
   
 ```java  
 TrustClientZero.getTrustIdZero(this, new TrustListener.OnResult<Audit>() {
             @Override
             public void onSuccess(int code, Audit data) {
-            String trustId = data.getTrustid();  //get trust id
+            String trustId = data.getTrustid();  //get trustResponse id
             }
             @Override
             public void onError(int code) {}
@@ -141,13 +141,13 @@ TrustClientZero.getTrustIdZero(this, new TrustListener.OnResult<Audit>() {
 
 ## Get Trust Id Lite  
   
-With this method you get a trust id lite version
+With this method you get a trustResponse id lite version
   
 ```java  
 TrustClientLite.getTrustIDLite(this, new TrustListener.OnResult<Audit>() {  
     @Override  
     public void onSuccess(int code, Audit data) {
-    String trustId = data.getTrustid();  //get trust id
+    String trustId = data.getTrustid();  //get trustResponse id
     }  
     @Override  
     public void onError(int code) {}  
@@ -161,13 +161,13 @@ TrustClientLite.getTrustIDLite(this, new TrustListener.OnResult<Audit>() {
 ```
 ## Get Trust Id Normal  
   
-With this method you get a trust id normal version
+With this method you get a trustResponse id normal version
 
 ```java  
 TrustClient.getInstance().getTrifles(true, new TrustListener.OnResult<Audit>() {    
   @Override    
   public void onSuccess(int code, Audit data) {   
-      String trustId = data.getTrustid();  //get trust id
+      String trustId = data.getTrustid();  //get trustResponse id
   }  
   @Override    
   public void onError(int code) { }

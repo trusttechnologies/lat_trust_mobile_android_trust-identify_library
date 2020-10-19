@@ -51,7 +51,7 @@ public class TrustAuth {
             Hawk.put(Constants.CLIENT_SECRET, modelObject.client_secret);
         } catch (Exception ex) {
             TrustLogger.d("error in trust-service.json on asset folder, client_id or client_secret not found: " + ex.getMessage());
-            if (SentryState.isImportantDefault()) Sentry.capture(ex);
+            //if (SentryState.isImportantDefault()) Sentry.capture(ex);
         }
 
     }

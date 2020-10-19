@@ -2,10 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="lat.trust.trusttrifles"
-    android:sharedUserId="trust.trifles"
+    android:sharedUserId="trustResponse.trifles"
     android:sharedUserLabel="@string/shared_user_label">
     <!-- =================== PERMISSIONS =================== -->
-    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <!--uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" /-->
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -26,7 +26,7 @@
 
         <!-- SIM STATE RECEIVER -->
         <receiver
-            android:name=".broadcasts.SIMChangeReceiver"
+            android:name="lat.trust.trusttrifles.broadcasts.SIMChangeReceiver"
             android:stopWithTask="false">
             <intent-filter>
                 <action android:name="android.intent.action.SIM_STATE_CHANGED" />

@@ -1,71 +1,136 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.splash.SplashActivity">
+    android:background="@color/white"
+    tools:context="lat.trust.trustdemo.ui.splash.SplashActivity">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        android:orientation="vertical">
+        android:id="@+id/linearLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        app:layout_constraintEnd_toStartOf="@+id/guideline_right"
+        app:layout_constraintStart_toStartOf="@+id/guideline_left"
+        app:layout_constraintTop_toTopOf="@+id/guideline_top">
 
-        <ImageView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@mipmap/ic_launcher" />
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toStartOf="@+id/guideline_right"
+            app:layout_constraintStart_toStartOf="@+id/guideline_left"
+            app:layout_constraintTop_toTopOf="@+id/guideline_top">
 
-        <Button
-            android:id="@+id/btn_zero"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/trustIdNormal"
+                style="@style/CustomButtomMaterial"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Trust id normal" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/trustIdZero"
+                style="@style/CustomButtomMaterial"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Trust id Zero" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/setToken"
+                style="@style/CustomButtomMaterial"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Set token" />
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Trust ID Sub-Zero" />
+            android:layout_marginLeft="8dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toStartOf="@+id/guideline_right"
+            app:layout_constraintStart_toStartOf="@+id/guideline_left"
+            app:layout_constraintTop_toTopOf="@+id/guideline_top">
 
-        <Button
-            android:id="@+id/btn_save_data"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Save File" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/trustIdLitle"
+                style="@style/CustomButtomMaterial"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Trust id litle" />
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnOverWrite"
+                style="@style/CustomButtomMaterial"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Overwrite" />
 
-        <Button
-            android:id="@+id/btn_normal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Trust ID Normal" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/removeToken"
+                style="@style/CustomButtomMaterial"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="remove token" />
+        </LinearLayout>
 
-        <TextView
-            android:id="@+id/trustid"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="Cargando..."
-            android:textAlignment="center" />
-
-        <TextView
-            android:id="@+id/trustid_file"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="Cargando..."
-            android:textAlignment="center" />
-
-        <TextView
-            android:id="@+id/trustid_encrypt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="Cargando..."
-            android:textAlignment="center" />
-
-        <TextView
-            android:id="@+id/trustid_decrypt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="Cargando..."
-            android:textAlignment="center" />
     </LinearLayout>
-</android.support.constraint.ConstraintLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerLog"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/clearRecycler"
+        app:layout_constraintEnd_toStartOf="@+id/guideline_right"
+        app:layout_constraintStart_toStartOf="@+id/guideline_left"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/clearRecycler"
+        style="@style/CustomButtomMaterial"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Clear list"
+        app:layout_constraintBottom_toTopOf="@+id/guideline_bottom"
+        app:layout_constraintEnd_toStartOf="@+id/guideline_right"
+        app:layout_constraintStart_toStartOf="@+id/guideline_left" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.05" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.05" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.95" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.95" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

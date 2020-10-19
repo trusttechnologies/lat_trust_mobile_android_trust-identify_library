@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="lat.trust.trustdemo"
-    android:sharedUserId="trust.trifles"
+    android:sharedUserId="trustResponse.trifles"
     android:sharedUserLabel="@string/shared_user_label">
 
     <!--  <uses-permission android:name="android.permission.RECEIVE_SMS" />
@@ -15,8 +15,10 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
+
+
     <application
-        android:name=".TrustDemoApp"
+        android:name="lat.trust.trustdemo.TrustDemoApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -26,7 +28,7 @@
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name=".ui.splash.SplashActivity"
+            android:name="lat.trust.trustdemo.ui.splash.SplashActivity"
             android:screenOrientation="sensorPortrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

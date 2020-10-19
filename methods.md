@@ -17,7 +17,7 @@ Get the minutiae of the Device. If requestTrustId is True, they will be sent to 
 
 TrustClient.getInstance().getTrifles(true, new  TrustListener.OnResult<Audit>() {
 	@Override
-	public  void  onSuccess(int  i, Audit  trust) {/**/}
+	public  void  onSuccess(int  i, Audit  trustResponse) {/**/}
 	@Override
 	public  void  onError(int  i) {/**/}
 	@Override
@@ -352,12 +352,12 @@ TrustClient.getInstance().sendTrifles(mBody,listener){
    ## notifyEvent()
   
   
-This method is used to report a change in the device to the server use the trust id that the user obtained do not expect trust in the response
+This method is used to report a change in the device to the server use the trustResponse id that the user obtained do not expect trustResponse in the response
 
 *14/11/2018: Currently this method returns error code 404 in its onFailure method* 
 
 **Params**
-- **String:** trustId  ,id unique trust
+- **String:** trustId  ,id unique trustResponse
 - **String:** packageName  ,package name in context
 - **String:** eventType  
 - **String:** eventValue  
@@ -382,7 +382,7 @@ TrustClient.getInstance().notifyEvent(trustId,packageName,eventType,eventValue,l
   
   
   
-This method is used to report a change in the device to the server. Use the trust id stored by the library. Do not expect trust in the response
+This method is used to report a change in the device to the server. Use the trustResponse id stored by the library. Do not expect trustResponse in the response
 
 *14/11/2018: Currently this method returns error code 404 in its onFailure method* 
 
@@ -407,13 +407,13 @@ TrustClient.getInstance().notifyEvent(packageName, eventType, eventValue, lat, l
   
   
   
-Method used to report a change in the device to the server expect an trust in the response.
+Method used to report a change in the device to the server expect an trustResponse in the response.
 
 *14/11/2018: Currently this method returns error code 500 in its onFailure method* 
 
 **Params**
 
-- **String:** tid, *the unique trust id*
+- **String:** tid, *the unique trustResponse id*
 - **String:** object, *the name of the object to report*  
 - **String:** key, *the name of the change e.g: Wifi*  
 - **String:** value, *the description or value of the change e.g: status :false*  
@@ -436,12 +436,12 @@ TrustClient.getInstance().remoteEvent(trustId,packageName,eventType,eventValue,l
    ## remoteEvent2()
   
   
-RemoteEvent clone method, try to try another Body to send information. Use sending by String for SIM info (use prior to the creation of SIM Class). Expect an trust in the response
+RemoteEvent clone method, try to try another Body to send information. Use sending by String for SIM info (use prior to the creation of SIM Class). Expect an trustResponse in the response
 
 *14/11/2018: Currently this method returns error code 500 in its onFailure method* 
 
 **Params**
-- **String:** tid, *the unique trust id*
+- **String:** tid, *the unique trustResponse id*
 - **String:** object, *the name of the object to report*  
 - **String:** key, *the name of the change e.g: Wifi*  
 - **String:** value, *the description or value of the change e.g: status :false*  
@@ -468,7 +468,7 @@ TrustClient.getInstance().remoteEvent2(trustid,operation,method,timestamp,lat,ln
 This method notify any action realized (transaction), i.e. document sign
 
 **Params**
-- **String:** tid, *the unique trust id*
+- **String:** tid, *the unique trustResponse id*
 - **String:** operation, *the name of the operation to report*  
 - **String:** method, *the name of the method to report*  
 - **long:** timestamp, *time the change occurred*

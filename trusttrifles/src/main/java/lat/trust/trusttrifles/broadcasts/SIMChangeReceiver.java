@@ -4,8 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.RequiresPermission;
-import android.support.v4.content.LocalBroadcastManager;
+import androidx.annotation.RequiresPermission;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 
 import static android.Manifest.permission.READ_PHONE_STATE;

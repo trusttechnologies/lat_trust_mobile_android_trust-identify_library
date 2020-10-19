@@ -82,18 +82,25 @@ public class Device {
     private List<SensorData> sensorData;
     private String sensor_size;
     private String nfc;
-    private String android_device_id;
-    private String google_service_framework_gsf;
+    @SerializedName("android_device_id")
+    private String androidDeviceId;
+    @SerializedName("google_service_framework_gsf")
+    private String googleServiceFrameworkGSF;
     private String root;
     private String battery;
-    private String battery_capacity;
-    private String battery_technology;
+    @SerializedName("battery_capacity")
+    private String batteryCapacity;
+    @SerializedName("battery_technology")
+    private String batteryTechnology;
     private String UUID;
     private boolean emulator;
     //06/11/2018
-    private boolean wifi_state;
-    private boolean bluetooth_state;
-    private boolean red_g_state;
+    @SerializedName("wifi_state")
+    private boolean wifiState;
+    @SerializedName("bluetooth_state")
+    private boolean bluetoothState;
+    @SerializedName("red_g_state")
+    private boolean redGState;
 
     public Device() {
     }
@@ -106,28 +113,28 @@ public class Device {
         this.emulator = emulator;
     }
 
-    public boolean getWifi_state() {
-        return wifi_state;
+    public boolean getWifiState() {
+        return wifiState;
     }
 
-    public void setWifi_state(boolean wifi_state) {
-        this.wifi_state = wifi_state;
+    public void setWifiState(boolean wifiState) {
+        this.wifiState = wifiState;
     }
 
-    public boolean getBluetooth_state() {
-        return bluetooth_state;
+    public boolean getBluetoothState() {
+        return bluetoothState;
     }
 
-    public void setBluetooth_state(boolean bluetooth_state) {
-        this.bluetooth_state = bluetooth_state;
+    public void setBluetoothState(boolean bluetoothState) {
+        this.bluetoothState = bluetoothState;
     }
 
-    public boolean getRed_g_state() {
-        return red_g_state;
+    public boolean getRedGState() {
+        return redGState;
     }
 
-    public void setRed_g_state(boolean red_g_state) {
-        this.red_g_state = red_g_state;
+    public void setRedGState(boolean redGState) {
+        this.redGState = redGState;
     }
 
     public String getBattery() {
@@ -138,36 +145,36 @@ public class Device {
         this.battery = battery;
     }
 
-    public String getBattery_capacity() {
-        return battery_capacity;
+    public String getBatteryCapacity() {
+        return batteryCapacity;
     }
 
-    public void setBattery_capacity(String battery_capacity) {
-        this.battery_capacity = battery_capacity;
+    public void setBatteryCapacity(String batteryCapacity) {
+        this.batteryCapacity = batteryCapacity;
     }
 
-    public String getBattery_technology() {
-        return battery_technology;
+    public String getBatteryTechnology() {
+        return batteryTechnology;
     }
 
-    public void setBattery_technology(String battery_technology) {
-        this.battery_technology = battery_technology;
+    public void setBatteryTechnology(String batteryTechnology) {
+        this.batteryTechnology = batteryTechnology;
     }
 
-    public String getAndroid_device_id() {
-        return android_device_id;
+    public String getAndroidDeviceId() {
+        return androidDeviceId;
     }
 
-    public void setAndroid_device_id(String android_device_id) {
-        this.android_device_id = android_device_id;
+    public void setAndroidDeviceId(String androidDeviceId) {
+        this.androidDeviceId = androidDeviceId;
     }
 
-    public String getGoogle_service_framework_gsf() {
-        return google_service_framework_gsf;
+    public String getGoogleServiceFrameworkGSF() {
+        return googleServiceFrameworkGSF;
     }
 
-    public void setGoogle_service_framework_gsf(String google_service_framework_gsf) {
-        this.google_service_framework_gsf = google_service_framework_gsf;
+    public void setGoogleServiceFrameworkGSF(String googleServiceFrameworkGSF) {
+        this.googleServiceFrameworkGSF = googleServiceFrameworkGSF;
     }
 
     public String getRoot() {
