@@ -60,7 +60,7 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
             public void onClick(View view) {
                 Trust.overWriteTrust(
                         "fd6462f6-f53f-4d1d-bd04-28187189494e",
-                      "e6dbf005-cd77-4d74-a546-27f459a14295",
+                        "e6dbf005-cd77-4d74-a546-27f459a14295",
                         SplashActivity.this);
             }
         });
@@ -111,7 +111,8 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
         Dexter.withActivity(this).withPermissions(
                 READ_PHONE_STATE,
                 READ_EXTERNAL_STORAGE,
-                WRITE_EXTERNAL_STORAGE).withListener(new MultiplePermissionsListener() {
+                WRITE_EXTERNAL_STORAGE,
+                "android.permission.READ_PRECISE_PHONE_STATE").withListener(new MultiplePermissionsListener() {
             @Override
             public void onPermissionsChecked(MultiplePermissionsReport report) {
                 mPresenter.initView();

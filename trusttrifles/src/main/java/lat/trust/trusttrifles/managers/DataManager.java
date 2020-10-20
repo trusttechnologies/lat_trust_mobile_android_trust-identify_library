@@ -523,7 +523,7 @@ public class DataManager {
             }
         } catch (Exception e) {
             //if (SentryState.isImportantHigh()) Sentry.capture(e);
-            e.printStackTrace();
+            //e.printStackTrace();
 
         }
 
@@ -542,7 +542,7 @@ public class DataManager {
             }
         } catch (Exception e) {
             //if (SentryState.isImportantHigh()) Sentry.capture(e);
-            e.printStackTrace();
+            //e.printStackTrace();
         }
 
         return isReady;
@@ -566,7 +566,7 @@ public class DataManager {
             }
         } catch (Exception e) {
             // if (SentryState.isImportantHigh()) Sentry.capture(e);
-            e.printStackTrace();
+            //e.printStackTrace();
         }
 
         return result;
