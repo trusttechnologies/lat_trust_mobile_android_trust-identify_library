@@ -42,7 +42,6 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         mPresenter = new SplashPresenter(this);
-
         btnCreateToken = findViewById(R.id.setToken);
         btnLitle = findViewById(R.id.trustIdLitle);
         btnNormal = findViewById(R.id.trustIdNormal);
@@ -94,7 +93,7 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
         btnCreateToken.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mPresenter.requestCustomToken("Bearer 9r23ukvUgg7mb-XCbRChKcdSpH5Rcc3idkOREUwt1Dw");
+                mPresenter.requestCustomToken("Bearer qc-lpm3IE-QPw5f7_J4SScMMfWA4o95s_0zzWEbLpt0");
             }
         });
         btnRemoveToken.setOnClickListener(new View.OnClickListener() {
@@ -136,6 +135,5 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
         mAdapter = new SplashAdapter(lst);
         recyclerView.setAdapter(mAdapter);
     }
-
 
 }

@@ -1,5 +1,7 @@
 package lat.trust.trusttrifles.network.req;
 
+import com.google.gson.annotations.SerializedName;
+
 public class SaveDeviceInfoRequest {
    /* {
         "trust_id": "",
@@ -7,19 +9,23 @@ public class SaveDeviceInfoRequest {
             "bundle_id": ""
     }*/
 
-    private String trust_id;
+    @SerializedName("trust_id")
+    private String trustId;
     private String dni;
-    private String bundle_id;
+    @SerializedName("bundle_id")
+    private String bundleId;
+    @SerializedName("flavor_id")
+    private String flavorId;
 
     public SaveDeviceInfoRequest() {
     }
 
-    public String getTrust_id() {
-        return trust_id;
+    public String getTrustId() {
+        return trustId;
     }
 
-    public void setTrust_id(String trust_id) {
-        this.trust_id = trust_id;
+    public void setTrustId(String trustId) {
+        this.trustId = trustId;
     }
 
     public String getDni() {
@@ -30,11 +36,19 @@ public class SaveDeviceInfoRequest {
         this.dni = dni;
     }
 
-    public String getBundle_id() {
-        return bundle_id;
+    public String getBundleId() {
+        return bundleId;
     }
 
-    public void setBundle_id(String bundle_id) {
-        this.bundle_id = bundle_id;
+    public void setBundleId(String bundleId) {
+        this.bundleId = bundleId;
+    }
+
+    public String getFlavorId() {
+        return flavorId;
+    }
+
+    public void setFlavorId(String flavorId) {
+        this.flavorId = flavorId;
     }
 }

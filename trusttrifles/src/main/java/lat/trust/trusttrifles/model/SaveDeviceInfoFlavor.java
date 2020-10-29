@@ -12,6 +12,7 @@ public class SaveDeviceInfoFlavor {
     public SaveDeviceInfoFlavor() {
     }
 
+
     public String getTrustId() {
         return trustId;
     }

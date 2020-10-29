@@ -24,9 +24,9 @@ public class SaveDeviceInfo {
     public static void saveDeviceInfo(final String dni, final String bundleId, final String trustId) {
         TrustLogger.d("[TRUST CLIENT] SAVING DEVICE...");
         final SaveDeviceInfoRequest saveDeviceInfo = new SaveDeviceInfoRequest();
-        saveDeviceInfo.setBundle_id(bundleId);
+        saveDeviceInfo.setBundleId(bundleId);
         saveDeviceInfo.setDni(dni);
-        saveDeviceInfo.setTrust_id(trustId);
+        saveDeviceInfo.setTrustId(trustId);
         saveDevice(saveDeviceInfo);
     }
 
@@ -39,8 +39,8 @@ public class SaveDeviceInfo {
     public static void saveDeviceInfo(final String bundleId, final String trustId) {
         TrustLogger.d("[TRUST CLIENT] SAVING DEVICE...");
         final SaveDeviceInfoRequest saveDeviceInfo = new SaveDeviceInfoRequest();
-        saveDeviceInfo.setBundle_id(bundleId);
-        saveDeviceInfo.setTrust_id(trustId);
+        saveDeviceInfo.setBundleId(bundleId);
+        saveDeviceInfo.setTrustId(trustId);
         saveDevice(saveDeviceInfo);
     }
 
@@ -63,8 +63,8 @@ public class SaveDeviceInfo {
                         TrustLogger.d("[TRUST CLIENT] DEVICE WAS SAVED CODE: "
                                 + response.code() + " DNI: "
                                 + saveDeviceInfo.getDni() + " BUNDLE ID: "
-                                + saveDeviceInfo.getBundle_id() + " TRUST ID: "
-                                + saveDeviceInfo.getTrust_id());
+                                + saveDeviceInfo.getBundleId() + " TRUST ID: "
+                                + saveDeviceInfo.getTrustId());
                     } else {
                         TrustLogger.d("[TRUST CLIENT] SAVING DEVICE CODE: " + response.code());
                     }
@@ -97,8 +97,8 @@ public class SaveDeviceInfo {
                             TrustLogger.d("[TRUST CLIENT] DEVICE WAS SAVED CODE: "
                                     + response.code() + " DNI: "
                                     + saveDeviceInfo.getDni() + " BUNDLE ID: "
-                                    + saveDeviceInfo.getBundle_id() + " TRUST ID: "
-                                    + saveDeviceInfo.getTrust_id());
+                                    + saveDeviceInfo.getBundleId() + " TRUST ID: "
+                                    + saveDeviceInfo.getTrustId());
                         }
                     }
 
@@ -128,9 +128,9 @@ public class SaveDeviceInfo {
         try {
             TrustLogger.d("[TRUST CLIENT] SAVING DEVICE...");
             final SaveDeviceInfoRequest saveDeviceInfo = new SaveDeviceInfoRequest();
-            saveDeviceInfo.setBundle_id(context.getPackageName());
+            saveDeviceInfo.setBundleId(context.getPackageName());
             saveDeviceInfo.setDni(dni);
-            saveDeviceInfo.setTrust_id(Hawk.get(Constants.TRUST_ID_AUTOMATIC).toString());
+            saveDeviceInfo.setTrustId(Hawk.get(Constants.TRUST_ID_AUTOMATIC).toString());
 
             RestClientIdentify.get().saveDeviceData(saveDeviceInfo, Hawk.get(Constants.TOKEN_SERVICE).toString()).enqueue(new Callback<Void>() {
                 @Override
@@ -141,7 +141,7 @@ public class SaveDeviceInfo {
                         return;
                     }
                     if (response.isSuccessful() || response.code() == 200) {
-                        TrustLogger.d("[TRUST CLIENT] DEVICE WAS SAVED CODE: " + response.code() + ", DNI: " + dni + " , BUNDLE ID: " + saveDeviceInfo.getBundle_id() + " , TRUST ID: " + saveDeviceInfo.getTrust_id());
+                        TrustLogger.d("[TRUST CLIENT] DEVICE WAS SAVED CODE: " + response.code() + ", DNI: " + dni + " , BUNDLE ID: " + saveDeviceInfo.getBundleId() + " , TRUST ID: " + saveDeviceInfo.getTrustId());
 
                     } else {
                         TrustLogger.d("[TRUST CLIENT] SAVING DEVICE CODE: " + response.code());

@@ -8,11 +8,11 @@ repositories {
     google()
 }
 android {
-    compileSdkVersion 28
+    compileSdkVersion 30
     defaultConfig {
         applicationId "lat.trust.trustdemo"
-        minSdkVersion 23
-        targetSdkVersion 28
+        minSdkVersion 19
+        targetSdkVersion 30
         versionCode 1
         versionName "2.0.3"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
@@ -57,4 +57,5 @@ dependencies {
 
     //----------FIREBASE
     implementation project(path: ':trusttrifles')
+
 }

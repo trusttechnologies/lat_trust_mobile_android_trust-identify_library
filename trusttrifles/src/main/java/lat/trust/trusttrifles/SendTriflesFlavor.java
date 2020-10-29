@@ -1,19 +1,21 @@
 package lat.trust.trusttrifles;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.orhanobut.hawk.Hawk;
 
-import java.io.File;
+import java.util.ArrayList;
 
-import lat.trust.trusttrifles.managers.DataManager;
 import lat.trust.trusttrifles.managers.FileManager;
+import lat.trust.trusttrifles.model.AppFlavor;
 import lat.trust.trusttrifles.model.FileTrustId;
 import lat.trust.trusttrifles.model.ResponseCompanyFlavors;
 import lat.trust.trusttrifles.model.SaveDeviceInfoFlavor;
 import lat.trust.trusttrifles.model.TrustResponse;
 import lat.trust.trusttrifles.network.RestClientIdentify;
 import lat.trust.trusttrifles.network.TrifleResponse;
+import lat.trust.trusttrifles.network.req.SaveDeviceInfoRequest;
 import lat.trust.trusttrifles.network.req.TrifleBody;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.TrustLogger;
@@ -77,18 +79,31 @@ public class SendTriflesFlavor {
         String trustId = body.getTrustid();
         SaveDeviceInfoFlavor saveDeviceInfoFlavor = new SaveDeviceInfoFlavor();
         saveDeviceInfoFlavor.setBundleId(packageName);
+        //saveDeviceInfoFlavor.setBundleId("com.trust.enrollment");
         saveDeviceInfoFlavor.setTrustId(trustId);
-        RestClientIdentify.get().saveDeviceDataFavlor(saveDeviceInfoFlavor, token).enqueue(new Callback<ResponseCompanyFlavors>() {
+        RestClientIdentify.get().saveDeviceDataFlavor(saveDeviceInfoFlavor, token).enqueue(new Callback<ResponseCompanyFlavors>() {
             @Override
             public void onResponse(Call<ResponseCompanyFlavors> call, Response<ResponseCompanyFlavors> response) {
                 if (response.isSuccessful()) {
-                    TrustLogger.d("[TRUST CLIENT] success call with flavors: " + response.code());
-                    TrustResponse trustResponse = new TrustResponse();
-                    trustResponse.setApp(response.body().getApps());
-                    trustResponse.setMessage(response.message());
-                    trustResponse.setStatus(response.isSuccessful());
-                    trustResponse.setTrustid(trustId);
-                    listener.onSuccess(response.code(), trustResponse);
+                    try {
+                        TrustLogger.d("[TRUST CLIENT] success call with flavors: " + response.code());
+                        TrustResponse trustResponse = new TrustResponse();
+                        assert response.body() != null;
+                        trustResponse.setApp(response.body().getApps());
+                        trustResponse.setMessage(response.message());
+                        trustResponse.setStatus(response.isSuccessful());
+                        trustResponse.setTrustid(trustId);
+                        ArrayList<AppFlavor> apps = response.body().getApps();
+                        SaveDeviceInfoRequest saveDeviceInfoRequest = new SaveDeviceInfoRequest();
+                        saveDeviceInfoRequest.setBundleId("com.trust.enrollment");
+                        saveDeviceInfoRequest.setFlavorId(apps.get(0).getFlavorId());
+                        saveDeviceInfoRequest.setDni(null);
+                        saveDeviceInfoRequest.setTrustId(trustId);
+                        saveDeviceData(saveDeviceInfoRequest, token, listener);
+                        listener.onSuccess(response.code(), trustResponse);
+                    } catch (Exception e) {
+                        TrustLogger.d("[TRUST CLIENT] error in call: " + response.code());
+                    }
                 } else {
                     TrustLogger.d("[TRUST CLIENT] error in call: " + response.code());
                 }
@@ -96,6 +111,21 @@ public class SendTriflesFlavor {
 
             @Override
             public void onFailure(Call<ResponseCompanyFlavors> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private static void saveDeviceData(SaveDeviceInfoRequest saveDeviceInfoRequest, String token, TrustListener.OnResult<TrustResponse> listener) {
+        RestClientIdentify.get().saveDeviceData(saveDeviceInfoRequest, token).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                //
+                // listener.onSuccess(response.code(), trustResponse);
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
 
             }
         });

@@ -37,7 +37,7 @@ public interface API {
 
 
     @POST("company/api/v1/app/list_flavors")
-    Call<ResponseCompanyFlavors> saveDeviceDataFavlor(@Body SaveDeviceInfoFlavor saveDeviceInfoRequest, @Header("Authorization") String token);
+    Call<ResponseCompanyFlavors> saveDeviceDataFlavor(@Body SaveDeviceInfoFlavor saveDeviceInfoRequest, @Header("Authorization") String token);
 
 
     @POST("v2/device")

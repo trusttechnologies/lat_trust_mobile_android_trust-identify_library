@@ -14,6 +14,7 @@ public class AppFlavor {
     private String flavorId;
 
     public AppFlavor() {
+
     }
 
     public int getId() {
@@ -47,4 +48,5 @@ public class AppFlavor {
     public void setFlavorId(String flavorId) {
         this.flavorId = flavorId;
     }
+
 }

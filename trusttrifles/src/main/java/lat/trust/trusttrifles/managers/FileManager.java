@@ -2,12 +2,17 @@ package lat.trust.trusttrifles.managers;
 
 import android.content.Context;
 import android.os.Environment;
+import android.os.storage.StorageManager;
+import android.provider.DocumentsContract;
 import android.util.Log;
+
+import androidx.documentfile.provider.DocumentFile;
 
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -36,7 +41,7 @@ public class FileManager {
 
         if (fileTrustId != null) {
             if (isOverWrite) {
-                trustIdOverwriteFlow(fileTrustIdIN);
+                trustIdOverwriteFlow(fileTrustIdIN, context);
                 return;
             }
             if (fileTrustIdIN.getType().equals(TRUST_ID_TYPE_ZERO)) {
@@ -44,7 +49,7 @@ public class FileManager {
                 return;
             }
             if (fileTrustIdIN.getType().equals(TRUST_ID_TYPE_NORMAL)) {
-                trustIdLiteOrNormalFlow(fileTrustIdIN);
+                trustIdLiteOrNormalFlow(fileTrustIdIN, context);
             }
         } else {
             trustIdNewFlow(fileTrustIdIN, context);
@@ -83,6 +88,7 @@ public class FileManager {
         }
     }
 
+
     private static void trustIdZeroFlow(FileTrustId fileTrustIdIN, Context context) {
         try {
             FileTrustId fileTrustId = getFileTrustId(); //--> este es el actual guardado en el archivo,  null si no
@@ -106,7 +112,7 @@ public class FileManager {
                     listOfApps.add(fileAppTrustIdToSave);
                 }
                 fileTrustId.setTrustIdApps(listOfApps);
-                saveFileLocal(fileTrustId);
+                saveFileLocal(fileTrustId, context);
             } else {
                 trustIdNewFlow(fileTrustIdIN, context);
             }
@@ -119,11 +125,11 @@ public class FileManager {
     /**
      * @param fileTrustIdIN: Trust object to save
      */
-    private static void trustIdLiteOrNormalFlow(FileTrustId fileTrustIdIN) {
+    private static void trustIdLiteOrNormalFlow(FileTrustId fileTrustIdIN, Context context) {
         try {
             FileTrustId fileTrustId = getFileTrustId(); //--> este es el actual guardado en el archivo,  null si no
             if (fileTrustId == null) {
-                saveFileLocal(fileTrustIdIN);
+                saveFileLocal(fileTrustIdIN, context);
             } else {
                 if (!fileTrustId.getTrustId().equals(fileTrustIdIN.getTrustId())) {
                     LogManager.addLogError("Trust id not the same");
@@ -135,11 +141,11 @@ public class FileManager {
                         fileTrustIdToSave.setType(fileTrustIdIN.getType());
                         fileTrustIdToSave.setTrustId(fileTrustIdIN.getTrustId());
                         fileTrustIdToSave.setTrustIdApps(fileTrustId.getTrustIdApps());
-                        saveFileLocal(fileTrustIdToSave);
+                        saveFileLocal(fileTrustIdToSave, context);
                     }
                 } else {
                     LogManager.addLog("Trust id are the same, nothing to do.");
-                    saveFileLocal(fileTrustId);
+                    saveFileLocal(fileTrustId, context);
 
                 }
             }
@@ -179,7 +185,7 @@ public class FileManager {
         } else {
             trustIdTosave.setTrustIdApps(new ArrayList<>());
         }
-        saveFileLocal(trustIdTosave);
+        saveFileLocal(trustIdTosave, context);
     }
 
     /**
@@ -187,14 +193,14 @@ public class FileManager {
      *
      * @param fileTrustIdIN: Trust object to save
      */
-    private static void trustIdOverwriteFlow(FileTrustId fileTrustIdIN) {
+    private static void trustIdOverwriteFlow(FileTrustId fileTrustIdIN, Context context) {
         try {
             LogManager.addLog("overwrite operation");
             //se obtiene el archivo almacenado
             FileTrustId fileTrustIdSaved = getFileTrustId();
             if (fileTrustIdSaved != null) {
                 fileTrustIdSaved.setTrustId(fileTrustIdIN.getTrustId());
-                saveFileLocal(fileTrustIdSaved);
+                saveFileLocal(fileTrustIdSaved, context);
             } else {
                 FileTrustId newFileTrustIdToSave = new FileTrustId();
                 newFileTrustIdToSave.setTrustId(fileTrustIdIN.getTrustId());
@@ -202,7 +208,7 @@ public class FileManager {
                 newFileTrustIdToSave.setScore(fileTrustIdIN.getScore());
                 newFileTrustIdToSave.setCreateAt(Utils.getCurrentTimeStamp());
                 newFileTrustIdToSave.setTrustIdApps(new ArrayList<>());
-                saveFileLocal(fileTrustIdIN);
+                saveFileLocal(fileTrustIdIN, context);
             }
 
         } catch (Exception e) {
@@ -212,7 +218,7 @@ public class FileManager {
 
     }
 
-    private static void saveFileLocal(FileTrustId fileToSave) {
+    private static void saveFileLocal(FileTrustId fileToSave, Context context) {
         ArrayList<String> paths = getPaths();
         for (String path : paths) {
             createFile(FILE_NAME, fileToSave, path);
