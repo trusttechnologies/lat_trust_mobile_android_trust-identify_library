@@ -98,5 +98,8 @@ public class Constants {
     public static final String TRUST_ID_NOT_FOUND = "";
     public static final String LIST_LOG = "LIST_LOG";
 
+    public static final String LIST_FLAVOR_ID = "com.trust.trifle.list_flavor_id";
+    public static final String LIST_FLAVOR_ID_FISRT = "com.trust.trifle.list_flavor_id_first";
+
 
 }

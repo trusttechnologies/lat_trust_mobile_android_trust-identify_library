@@ -27,6 +27,9 @@ import static lat.trust.trusttrifles.utilities.Constants.TRUST_ID_TYPE_ZERO_SAVE
 public class SendTrifles {
 
 
+
+
+
     static void sendTriflesToken(TrifleBody trifleBody, Context context, TrustListener.OnResult<TrustResponse> listener) {
         if (Hawk.contains(TOKEN_SERVICE_CUSTOM)) {
             TrustLogger.d("token service custom found");

@@ -93,7 +93,7 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
         btnCreateToken.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mPresenter.requestCustomToken("Bearer qc-lpm3IE-QPw5f7_J4SScMMfWA4o95s_0zzWEbLpt0");
+                mPresenter.requestCustomToken("Bearer 1ZBUv503JmbjWfF8vuRN7F7lpZ1Zr6wH_VvKYQ-PAh8");
             }
         });
         btnRemoveToken.setOnClickListener(new View.OnClickListener() {

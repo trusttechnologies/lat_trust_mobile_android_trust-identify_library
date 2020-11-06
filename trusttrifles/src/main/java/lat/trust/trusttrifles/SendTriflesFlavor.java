@@ -24,6 +24,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static lat.trust.trusttrifles.utilities.Constants.LIST_FLAVOR_ID;
+import static lat.trust.trusttrifles.utilities.Constants.LIST_FLAVOR_ID_FISRT;
 import static lat.trust.trusttrifles.utilities.Constants.TRUST_ID_TYPE_ZERO;
 import static lat.trust.trusttrifles.utilities.Constants.TRUST_ID_TYPE_ZERO_SAVED;
 
@@ -94,8 +96,13 @@ public class SendTriflesFlavor {
                         trustResponse.setStatus(response.isSuccessful());
                         trustResponse.setTrustid(trustId);
                         ArrayList<AppFlavor> apps = response.body().getApps();
+                        Hawk.put(LIST_FLAVOR_ID, apps);
+                        if (apps.size() != 0) {
+                            Hawk.put(LIST_FLAVOR_ID_FISRT, apps.get(0).getFlavorId());
+                        }
                         SaveDeviceInfoRequest saveDeviceInfoRequest = new SaveDeviceInfoRequest();
-                        saveDeviceInfoRequest.setBundleId("com.trust.enrollment");
+                        saveDeviceInfoRequest.setBundleId(packageName);
+                        //saveDeviceInfoRequest.setBundleId("com.trust.enrollment");
                         saveDeviceInfoRequest.setFlavorId(apps.get(0).getFlavorId());
                         saveDeviceInfoRequest.setDni(null);
                         saveDeviceInfoRequest.setTrustId(trustId);
