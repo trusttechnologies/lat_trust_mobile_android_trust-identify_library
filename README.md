@@ -1,8 +1,3 @@
-
-
-  
-  
-  
   
 # Trust Technologies 
 ![image](https://avatars2.githubusercontent.com/u/42399326?s=200&v=4)  
@@ -36,8 +31,20 @@ dependencies {
   
 ```  
 > See the actual version [here](https://bintray.com/fcarotrust/trustResponse/trustidentify).
-  
-# Initialize  - TrustClient
+
+# Initialize (new)  - Trust
+This initiation establishes by default that automatic audits are not initiated  
+```java  
+import ...  
+public class TestApp extends Application {    
+  @Override    
+  public void onCreate() {    
+        super.onCreate();    
+        Trust.init(this);         
+  }  
+}   
+```
+# Initialize (old)  - TrustClient
     
 This initiation establishes by default that automatic audits are not initiated  
 ```java  
@@ -117,10 +124,114 @@ The trustResponse library works from API LEVEL 15 because Google Play services a
 See more information  [here](https://android-developers.googleblog.com/2016/11/google-play-services-and-firebase-for-android-will-support-api-level-14-at-minimum.html). 
 >  For more information visit the documentation in Firebase console [here](https://firebase.google.com/docs/?hl=es)
 >  
-# Methods  
+# Methods (new)  
+
+This section describes the methods that the library has to get the trustResponse id.
+
+## Get Trust Id Zero (new)
+```java
+Trust.getTrustIdZero(context, new TrustListener.OnResult<TrustResponse>() {  
+    @Override  
+  public void onSuccess(int code, TrustResponse data) {  
+ 
+  }  
+  
+    @Override  
+  public void onError(int code) {  
+  
+    }  
+  
+    @Override  
+  public void onFailure(Throwable t) {  
+  
+    }  
+  
+    @Override  
+  public void onPermissionRequired(ArrayList<String> permisos) {  
+  
+    }  
+});
+```
+## Get Trust Id Lite  (new)
+```java  
+Trust.getTrustIdLite(context, new TrustListener.OnResult<TrustResponse>() {  
+    @Override  
+  public void onSuccess(int code, TrustResponse data) {  
+           
+  }  
+  
+    @Override  
+  public void onError(int code) {  
+  
+    }  
+  
+    @Override  
+  public void onFailure(Throwable t) {  
+  
+    }  
+  
+    @Override  
+  public void onPermissionRequired(ArrayList<String> permisos) {  
+  
+    }  
+});
+```
+## Get Trust Id Normal  (new)
+
+
+```java 
+Trust.getTrustIdNormal(context, new TrustListener.OnResult<TrustResponse>() {  
+    @Override  
+  public void onSuccess(int code, TrustResponse data) {  
+ 
+  }  
+  
+    @Override  
+  public void onError(int code) {  
+  
+    }  
+  
+    @Override  
+  public void onFailure(Throwable t) {  
+  
+    }  
+  
+    @Override  
+  public void onPermissionRequired(ArrayList<String> permisos) {  
+  
+    }  
+});
+```
+## Send a Identify (new)
+If in your application there is a login with user data, please send that information as follows
+
+```java
+Trust.sendIdentify(identity, context, new TrustListener.OnResult<TrustResponse>() {  
+    @Override  
+  public void onSuccess(int code, TrustResponse data) {  
+  
+    }  
+  
+    @Override  
+  public void onError(int code) {  
+  
+    }  
+  
+    @Override  
+  public void onFailure(Throwable t) {  
+  
+    }  
+  
+    @Override  
+  public void onPermissionRequired(ArrayList<String> permisos) {  
+  
+    }  
+});
+```
+# Methods (old)  
   
 This section describes the methods that the library has to get the trustResponse id.
-## Get Trust Id Zero  
+## Get Trust Id Zero  (old)
   
 With this method you get a trustResponse id lite version
   
@@ -139,7 +250,7 @@ TrustClientZero.getTrustIdZero(this, new TrustListener.OnResult<Audit>() {
         });
 ```
 
-## Get Trust Id Lite  
+## Get Trust Id Lite  (old)
   
 With this method you get a trustResponse id lite version
   
@@ -159,7 +270,7 @@ TrustClientLite.getTrustIDLite(this, new TrustListener.OnResult<Audit>() {
     public void onPermissionRequired(ArrayList<String> permissions) {}  
 });
 ```
-## Get Trust Id Normal  
+## Get Trust Id Normal  (old)
   
 With this method you get a trustResponse id normal version
 
@@ -179,7 +290,7 @@ TrustClient.getInstance().getTrifles(true, new TrustListener.OnResult<Audit>() {
   public void onPermissionRequired(ArrayList<String> permisos) {  } 
 });  
 ```
-## Send a Identify
+## Send a Identify (old)
 If in your application there is a login with user data, please send that information as follows
 ```java  
 Identity identity = new Identity();
