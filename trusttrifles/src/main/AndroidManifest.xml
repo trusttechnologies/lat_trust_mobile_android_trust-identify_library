@@ -5,7 +5,6 @@
     android:sharedUserId="trustResponse.trifles"
     android:sharedUserLabel="@string/shared_user_label">
     <!-- =================== PERMISSIONS =================== -->
-    <!--uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" /-->
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />

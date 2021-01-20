@@ -2,9 +2,9 @@ package lat.trust.trusttrifles.network.res;
 
 public class AuthTokenResponse {
     private String access_token;
-    private  String token_type;
+    private String token_type;
     private String expires_in;
-    private  String created_at;
+    private String created_at;
 
     public AuthTokenResponse() {
     }

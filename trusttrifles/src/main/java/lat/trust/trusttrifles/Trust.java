@@ -11,13 +11,15 @@ import lat.trust.trusttrifles.managers.IdentifyManager;
 import lat.trust.trusttrifles.model.Identity;
 import lat.trust.trusttrifles.model.TrustAuth;
 import lat.trust.trusttrifles.model.TrustResponse;
+import lat.trust.trusttrifles.network.req.AuthTokenRequestFlavor;
 import lat.trust.trusttrifles.network.req.TrifleBody;
+import lat.trust.trusttrifles.network.res.AuthTokenResponseFlavor;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 
 import static lat.trust.trusttrifles.utilities.Constants.OPERATION_OVERWRITE;
 import static lat.trust.trusttrifles.utilities.Constants.SDK_IDENTIFY;
-import static lat.trust.trusttrifles.utilities.Constants.TOKEN_SERVICE_CUSTOM;
+import static lat.trust.trusttrifles.utilities.Constants.TOKEN_CUSTOM_FLAVOR_OBJECT;
 
 public class Trust {
 
@@ -28,17 +30,20 @@ public class Trust {
         setVersionName(context);
     }
 
-    public static void setCustomToken(String token) {
-        Hawk.put(TOKEN_SERVICE_CUSTOM, token);
+
+    public static void setCustomToken(AuthTokenResponseFlavor authTokenRequestFlavor) {
+        Hawk.put(TOKEN_CUSTOM_FLAVOR_OBJECT, authTokenRequestFlavor);
     }
 
     private static void sentryInit(Context context) {
-        SentryState.init(context);
+        if(BuildConfig.DEBUG){
+            SentryState.init(context);
+        }
     }
 
     public static void removeCustomToken() {
-        if (Hawk.contains(TOKEN_SERVICE_CUSTOM)) {
-            Hawk.delete(TOKEN_SERVICE_CUSTOM);
+        if (Hawk.contains(TOKEN_CUSTOM_FLAVOR_OBJECT)) {
+            Hawk.delete(TOKEN_CUSTOM_FLAVOR_OBJECT);
         }
     }
 
@@ -86,8 +91,7 @@ public class Trust {
             SendTrifles.sendTriflesToken(trifleBody, context, listener);
         } catch (Exception e) {
             TrustLogger.d("Error sendIdentify: " + e.getMessage());
-            if (SentryState.getImportance().equals(SentryState.SENTRY_IMPORTANCE.IMPORTANCE_DEFAULT) || SentryState.getImportance().equals(SentryState.SENTRY_IMPORTANCE.IMPORTANCE_HIGH))
-                Sentry.capture(e);
+
         }
     }
 

@@ -14,9 +14,13 @@ import lat.trust.trusttrifles.model.ResponseCompanyFlavors;
 import lat.trust.trusttrifles.model.SaveDeviceInfoFlavor;
 import lat.trust.trusttrifles.model.TrustResponse;
 import lat.trust.trusttrifles.network.RestClientIdentify;
+import lat.trust.trusttrifles.network.RestClientTrust;
 import lat.trust.trusttrifles.network.TrifleResponse;
+import lat.trust.trusttrifles.network.req.AuthTokenRequestFlavor;
 import lat.trust.trusttrifles.network.req.SaveDeviceInfoRequest;
 import lat.trust.trusttrifles.network.req.TrifleBody;
+import lat.trust.trusttrifles.network.res.AuthTokenResponse;
+import lat.trust.trusttrifles.network.res.AuthTokenResponseFlavor;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 import lat.trust.trusttrifles.utilities.Utils;
@@ -32,12 +36,12 @@ import static lat.trust.trusttrifles.utilities.Constants.TRUST_ID_TYPE_ZERO_SAVE
 public class SendTriflesFlavor {
 
 
-    public static void sendTriflesCompany(TrifleBody trifleBody, String token, Context context, TrustListener.OnResult<TrustResponse> listener) {
-        sendData(trifleBody, token, context, listener);
+    public static void sendTriflesCompany(TrifleBody trifleBody, AuthTokenResponseFlavor authTokenResponseFlavor, Context context, TrustListener.OnResult<TrustResponse> listener) {
+        sendData(trifleBody, authTokenResponseFlavor, context, listener);
     }
 
-    private static void sendData(TrifleBody trifleBody, String token, Context context, TrustListener.OnResult<TrustResponse> listener) {
-        RestClientIdentify.get().trifle2(trifleBody, token).enqueue(new Callback<TrifleResponse>() {
+    private static void sendData(TrifleBody trifleBody, AuthTokenResponseFlavor authTokenRequestFlavor, Context context, TrustListener.OnResult<TrustResponse> listener) {
+        RestClientIdentify.get().trifle2(trifleBody, authTokenRequestFlavor.getAccessToken()).enqueue(new Callback<TrifleResponse>() {
             @Override
             public void onResponse(Call<TrifleResponse> call, Response<TrifleResponse> response) {
                 if (response.isSuccessful()) {
@@ -64,8 +68,16 @@ public class SendTriflesFlavor {
                     fileTrustId.setCreateAt(Utils.getCurrentTimeStamp());
                     FileManager.saveFile(fileTrustId, false, context);
                     //listener.onSuccess(response.code(), body.getTrustResponse());
-                    sendFavlor(body, context.getPackageName(), token, listener);
+                    sendFavlor(body, context.getPackageName(), authTokenRequestFlavor, listener);
                 } else {
+                    if (response.code() == 401) {
+                        AuthTokenRequestFlavor authTokenResponseFlavor = new AuthTokenRequestFlavor();
+                        authTokenResponseFlavor.setClientId(authTokenRequestFlavor.getClientId());
+                        authTokenResponseFlavor.setGrantType(authTokenRequestFlavor.getGrantType());
+                        authTokenResponseFlavor.setRefreshToken(authTokenRequestFlavor.getRefreshToken());
+                        authTokenResponseFlavor.setClientSecret(authTokenRequestFlavor.getClientSecret());
+                        refreshTokenFlavor(authTokenResponseFlavor);
+                    }
                     TrustLogger.d("[TRUST CLIENT] error in call: " + response.code());
                 }
             }
@@ -77,13 +89,28 @@ public class SendTriflesFlavor {
         });
     }
 
-    private static void sendFavlor(TrifleResponse body, String packageName, String token, TrustListener.OnResult<TrustResponse> listener) {
+    private static void refreshTokenFlavor(AuthTokenRequestFlavor authTokenResponseFlavor) {
+        RestClientTrust.setup().getAccessTokenFlavor(authTokenResponseFlavor).enqueue(new Callback<AuthTokenResponse>() {
+            @Override
+            public void onResponse(Call<AuthTokenResponse> call, Response<AuthTokenResponse> response) {
+                Log.e("refreshTokenFlavor", response.message());
+                Log.e("refreshTokenFlavor", response.code() + "");
+            }
+
+            @Override
+            public void onFailure(Call<AuthTokenResponse> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private static void sendFavlor(TrifleResponse body, String packageName, AuthTokenResponseFlavor authTokenResponseFlavor, TrustListener.OnResult<TrustResponse> listener) {
         String trustId = body.getTrustid();
         SaveDeviceInfoFlavor saveDeviceInfoFlavor = new SaveDeviceInfoFlavor();
         saveDeviceInfoFlavor.setBundleId(packageName);
         //saveDeviceInfoFlavor.setBundleId("com.trust.enrollment");
         saveDeviceInfoFlavor.setTrustId(trustId);
-        RestClientIdentify.get().saveDeviceDataFlavor(saveDeviceInfoFlavor, token).enqueue(new Callback<ResponseCompanyFlavors>() {
+        RestClientIdentify.get().saveDeviceDataFlavor(saveDeviceInfoFlavor, authTokenResponseFlavor.getAccessToken()).enqueue(new Callback<ResponseCompanyFlavors>() {
             @Override
             public void onResponse(Call<ResponseCompanyFlavors> call, Response<ResponseCompanyFlavors> response) {
                 if (response.isSuccessful()) {
@@ -106,12 +133,13 @@ public class SendTriflesFlavor {
                         saveDeviceInfoRequest.setFlavorId(apps.get(0).getFlavorId());
                         saveDeviceInfoRequest.setDni(null);
                         saveDeviceInfoRequest.setTrustId(trustId);
-                        saveDeviceData(saveDeviceInfoRequest, token, listener);
+                        saveDeviceData(saveDeviceInfoRequest, authTokenResponseFlavor, listener);
                         listener.onSuccess(response.code(), trustResponse);
                     } catch (Exception e) {
                         TrustLogger.d("[TRUST CLIENT] error in call: " + response.code());
                     }
                 } else {
+                    // refreshTokenFlavor(authTokenResponseFlavor);
                     TrustLogger.d("[TRUST CLIENT] error in call: " + response.code());
                 }
             }
@@ -123,12 +151,11 @@ public class SendTriflesFlavor {
         });
     }
 
-    private static void saveDeviceData(SaveDeviceInfoRequest saveDeviceInfoRequest, String token, TrustListener.OnResult<TrustResponse> listener) {
-        RestClientIdentify.get().saveDeviceData(saveDeviceInfoRequest, token).enqueue(new Callback<Void>() {
+    private static void saveDeviceData(SaveDeviceInfoRequest saveDeviceInfoRequest, AuthTokenResponseFlavor authTokenResponseFlavor, TrustListener.OnResult<TrustResponse> listener) {
+        RestClientIdentify.get().saveDeviceData(saveDeviceInfoRequest, authTokenResponseFlavor.getAccessToken()).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                //
-                // listener.onSuccess(response.code(), trustResponse);
+
             }
 
             @Override

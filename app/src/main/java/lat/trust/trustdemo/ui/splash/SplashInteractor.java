@@ -13,11 +13,12 @@ import lat.trust.trusttrifles.managers.LogManager;
 import lat.trust.trusttrifles.model.Identity;
 import lat.trust.trusttrifles.model.StringsModel;
 import lat.trust.trusttrifles.model.TrustResponse;
+import lat.trust.trusttrifles.network.res.AuthTokenResponseFlavor;
 import lat.trust.trusttrifles.utilities.TrustLogger;
 
 import static lat.trust.trustdemo.Utils.ConstrantsTrustDemo.TYPE_TRUST_ID_NORMAL;
 import static lat.trust.trusttrifles.utilities.Constants.LIST_LOG;
-import static lat.trust.trusttrifles.utilities.Constants.TOKEN_SERVICE_CUSTOM;
+import static lat.trust.trusttrifles.utilities.Constants.TOKEN_CUSTOM_FLAVOR_OBJECT;
 
 public class SplashInteractor implements SplashContract.Interactor {
 
@@ -38,14 +39,14 @@ public class SplashInteractor implements SplashContract.Interactor {
     }
 
     @Override
-    public void setCustomToken(String customToken) {
-        Trust.setCustomToken(customToken);
+    public void setCustomToken(AuthTokenResponseFlavor authTokenResponseFlavor) {
+        Trust.setCustomToken(authTokenResponseFlavor);
     }
 
     @Override
     public void deleteToken() {
-        if (Hawk.contains(TOKEN_SERVICE_CUSTOM)) {
-            Hawk.delete(TOKEN_SERVICE_CUSTOM);
+        if (Hawk.contains(TOKEN_CUSTOM_FLAVOR_OBJECT)) {
+            Hawk.delete(TOKEN_CUSTOM_FLAVOR_OBJECT);
         }
     }
 

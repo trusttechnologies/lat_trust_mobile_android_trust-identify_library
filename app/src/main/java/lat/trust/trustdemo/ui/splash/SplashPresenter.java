@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import lat.trust.trusttrifles.model.StringsModel;
 import lat.trust.trusttrifles.model.TrustResponse;
+import lat.trust.trusttrifles.network.res.AuthTokenResponseFlavor;
 
 public class SplashPresenter implements SplashContract.Presenter, SplashContract.InteractorOutput {
 
@@ -60,8 +61,8 @@ public class SplashPresenter implements SplashContract.Presenter, SplashContract
     }
 
     @Override
-    public void requestCustomToken(String customToken) {
-        mInteractor.setCustomToken(customToken);
+    public void requestCustomToken(AuthTokenResponseFlavor authTokenResponseFlavor) {
+        mInteractor.setCustomToken(authTokenResponseFlavor);
     }
 
 

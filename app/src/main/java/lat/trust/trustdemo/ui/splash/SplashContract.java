@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import lat.trust.trusttrifles.model.StringsModel;
 import lat.trust.trusttrifles.model.TrustResponse;
+import lat.trust.trusttrifles.network.res.AuthTokenResponseFlavor;
 
 public interface SplashContract {
 
@@ -35,7 +36,7 @@ public interface SplashContract {
 
         void requestSendIdentify(Context context);
 
-        void requestCustomToken(String customToken);
+        void requestCustomToken(AuthTokenResponseFlavor authTokenResponseFlavor);
 
         void requestDeleteToken();
     }
@@ -44,7 +45,7 @@ public interface SplashContract {
 
         void clearLog();
 
-        void setCustomToken(String customToken);
+        void setCustomToken(AuthTokenResponseFlavor authTokenResponseFlavor);
 
         void deleteToken();
 

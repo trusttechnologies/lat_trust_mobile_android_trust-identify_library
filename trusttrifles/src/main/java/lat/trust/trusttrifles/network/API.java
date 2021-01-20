@@ -4,6 +4,7 @@ import lat.trust.trusttrifles.model.ResponseCompanyFlavors;
 import lat.trust.trusttrifles.model.SaveDeviceInfoFlavor;
 import lat.trust.trusttrifles.model.gateway.DeviceBody;
 import lat.trust.trusttrifles.network.req.AuthTokenRequest;
+import lat.trust.trusttrifles.network.req.AuthTokenRequestFlavor;
 import lat.trust.trusttrifles.network.req.SaveDeviceInfoRequest;
 import lat.trust.trusttrifles.network.req.SaveDeviceNotificationRequest;
 import lat.trust.trusttrifles.network.req.TrifleBody;
@@ -12,6 +13,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 
 /**
  * Created by felipe on 15-03-18.
@@ -32,6 +34,10 @@ public interface API {
     @POST("oauth/token")
     Call<AuthTokenResponse> getAccessToken(@Body AuthTokenRequest tokenRequest);
 
+    @POST("oauth/token")
+    Call<AuthTokenResponse> getAccessTokenFlavor(@Body AuthTokenRequestFlavor tokenRequest);
+
+
     @POST("company/api/v1/app/state")
     Call<Void> saveDeviceData(@Body SaveDeviceInfoRequest saveDeviceInfoRequest, @Header("Authorization") String token);
 
@@ -45,5 +51,8 @@ public interface API {
 
     @POST("v2/device/{trustid}/sim")
     Call<Void> sendSIM(@Header("Authorization") String token);
+
+
+
 
 }

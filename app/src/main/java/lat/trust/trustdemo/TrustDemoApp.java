@@ -13,7 +13,7 @@ public class TrustDemoApp extends Application {
         super.onCreate();
         Hawk.init(this).build();
         Trust.init(this);
-        TrustIdentifyConfigurationService.setEnvironment(TrustIdentifyConfigurationService.ENVIRONMENT_MONKEY, this);
+        //TrustIdentifyConfigurationService.setEnvironment(TrustIdentifyConfigurationService.ENVIRONMENT_MONKEY, this);
 
     }
 }

@@ -47,8 +47,7 @@ public class Constants {
     public static final String BUNDLE_ID = "bundle";
 
     public static final String TOKEN_SERVICE = "token_service";
-    public static final String TOKEN_SERVICE_CUSTOM = "com.trust.trsustid.token_service";
-
+    public static final String TOKEN_CUSTOM_FLAVOR_OBJECT = "com.trust.trsustid.token_service_object";
 
     public static final String CLIENT_ID = "client_id";
     public static final String CLIENT_SECRET = "client_secret";

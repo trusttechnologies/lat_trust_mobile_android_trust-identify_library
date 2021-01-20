@@ -254,6 +254,7 @@ public class FileManager {
         }
     }
 
+
     public static FileTrustId getFileTrustId() {
         String fileJson = null;
         try {
@@ -288,6 +289,8 @@ public class FileManager {
                 LogManager.addLog("backup inv file path found");
                 return new Gson().fromJson(fileJson, FileTrustId.class);
             }
+
+
         } catch (Exception e) {
             LogManager.addLogError("error while searching file: " + e.getMessage());
             return null;

@@ -11,7 +11,9 @@ import lat.trust.trusttrifles.model.FileTrustId;
 import lat.trust.trusttrifles.model.TrustResponse;
 import lat.trust.trusttrifles.network.RestClientIdentify;
 import lat.trust.trusttrifles.network.TrifleResponse;
+import lat.trust.trusttrifles.network.req.AuthTokenRequestFlavor;
 import lat.trust.trusttrifles.network.req.TrifleBody;
+import lat.trust.trusttrifles.network.res.AuthTokenResponseFlavor;
 import lat.trust.trusttrifles.utilities.Constants;
 import lat.trust.trusttrifles.utilities.SaveDeviceInfo;
 import lat.trust.trusttrifles.utilities.TrustLogger;
@@ -20,20 +22,19 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static lat.trust.trusttrifles.utilities.Constants.TOKEN_SERVICE_CUSTOM;
+import static lat.trust.trusttrifles.utilities.Constants.TOKEN_CUSTOM_FLAVOR_OBJECT;
 import static lat.trust.trusttrifles.utilities.Constants.TRUST_ID_TYPE_ZERO;
 import static lat.trust.trusttrifles.utilities.Constants.TRUST_ID_TYPE_ZERO_SAVED;
 
 public class SendTrifles {
 
 
-
-
-
     static void sendTriflesToken(TrifleBody trifleBody, Context context, TrustListener.OnResult<TrustResponse> listener) {
-        if (Hawk.contains(TOKEN_SERVICE_CUSTOM)) {
+
+        if (Hawk.contains(TOKEN_CUSTOM_FLAVOR_OBJECT)) {
             TrustLogger.d("token service custom found");
-            SendTriflesFlavor.sendTriflesCompany(trifleBody, Hawk.get(Constants.TOKEN_SERVICE_CUSTOM).toString(), context, listener);
+            AuthTokenResponseFlavor authTokenResponseFlavor = Hawk.get(TOKEN_CUSTOM_FLAVOR_OBJECT);
+            SendTriflesFlavor.sendTriflesCompany(trifleBody, authTokenResponseFlavor, context, listener);
         } else {
             if (Hawk.contains(Constants.TOKEN_SERVICE)) {
                 TrustLogger.d("token found");
@@ -74,7 +75,7 @@ public class SendTrifles {
                     FileManager.saveFile(fileTrustId, false, context);
                     listener.onSuccess(response.code(), body.getTrustResponse());
                 } else {
-                    if (!Hawk.contains(TOKEN_SERVICE_CUSTOM)) {
+                    if (!Hawk.contains(TOKEN_CUSTOM_FLAVOR_OBJECT)) {
                         TrustLogger.d("token found but is invalid.");
                         refreshToken(trifleBody, context, listener);
                         listener.onFailure(new Throwable(response.code() + "Error"));

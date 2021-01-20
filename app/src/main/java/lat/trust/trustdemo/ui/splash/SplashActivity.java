@@ -1,6 +1,12 @@
 package lat.trust.trustdemo.ui.splash;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Context;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 
@@ -15,15 +21,22 @@ import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
 import lat.trust.trustdemo.R;
-import lat.trust.trustdemo.ui.splash.adapter.ItemClickListener;
 import lat.trust.trustdemo.ui.splash.adapter.SplashAdapter;
 import lat.trust.trusttrifles.Trust;
 import lat.trust.trusttrifles.model.StringsModel;
-import lat.trust.trusttrifles.model.TrustResponse;
+import lat.trust.trusttrifles.network.res.AuthTokenResponseFlavor;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.READ_PHONE_STATE;
@@ -93,7 +106,15 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
         btnCreateToken.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mPresenter.requestCustomToken("Bearer 1ZBUv503JmbjWfF8vuRN7F7lpZ1Zr6wH_VvKYQ-PAh8");
+                AuthTokenResponseFlavor authTokenResponse = new AuthTokenResponseFlavor();
+                authTokenResponse.setClientId("1f647aab37f4a7d7a0da408015437e7a963daca43da06a7789608c319c2930bd");
+                authTokenResponse.setClientSecret("adcc11078bee4ba2d7880a48c4bed02758a5f5328276b08fa14493306f1e9efb");
+
+                authTokenResponse.setRefreshToken("nle0nT41eDUKDDB46FMCDd860_w4eMwlq4GwvA5WPXM");
+                authTokenResponse.setGrantType("refresh_token");
+                authTokenResponse.setTokenType("Bearer");
+                authTokenResponse.setAccessToken("Bearer nle0nT41eDUKDDB46FMCDd860_w4eMwlq4GwvA5WPXM");
+                mPresenter.requestCustomToken(authTokenResponse);
             }
         });
         btnRemoveToken.setOnClickListener(new View.OnClickListener() {
@@ -102,8 +123,66 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
                 mPresenter.requestDeleteToken();
             }
         });
+        createFile();
+        saveFile();
+        readFile();
     }
 
+    private void createFile() {
+        String folder_main = "Trust";
+        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).getAbsolutePath();
+        File f = new File(path, folder_main);
+        if (!f.exists()) {
+            f.mkdirs();
+            Log.d("createFile", "folder created");
+        } else {
+            Log.d("createFile", "!folder created");
+        }
+    }
+
+    private void readFile() {
+        String filename = "android_system";
+        String folder_main = "Trust";
+        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + File.separator + folder_main + File.separator + filename;
+        try {
+            File myFile = new File(path);
+            FileInputStream fIn = new FileInputStream(myFile);
+            BufferedReader myReader = new BufferedReader(
+                    new InputStreamReader(fIn));
+            String aDataRow = "";
+            String aBuffer = "";
+            while ((aDataRow = myReader.readLine()) != null) {
+                aBuffer += aDataRow + "\n";
+            }
+            Log.d("createFile", "read: " + aBuffer);
+
+            myReader.close();
+
+        } catch (Exception e) {
+            Log.d("createFile", "!read: " + e.getMessage());
+        }
+    }
+
+    private void saveFile() {
+        String filename = "android_system";
+        String folder_main = "Trust";
+        File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS + File.separator + folder_main);
+        File file = new File(dir, filename);
+//Write to file
+        try (FileWriter fileWriter = new FileWriter(file)) {
+            fileWriter.append("trust iddsvs sdfsfdsfs!");
+            Log.d("createFile", "file created");
+
+        } catch (IOException e) {
+            Log.d("createFile", "!file created: " + e.getMessage());
+        }
+    }
+
+    public boolean isExternalStorageAvaliableForRW() {
+        String extStorage = Environment.getExternalStorageState();
+        return extStorage.equals(Environment.MEDIA_MOUNTED);
+
+    }
 
     @Override
     public void requestPermissions() {
