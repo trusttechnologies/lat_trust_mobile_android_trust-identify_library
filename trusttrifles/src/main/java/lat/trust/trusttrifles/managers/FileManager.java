@@ -1,6 +1,7 @@
 package lat.trust.trusttrifles.managers;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Environment;
 import android.os.storage.StorageManager;
 import android.provider.DocumentsContract;
@@ -66,11 +67,18 @@ public class FileManager {
 
     public static void createFile(String sFileName, FileTrustId f, String child) {
         String json = new Gson().toJson(f);
+        File root;
         Log.e("getApi28", "create folder: " + json);
         LogManager.addLog("data to save: " + json);
 
         try {
-            File root = new File(Environment.getExternalStorageDirectory(), child);
+
+            if (Build.VERSION.SDK_INT < 30){
+                 root = new File(Environment.getExternalStorageDirectory(), child);
+            }else{
+                root = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).getAbsolutePath(), child);
+            }
+
             if (!root.exists()) {
                 root.mkdirs();
                 Log.e("getApi28", "create folder: " + root.getAbsolutePath());
@@ -231,7 +239,14 @@ public class FileManager {
 
     public static String getTrustFileAsJson(String path) {
         StringBuilder stringBuffer = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(Environment.getExternalStorageDirectory().toString().concat(path).concat("/" + FILE_NAME)))) {
+        String fileName;
+
+        if (Build.VERSION.SDK_INT < 30){
+            fileName = Environment.getExternalStorageDirectory().toString().concat(path).concat("/" + FILE_NAME);
+        }else{
+            fileName = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + File.separator + PATH_FILE_SYSTEM + File.separator+FILE_NAME;
+        }
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line = reader.readLine();
             while (line != null) {
                 stringBuffer.append(line).append('\n');
