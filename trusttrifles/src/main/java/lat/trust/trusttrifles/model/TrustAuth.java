@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.lang.reflect.Type;
 
 import io.sentry.Sentry;
+import lat.trust.trusttrifles.R;
 import lat.trust.trusttrifles.SentryState;
 import lat.trust.trusttrifles.TrustClientLite;
 import lat.trust.trusttrifles.utilities.Constants;
@@ -41,17 +42,19 @@ public class TrustAuth {
 
     }
 
-    public static void setSecretAndId(Context context) {
+    public static void setSecretAndId(String clientID, String clientSecret) {
         try {
-            String json = getAssetJsonData(context);
-            Type type = new TypeToken<ClientTrust>() {
-            }.getType();
-            TrustAuth.ClientTrust modelObject = new Gson().fromJson(json, type);
-            Hawk.put(Constants.CLIENT_ID, modelObject.client_id);
-            Hawk.put(Constants.CLIENT_SECRET, modelObject.client_secret);
+            if (null != clientID && clientID.equals("")) {
+                throw new Exception("Client id cant be null or empty");
+            }
+            if (null != clientSecret && clientSecret.equals("")) {
+                throw new Exception("Client secret cant be null or empty");
+            }
+
+            Hawk.put(Constants.CLIENT_ID, clientID);
+            Hawk.put(Constants.CLIENT_SECRET, clientSecret);
         } catch (Exception ex) {
             TrustLogger.d("error in trust-service.json on asset folder, client_id or client_secret not found: " + ex.getMessage());
-            //if (SentryState.isImportantDefault()) Sentry.capture(ex);
         }
 
     }

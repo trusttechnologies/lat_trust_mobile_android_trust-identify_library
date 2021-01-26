@@ -21,9 +21,9 @@ import static lat.trust.trusttrifles.utilities.Constants.TOKEN_SERVICE_CUSTOM;
 
 public class Trust {
 
-    public static void init(Context context) {
+    public static void init(Context context, String clientID, String clientSecret) {
         initHawk(context);
-        setClientAndSecret(context);
+        setClientAndSecret(clientID,clientSecret);
         sentryInit(context);
         setVersionName(context);
     }
@@ -48,8 +48,8 @@ public class Trust {
         }
     }
 
-    private static void setClientAndSecret(Context context) {
-        TrustAuth.setSecretAndId(context);
+    private static void setClientAndSecret(String clientID,String clientSecret) {
+        TrustAuth.setSecretAndId(clientID,clientSecret);
     }
 
     private static void setVersionName(Context context) {
