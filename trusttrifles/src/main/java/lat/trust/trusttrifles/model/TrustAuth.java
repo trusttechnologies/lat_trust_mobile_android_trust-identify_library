@@ -42,7 +42,10 @@ public class TrustAuth {
 
     }
 
-    public static void setSecretAndId(String clientID, String clientSecret) {
+    public static void setSecretAndId(Context ctx) {
+        String clientID = ctx.getString((R.string.client_id));
+        String clientSecret = ctx.getString((R.string.client_secret));
+
         try {
             if (null != clientID && clientID.equals("")) {
                 throw new Exception("Client id cant be null or empty");

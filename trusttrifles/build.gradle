@@ -1,6 +1,15 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
+apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+
+group = 'com.github.trusttechnologies.trust-device-info'
+version = '2.0.25'
+
+def localProperties = new Properties()
+localProperties.load(new FileInputStream(rootProject.file("local.properties")))
+
 buildscript {
     repositories {
         mavenCentral()
@@ -13,11 +22,7 @@ buildscript {
     }
 }
 
-apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
 
-group = 'com.github.trusttechnologies.trust-device-info'
-version = '2.0.25'
 
 
 
@@ -30,6 +35,8 @@ android {
         versionName "2.0.31"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         tasks.withType(Javadoc).all { enabled = false }
+        resValue("string", "client_id", localProperties['trust.client.id'])
+        resValue("string", "client_secret", localProperties['trust.client.secret'])
 
 
     }
