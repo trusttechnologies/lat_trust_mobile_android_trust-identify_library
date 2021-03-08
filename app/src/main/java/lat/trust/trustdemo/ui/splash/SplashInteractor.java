@@ -181,4 +181,9 @@ public class SplashInteractor implements SplashContract.Interactor {
             }
         });
     }
+
+    @Override
+    public void setIdentity(Identity identity) {
+        Trust.saveIdentify(identity);
+    }
 }

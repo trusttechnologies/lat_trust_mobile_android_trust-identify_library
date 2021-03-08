@@ -6,6 +6,7 @@ import com.orhanobut.hawk.Hawk;
 
 import lat.trust.trusttrifles.authToken.AuthToken;
 import lat.trust.trusttrifles.authToken.AuthTokenListener;
+import lat.trust.trusttrifles.managers.DataManager;
 import lat.trust.trusttrifles.network.RestClientIdentify;
 import lat.trust.trusttrifles.network.req.SaveDeviceInfoRequest;
 import retrofit2.Call;
@@ -27,6 +28,7 @@ public class SaveDeviceInfo {
         saveDeviceInfo.setBundleId(bundleId);
         saveDeviceInfo.setDni(dni);
         saveDeviceInfo.setTrustId(trustId);
+        saveDeviceInfo.setPerson(DataManager.getIdentity());
         saveDevice(saveDeviceInfo);
     }
 
@@ -131,6 +133,7 @@ public class SaveDeviceInfo {
             saveDeviceInfo.setBundleId(context.getPackageName());
             saveDeviceInfo.setDni(dni);
             saveDeviceInfo.setTrustId(Hawk.get(Constants.TRUST_ID_AUTOMATIC).toString());
+            saveDeviceInfo.setPerson(DataManager.getIdentity());
 
             RestClientIdentify.get().saveDeviceData(saveDeviceInfo, Hawk.get(Constants.TOKEN_SERVICE).toString()).enqueue(new Callback<Void>() {
                 @Override

@@ -8,6 +8,13 @@ public class Identity {
     private String email;
     private String phone;
 
+    public Identity(String dni, String name, String lastname, String email, String phone) {
+        this.dni = dni;
+        this.name = name;
+        this.lastname = lastname;
+        this.email = email;
+        this.phone = phone;
+    }
 
     public String getDni() {
         return dni;

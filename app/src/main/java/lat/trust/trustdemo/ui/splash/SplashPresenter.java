@@ -5,6 +5,7 @@ import android.content.Context;
 
 import java.util.ArrayList;
 
+import lat.trust.trusttrifles.model.Identity;
 import lat.trust.trusttrifles.model.StringsModel;
 import lat.trust.trusttrifles.model.TrustResponse;
 
@@ -40,8 +41,8 @@ public class SplashPresenter implements SplashContract.Presenter, SplashContract
 
     @Override
     public void requestTrustIdNormal(Context context) {
+        mInteractor.setIdentity(new Identity("17141991-3", "Aldo", "Ulloa", "aulloa@jumpitt.com", "96387827"));
         mInteractor.getTrustIdNormal(context);
-
     }
 
     @Override

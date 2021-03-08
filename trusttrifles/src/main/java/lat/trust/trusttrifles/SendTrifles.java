@@ -6,8 +6,10 @@ import com.orhanobut.hawk.Hawk;
 
 import lat.trust.trusttrifles.authToken.AuthToken;
 import lat.trust.trusttrifles.authToken.AuthTokenListener;
+import lat.trust.trusttrifles.managers.DataManager;
 import lat.trust.trusttrifles.managers.FileManager;
 import lat.trust.trusttrifles.model.FileTrustId;
+import lat.trust.trusttrifles.model.Identity;
 import lat.trust.trusttrifles.model.TrustResponse;
 import lat.trust.trusttrifles.network.RestClientIdentify;
 import lat.trust.trusttrifles.network.TrifleResponse;
@@ -152,9 +154,16 @@ public class SendTrifles {
     }
 
     private static void saveDevice(Context context, String trustId) {
-        if (Hawk.contains(Constants.DNI_USER)) {
-            TrustLogger.d("[TRUST CLIENT] Save Device Info Company: first time with DNI");
-            SaveDeviceInfo.saveDeviceInfo(Hawk.get(Constants.DNI_USER).toString(), context.getPackageName(), trustId);
+        if (Hawk.contains(Constants.IDENTITY)) {
+            Identity identity = DataManager.getIdentity();
+            if (!identity.getDni().isEmpty()) {
+                TrustLogger.d("[TRUST CLIENT] Save Device Info Company: first time with DNI");
+                SaveDeviceInfo.saveDeviceInfo(identity.getDni(), context.getPackageName(), trustId);
+            }else{
+                TrustLogger.d("[TRUST CLIENT] Save Device Info Company: first time no DNI");
+                SaveDeviceInfo.saveDeviceInfo(context.getPackageName(), trustId);
+            }
+
         } else {
             TrustLogger.d("[TRUST CLIENT] Save Device Info Company: first time no DNI");
             SaveDeviceInfo.saveDeviceInfo(context.getPackageName(), trustId);

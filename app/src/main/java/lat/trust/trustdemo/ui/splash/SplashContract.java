@@ -4,6 +4,7 @@ import android.content.Context;
 
 import java.util.ArrayList;
 
+import lat.trust.trusttrifles.model.Identity;
 import lat.trust.trusttrifles.model.StringsModel;
 import lat.trust.trusttrifles.model.TrustResponse;
 
@@ -60,6 +61,7 @@ public interface SplashContract {
 
         void getSendIdentify(Context context);
 
+        void setIdentity(Identity identity);
     }
 
     interface InteractorOutput {

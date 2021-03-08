@@ -7,9 +7,11 @@ import com.orhanobut.hawk.Hawk;
 
 import java.util.ArrayList;
 
+import lat.trust.trusttrifles.managers.DataManager;
 import lat.trust.trusttrifles.managers.FileManager;
 import lat.trust.trusttrifles.model.AppFlavor;
 import lat.trust.trusttrifles.model.FileTrustId;
+import lat.trust.trusttrifles.model.Identity;
 import lat.trust.trusttrifles.model.ResponseCompanyFlavors;
 import lat.trust.trusttrifles.model.SaveDeviceInfoFlavor;
 import lat.trust.trusttrifles.model.TrustResponse;
@@ -100,12 +102,14 @@ public class SendTriflesFlavor {
                         if (apps.size() != 0) {
                             Hawk.put(LIST_FLAVOR_ID_FISRT, apps.get(0).getFlavorId());
                         }
+                        Identity identity = DataManager.getIdentity();
                         SaveDeviceInfoRequest saveDeviceInfoRequest = new SaveDeviceInfoRequest();
                         saveDeviceInfoRequest.setBundleId(packageName);
                         //saveDeviceInfoRequest.setBundleId("com.trust.enrollment");
                         saveDeviceInfoRequest.setFlavorId(apps.get(0).getFlavorId());
-                        saveDeviceInfoRequest.setDni(null);
+                        saveDeviceInfoRequest.setDni(identity.getDni());
                         saveDeviceInfoRequest.setTrustId(trustId);
+                        saveDeviceInfoRequest.setPerson(identity);
                         saveDeviceData(saveDeviceInfoRequest, token, listener);
                         listener.onSuccess(response.code(), trustResponse);
                     } catch (Exception e) {

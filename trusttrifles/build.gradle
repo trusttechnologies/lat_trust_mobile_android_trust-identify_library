@@ -32,7 +32,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 30
         versionCode 8
-        versionName "2.0.33"
+        versionName "2.0.34"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         tasks.withType(Javadoc).all { enabled = false }
         resValue("string", "client_id", localProperties['trust.client.id'])
@@ -82,7 +82,7 @@ ext {
     siteUrl = 'https://github.com/trusttechnologies/lat_trust_mobile_android_trust-identify_library'
     gitUrl = 'https://github.com/trusttechnologies/lat_trust_mobile_android_trust-identify_library.git'
 
-    libraryVersion = '2.0.33'
+    libraryVersion = '2.0.34'
 
     developerId = 'fcaro'
     developerName = 'Felipe Caro'
