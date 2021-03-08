@@ -18,6 +18,7 @@ import lat.trust.trusttrifles.utilities.TrustLogger;
 import static lat.trust.trusttrifles.utilities.Constants.OPERATION_OVERWRITE;
 import static lat.trust.trusttrifles.utilities.Constants.SDK_IDENTIFY;
 import static lat.trust.trusttrifles.utilities.Constants.TOKEN_SERVICE_CUSTOM;
+import static lat.trust.trusttrifles.utilities.Constants.TRUST_ID_AUTOMATIC;
 
 public class Trust {
 

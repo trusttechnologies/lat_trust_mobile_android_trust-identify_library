@@ -16,8 +16,6 @@ public class TrustDemoApp extends Application {
         Hawk.init(this).build();
         Trust.init(this);
         TrustIdentifyConfigurationService.setEnvironment(TrustIdentifyConfigurationService.ENVIRONMENT_MONKEY, this);
-        Log.d("getResources", getResources().getString(R.string.client_id));
-        Log.d("getResources", getResources().getString(R.string.client_secret));
 
 
     }
